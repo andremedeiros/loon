@@ -32,36 +32,36 @@ A project's metadata will be defined in a file that lives in the project's root.
 ```yaml
 version: 1
 project:
-	name: awesome-tool
-	url: https://github.com/andremedeiros/awesome-tool
-	provider: nix
+  name: awesome-tool
+  url: https://github.com/andremedeiros/awesome-tool
+  provider: nix
 languages:
-	ruby:
-		version: 2.7.1
-	golang:
-		version: 1.13.1
+  ruby:
+    version: 2.7.1
+  golang:
+    version: 1.13.1
 services:
-	postgres:
-		version: 12.3
-	faktory:
-		version: 1.4.0
-		provider: docker
+  postgres:
+    version: 12.3
+  faktory:
+    version: 1.4.0
+    provider: docker
 tools:
-	imagemagick:
-		version: latest
+  imagemagick:
+    version: latest
 hostnames:
-	- www.awesome-tool.dev
-	- account.awesome-tool.dev
+  - www.awesome-tool.dev
+  - account.awesome-tool.dev
 environment:
-	THIS_VAR: that value
-	SOME_OTHER_VAR: that other value
+  THIS_VAR: that value
+  SOME_OTHER_VAR: that other value
 tasks:
-	test:
-		description: Runs the test suite
-		command: rake test
-	race:
-		description: Runs race checks
-		command: go test -race ./...
+  test:
+    description: Runs the test suite
+    command: rake test
+  race:
+    description: Runs race checks
+    command: go test -race ./...
 ```
 
 Monitoring should be included for all projects, unless explicitly disabled.
@@ -155,7 +155,7 @@ Any command that is invoked, whether it's a task or something the tool runs must
 * Support defining a custom UI (plain, colourized, JSON)
 * Check the project's task list for any commands that overwrite the tools's commands and show an error
 * Check configuration:
-	* Emit warning if `dev_tld` is `.dev` (and link to Chrome's asinine 
+	* Emit warning if `dev_tld` is `.dev` (and link to Chrome's asinine
 
 ### `$ loon vet` / `$ loon doctor`
 
@@ -182,7 +182,7 @@ When the repository already exists on disk, the tool must fail and exit.
 
 ### `$ loon init`
 
-The `init` command asks the user some questions about the project and writes an initial `loon.yml` file. 
+The `init` command asks the user some questions about the project and writes an initial `loon.yml` file.
 
 The project's dependencies can be inferred or suggested based on what files exist. For instance, if there's a `.gemspec` or `gems.rb` file in the project's root, it's safe to assume it's a Ruby project. Moreover, if the `Gemfile` includes `pg`, it's safe to assume the project depends on Postgres.
 
@@ -203,7 +203,7 @@ The `down` command brings down all the infrastructure. This means:
 The `shell` or `mux` command starts a shell with the project's environment all set up. This is good to further test or experiment with different tasks that can help expand the catalog of the project's task list. This command must:
 - Respect the user's chosen shell
 - Carry over the existing environment, merged with the project's intended environment
-- Check for the presence of tmux when the `mux` v 
+- Check for the presence of tmux when the `mux` v
 
 ### `$ loon deploy`
 
