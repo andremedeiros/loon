@@ -94,16 +94,16 @@ The tool must check for `$XDG_CONFIG_HOME/loon/config.yml` for configuration pre
 
 The template to which the tool checks out repositories. It defaults to:
 
-`$HOME/src/{gitProvider}/{accountOrOrganization}/{repository}`
+`$HOME/src/{host}/{owner}/{name}`
 
 Where:
 
-* `gitProvider` is one of:
+* `host` is one of:
 	* github.com
 	* gitlab.com
 	* bitbucket.org
-* `accountOrOrganization` is the repository owner's account or organization
-* `repository` is the repository or project name
+* `owner` is the repository owner's account or organization
+* `name` is the repository or project name
 
 This value must be checked to ensure that, at least, the `repository` placeholder is present.
 
