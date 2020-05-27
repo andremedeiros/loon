@@ -50,8 +50,8 @@ tools:
   imagemagick:
     version: latest
 hostnames:
-  - www.awesome-tool.dev
-  - account.awesome-tool.dev
+  - www.awesome-tool.test
+  - account.awesome-tool.test
 environment:
   THIS_VAR: that value
   SOME_OTHER_VAR: that other value
@@ -111,7 +111,7 @@ This value must be checked to ensure that, at least, the `repository` placeholde
 
 This configuration value defines the top level domain for development domains. It defaults to `.test` or `.localhost`
 
-### `default_provider`
+### `provider`
 
 This configuration value sets the default provider for services, languages, and tools. Possible values are:
 * nix
@@ -164,6 +164,10 @@ The `vet` command will check the current state of the system. It will check:
 	* Health of the provider(s) (ie. is Nix healthy?)
 	* The system's DNS is setup to use our resolver for `dev_tld` domains
 	* There is a reasonable amount of disk space available
+
+The `vet` command will also check the goodness of the project's metadata. Things like this will be checked:
+* Whether the providers can satisfy the requested versions
+* Whether hostnames have the correct TLD
 
 ### `$ loon clone`
 
