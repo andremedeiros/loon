@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 	Long:  `Loon is a development acceleration tool`,
 }
 
-func makeRunE(fun func(context.Context, *config.Config, []string) error) func(*cobra.Command, []string) error {
+func makeRunE(fun func(context.Context, *config.Config, *cobra.Command, []string) error) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Read()
 		if err != nil {
@@ -44,7 +44,7 @@ func makeRunE(fun func(context.Context, *config.Config, []string) error) func(*c
 			}
 		}()
 
-		return fun(ctx, cfg, args)
+		return fun(ctx, cfg, cmd, args)
 	}
 }
 
