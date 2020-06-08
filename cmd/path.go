@@ -23,7 +23,7 @@ Some accepted values are:
   $ loon path andremedeiros/loon
 	$ loon path andre.cool`,
 	Args: cobra.ExactArgs(1),
-	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, args []string) error {
+	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		repo := git.NewRepository(args[0])
 		path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
 		fmt.Println(path)

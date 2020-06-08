@@ -30,11 +30,9 @@ Adoption success metrics:
 A project's metadata will be defined in a file that lives in the project's root. For now, we'll call it `loon.yml` and it will have the following format:
 
 ```yaml
-version: 1
-project:
-  name: awesome-tool
-  url: https://github.com/andremedeiros/awesome-tool
-  provider: nix
+name: awesome-tool
+url: https://github.com/andremedeiros/awesome-tool
+provider: nix
 languages:
   ruby:
     version: 2.7.1
@@ -66,7 +64,7 @@ tasks:
 
 Monitoring should be included for all projects, unless explicitly disabled.
 
-A `version` field should be included. Without the version field, the tool will assume the latest version.
+The tool will assume the latest version of the config is applicable to whatever project payload file it finds.
 
 When invoking the tool, it will traverse up the directory tree until either of these happens:
 * A `loon.yml` file is found, and as such, the project root is found
