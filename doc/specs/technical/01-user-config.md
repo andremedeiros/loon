@@ -18,7 +18,7 @@ This document proposes a specification for the user configuration aspect of the 
 | `dev_tld` | `.test` |
 | `provider` | `nix` |
 | `silence_dev_dev_tld` | false |
-| `source_tree` | `$HOME/src/{gitProvider}/{accountOrOrganization}/{repository}` |
+| `source_tree` | `$HOME/src/{host}/{owner}/{name}` |
 
 ### `dev_tld`
 
@@ -50,9 +50,9 @@ This contains the template on which source trees will be calculated. This templa
 
 | Variable | Default | Required |
 |:--|:--|:--|
-| `gitProvider` | `github.com` | |
-| `accountOrOrganization` | The current UNIX username | |
-| `repository` | The name of the repository | X |
+| `host` | `github.com` | |
+| `owner` | The current UNIX username | |
+| `name` | The name of the repository | X |
 
 The template MUST validate that the resulting path is valid.
 
