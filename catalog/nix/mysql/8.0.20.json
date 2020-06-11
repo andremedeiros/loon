@@ -1,0 +1,8 @@
+{
+  "mysql": {
+    "version": "8.0.20",
+    "url": "https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.20.tar.gz",
+    "sha256": "4d62eaca43cd9c858baca10d02857382887507a17ffdbfa97daf107d0c62ee5f",
+    "latest": true
+  }
+}

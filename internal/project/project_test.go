@@ -1,6 +1,7 @@
 package project
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -37,5 +38,25 @@ environment:
 		if !reflect.DeepEqual(env, p.Environment) {
 			t.Errorf("wanted %q, got %q", env, p.Environment)
 		}
+	})
+
+	t.Run("payload with services", func(t *testing.T) {
+		payload := `name: Awesome Tool
+services:
+  postgres:
+    version: 12.3
+  redis:
+    version: 6.0.4
+`
+
+		p, err := NewFromPayload([]byte(payload))
+		if err != nil {
+			t.Errorf("got %q", err)
+			return
+		}
+		if len(p.Services) != 2 {
+			t.Errorf("wanted 2 services, got %d", len(p.Services))
+		}
+		fmt.Println(p.Services)
 	})
 }
