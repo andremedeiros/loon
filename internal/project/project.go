@@ -8,9 +8,8 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/andremedeiros/loon/catalog"
-	"github.com/andremedeiros/loon/internal/provider"
-	"github.com/andremedeiros/loon/internal/service"
+	"github.com/andremedeiros/loon/internal/catalog"
+	"github.com/andremedeiros/loon/internal/nix"
 )
 
 type Project struct {
@@ -19,6 +18,9 @@ type Project struct {
 	Provider    string            `yaml:"provider"`
 	Services    []Service         `yaml:"services"`
 	Environment map[string]string `yaml:"environment"`
+	Path        string
+
+	derivation *nix.Derivation
 }
 
 func FindInTree() (*Project, error) {
@@ -29,20 +31,31 @@ func FindInTree() (*Project, error) {
 			cwd = filepath.Dir(cwd)
 			continue
 		}
-		return NewFromPath(path)
+
+		p, err := fromPath(path)
+		if err != nil {
+			return nil, err
+		}
+		p.derivation = nix.NewDerivation(p.VDPath())
+		return p, nil
 	}
 	return nil, ErrProjectPayloadNotFound
 }
 
-func NewFromPath(path string) (*Project, error) {
+func fromPath(path string) (*Project, error) {
 	body, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return NewFromPayload(body)
+	p, err := fromPayload(body)
+	if err != nil {
+		return nil, err
+	}
+	p.Path = filepath.Dir(path)
+	return p, nil
 }
 
-func NewFromPayload(b []byte) (*Project, error) {
+func fromPayload(b []byte) (*Project, error) {
 	project := &Project{}
 	if err := yaml.Unmarshal(b, project); err != nil {
 		return nil, err
@@ -52,13 +65,19 @@ func NewFromPayload(b []byte) (*Project, error) {
 
 func (p *Project) Environ() []string {
 	environ := os.Environ()
-	for _, s := range p.Services {
-		environ = append(environ, s.Service.Environ()...)
-	}
+	/*
+		for _, s := range p.Services {
+			environ = append(environ, s.Service.Environ()...)
+		}
+	*/
 	for k, v := range p.Environment {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 	}
 	return environ
+}
+
+func (p *Project) VDPath() string {
+	return filepath.Join(p.Path, ".loon")
 }
 
 func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -85,23 +104,19 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	for serviceName, opts := range serviceData.Services {
-		srvc, ok := service.Handlers[serviceName]
+		srvc, ok := catalog.Services[serviceName]
 		if !ok {
 			return fmt.Errorf("service not supported: %s", srvc)
 		}
 
-		ce, err := catalog.EntryFor("nix", serviceName, opts["version"])
+		ce, err := catalog.EntryFor(serviceName, opts["version"])
 		if err != nil {
 			return err
 		}
 
-		prov := provider.Handlers["nix"]
-		prov.Add(ce)
-
 		s := Service{
-			Provider: prov,
-			Service:  srvc,
-			Version:  ce.Version,
+			Service: srvc,
+			Version: ce.Version,
 		}
 		p.Services = append(p.Services, s)
 	}

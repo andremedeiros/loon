@@ -11,6 +11,9 @@ type Service struct {
 	Provider provider.Provider
 	Service  service.Service
 	Version  string
+
+	IPAddress        string
+	VariableDataPath string
 }
 
 func (s *Service) String() string {
@@ -18,9 +21,11 @@ func (s *Service) String() string {
 }
 
 func (s *Service) Start() error {
-	cmd := s.Service.Start()
+	cmd := s.Service.Start(s.IPAddress, s.VariableDataPath)
 	return s.Provider.Start(cmd)
 }
 
-func (s *Service) Stop() {
+func (s *Service) Stop() error {
+	cmd := s.Service.Start(s.IPAddress, s.VariableDataPath)
+	return s.Provider.Stop(cmd)
 }
