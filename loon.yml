@@ -2,6 +2,11 @@ name: loon
 url: https://github.com/andremedeiros/loon
 environment:
   LOON: Was here
+languages:
+  ruby:
+    version: 2.7.0
+  golang:
+    version: 1.14.1
 services:
   memcached:
     version: 1.6.5
