@@ -2,26 +2,26 @@ package nix
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
-
-	"github.com/andremedeiros/loon/internal/catalog"
 )
 
 type Derivation struct {
-	Entries []catalog.Entry
-	vdpath  string
+	Packages []Package
+	vdpath   string
 }
 
-func NewDerivation(vdpath string) *Derivation {
-	return &Derivation{vdpath: vdpath}
+func NewDerivation() *Derivation {
+	return &Derivation{}
 }
 
 func (d *Derivation) Execute(args []string) error {
 	cmd := strings.Join(args, " ")
+	fmt.Println(cmd)
 	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
 	exe.Stdout = os.Stdout
 	exe.Stderr = os.Stderr
@@ -33,8 +33,7 @@ func (d *Derivation) Install() error {
 { pkgs ? import <nixpkgs> { } }:
 let
 inherit (pkgs) fetchurl mkShell;
-{{range $entry := .Entries}}
-{range $package := $entry.Packages}}
+{{range $package := $.Packages}}
 	{{$package.Name}} = pkgs.{{$package.Name}}.overrideAttrs (attrs: {
 		version = "{{$package.Version}}";
 		src = fetchurl {
@@ -54,7 +53,7 @@ in mkShell {
 	t := template.Must(template.New("nix").Parse(tmpl))
 	t.Execute(buf, d)
 
-	fd, _ := os.OpenFile(d.Path(), os.O_RDWR|os.O_CREATE, 0755)
+	fd, _ := os.OpenFile(d.Path(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	defer fd.Close()
 	fd.Write(buf.Bytes())
 
@@ -65,5 +64,5 @@ in mkShell {
 }
 
 func (d *Derivation) Path() string {
-	return filepath.Join(d.vdpath, "default.nix")
+	return filepath.Join("/tmp", "default.nix")
 }

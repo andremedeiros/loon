@@ -12,13 +12,13 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(upCommand)
+	rootCmd.AddCommand(downCommand)
 }
 
-var upCommand = &cobra.Command{
-	Use:   "up",
-	Short: "INSTALLS ALL THE THINGS",
-	Long:  `Installs all the things`,
+var downCommand = &cobra.Command{
+	Use:   "down",
+	Short: "STOPS ALL THE THINGS",
+	Long:  `Stops all the things`,
 	Args:  cobra.ExactArgs(0),
 	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		proj, err := project.FindInTree()
@@ -26,22 +26,12 @@ var upCommand = &cobra.Command{
 			return err
 		}
 
-		fmt.Println("ensuring software installed...")
-		if err = proj.EnsureDependencies(); err != nil {
-			return err
-		}
-
 		g, ctx := errgroup.WithContext(ctx)
 		for _, srv := range proj.Services {
-			fmt.Printf("starting %s...\n", srv.String())
+			fmt.Printf("stopping %s...\n", srv.String())
 			srv := srv // otherwise it goes out of scope
 			g.Go(func() error {
-				cmd := srv.Initialize(proj.IPAddr(), proj.VDPath())
-				if len(cmd) > 0 {
-					proj.Execute(cmd)
-				}
-				cmd = srv.Start(proj.IPAddr(), proj.VDPath())
-				return proj.Execute(cmd)
+				return srv.Stop(proj.IPAddr(), proj.VDPath())
 			})
 		}
 		if err := g.Wait(); err != nil {

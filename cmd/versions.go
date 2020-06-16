@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/andremedeiros/loon/catalog"
+	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/config"
 )
 
@@ -22,9 +22,9 @@ var versionsCommand = &cobra.Command{
 	Args:  cobra.ExactArgs(0),
 	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		w := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 8, 4, '\t', 0)
-		fmt.Fprintln(w, "Provider\tSoftware\tVersion")
+		fmt.Fprintln(w, "Software\tVersion")
 		for _, sv := range catalog.List() {
-			fmt.Fprintf(w, "%s\t%s\t%s\n", sv.Provider, sv.Software, sv.Version)
+			fmt.Fprintf(w, "%s\t%s\n", sv.Name, sv.Version)
 		}
 		w.Flush()
 		return nil

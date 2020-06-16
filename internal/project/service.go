@@ -3,17 +3,12 @@ package project
 import (
 	"fmt"
 
-	"github.com/andremedeiros/loon/internal/provider"
-	"github.com/andremedeiros/loon/internal/service"
+	"github.com/andremedeiros/loon/internal/catalog"
 )
 
 type Service struct {
-	Provider provider.Provider
-	Service  service.Service
-	Version  string
-
-	IPAddress        string
-	VariableDataPath string
+	Service catalog.Service
+	Version string
 }
 
 func (s *Service) String() string {
@@ -21,11 +16,9 @@ func (s *Service) String() string {
 }
 
 func (s *Service) Start() error {
-	cmd := s.Service.Start(s.IPAddress, s.VariableDataPath)
-	return s.Provider.Start(cmd)
+	return nil
 }
 
 func (s *Service) Stop() error {
-	cmd := s.Service.Start(s.IPAddress, s.VariableDataPath)
-	return s.Provider.Stop(cmd)
+	return nil
 }

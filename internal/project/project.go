@@ -16,11 +16,24 @@ type Project struct {
 	Name        string            `yaml:"name"`
 	URL         string            `yaml:"url"`
 	Provider    string            `yaml:"provider"`
-	Services    []Service         `yaml:"services"`
+	Services    []catalog.Service `yaml:"services"`
 	Environment map[string]string `yaml:"environment"`
 	Path        string
 
 	derivation *nix.Derivation
+}
+
+func (p *Project) IPAddr() string {
+	// TODO(andremedeiros): implement the thing
+	return "127.0.0.1"
+}
+
+func (p *Project) Execute(args []string) error {
+	return p.derivation.Execute(args)
+}
+
+func (p *Project) EnsureDependencies() error {
+	return p.derivation.Install()
 }
 
 func FindInTree() (*Project, error) {
@@ -36,7 +49,6 @@ func FindInTree() (*Project, error) {
 		if err != nil {
 			return nil, err
 		}
-		p.derivation = nix.NewDerivation(p.VDPath())
 		return p, nil
 	}
 	return nil, ErrProjectPayloadNotFound
@@ -56,7 +68,7 @@ func fromPath(path string) (*Project, error) {
 }
 
 func fromPayload(b []byte) (*Project, error) {
-	project := &Project{}
+	project := &Project{derivation: nix.NewDerivation()}
 	if err := yaml.Unmarshal(b, project); err != nil {
 		return nil, err
 	}
@@ -65,11 +77,9 @@ func fromPayload(b []byte) (*Project, error) {
 
 func (p *Project) Environ() []string {
 	environ := os.Environ()
-	/*
-		for _, s := range p.Services {
-			environ = append(environ, s.Service.Environ()...)
-		}
-	*/
+	for _, s := range p.Services {
+		environ = append(environ, s.Environ(p.IPAddr(), p.VDPath())...)
+	}
 	for k, v := range p.Environment {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 	}
@@ -104,21 +114,21 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 
 	for serviceName, opts := range serviceData.Services {
-		srvc, ok := catalog.Services[serviceName]
+		version := "default"
+		if _, ok := opts["version"]; ok {
+			version = opts["version"]
+		}
+
+		svc, ok := catalog.Services[serviceName]
 		if !ok {
-			return fmt.Errorf("service not supported: %s", srvc)
+			return fmt.Errorf("service not supported: %s", serviceName)
 		}
 
-		ce, err := catalog.EntryFor(serviceName, opts["version"])
-		if err != nil {
-			return err
+		for _, nixpkg := range catalog.Packages(svc.(catalog.Installable), version) {
+			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
 		}
 
-		s := Service{
-			Service: srvc,
-			Version: ce.Version,
-		}
-		p.Services = append(p.Services, s)
+		p.Services = append(p.Services, svc)
 	}
 
 	return nil

@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -23,14 +22,14 @@ type Entry struct {
 	Packages PackageList
 }
 
-func EntryFor(software string, version string) (Entry, error) {
+func EntryFor(software string, version string) Entry {
 	for _, e := range List() {
 		if e.Name == software && e.Version == version {
-			return e, nil
+			return e
 		}
 	}
 
-	return Entry{}, fmt.Errorf("no catalog entry for %s/%s", software, version)
+	panic("no entry")
 }
 
 func List() []Entry {
@@ -40,33 +39,29 @@ func List() []Entry {
 	sort.Strings(assets)
 
 	for _, asset := range assets {
-		b, _ := Asset(asset)
-
 		parts := strings.SplitN(asset, "/", 2)
 		ext := filepath.Ext(parts[1])
 		e := Entry{
 			Name:    parts[0],
 			Version: parts[1][0 : len(parts[1])-len(ext)],
 		}
-		json.Unmarshal(b, &e.Packages)
+
+		{
+			b, _ := Asset(asset)
+			pkgs := map[string]map[string]string{}
+			json.Unmarshal(b, &pkgs)
+			for name, pkg := range pkgs {
+				e.Packages = append(e.Packages, Package{
+					Package: name,
+					Version: pkg["version"],
+					URL:     pkg["url"],
+					SHA256:  pkg["sha256"],
+				})
+			}
+		}
+
 		es = append(es, e)
 	}
 
 	return es
-}
-
-func (pl PackageList) UnmarshalJSON(b []byte) error {
-	pkgs := map[string]map[string]string{}
-	json.Unmarshal(b, &pkgs)
-
-	for name, pkg := range pkgs {
-		pl = append(pl, Package{
-			Package: name,
-			Version: pkg["version"],
-			URL:     pkg["url"],
-			SHA256:  pkg["sha256"],
-		})
-	}
-
-	return nil
 }
