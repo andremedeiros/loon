@@ -31,7 +31,7 @@ var downCommand = &cobra.Command{
 			fmt.Printf("stopping %s...\n", srv.String())
 			srv := srv // otherwise it goes out of scope
 			g.Go(func() error {
-				return srv.Stop(proj.IPAddr(), proj.VDPath())
+				return srv.Stop(proj, proj.IPAddr(), proj.VDPath())
 			})
 		}
 		if err := g.Wait(); err != nil {

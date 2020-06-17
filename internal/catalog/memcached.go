@@ -14,7 +14,11 @@ func (m *Memcached) String() string {
 	return "Memcached"
 }
 
-func (m *Memcached) Initialize(_, _ string) []string {
+func (m *Memcached) Identifier() string {
+	return "memcached"
+}
+
+func (m *Memcached) Initialize(_ Executer, _, _ string) error {
 	return nil
 }
 
@@ -34,23 +38,24 @@ func (m *Memcached) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (m *Memcached) Start(ipaddr, vdpath string) []string {
-	pidsPath := filepath.Join(vdpath, "pids")
-	os.MkdirAll(pidsPath, 0755)
+func (m *Memcached) Start(exe Executer, ipaddr, vdpath string) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
 
-	return []string{
+	return exe.Execute([]string{
 		"memcached",
 		"--daemon",
 		"--port=11211",
 		fmt.Sprintf("--listen=%s", ipaddr),
 		fmt.Sprintf("--pidfile=%s", pidPath),
-	}
+	})
 }
 
-func (m *Memcached) Stop(ipaddr, vdpath string) error {
+func (m *Memcached) Stop(exe Executer, ipaddr, vdpath string) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
-	p, _ := process.FromPidFile(pidPath)
+	p, err := process.FromPidFile(pidPath)
+	if err != nil {
+		return nil
+	}
 	_ = os.Remove(pidPath)
 	return p.Signal(os.Interrupt)
 }

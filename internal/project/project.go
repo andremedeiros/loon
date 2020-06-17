@@ -49,6 +49,7 @@ func FindInTree() (*Project, error) {
 		if err != nil {
 			return nil, err
 		}
+		p.ensurePaths()
 		return p, nil
 	}
 	return nil, ErrProjectPayloadNotFound
@@ -84,6 +85,23 @@ func (p *Project) Environ() []string {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 	}
 	return environ
+}
+
+func (p *Project) ensurePaths() {
+	paths := []string{
+		p.VDPath(),
+		filepath.Join(p.VDPath(), "pids"),
+		filepath.Join(p.VDPath(), "sockets"),
+	}
+
+	for _, svc := range p.Services {
+		svcPath := filepath.Join(p.VDPath(), "data", svc.Identifier())
+		paths = append(paths, svcPath)
+	}
+
+	for _, p := range paths {
+		os.MkdirAll(p, 0755)
+	}
 }
 
 func (p *Project) VDPath() string {
@@ -124,7 +142,12 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			return fmt.Errorf("service not supported: %s", serviceName)
 		}
 
-		for _, nixpkg := range catalog.Packages(svc.(catalog.Installable), version) {
+		pkgs := catalog.Packages(svc.(catalog.Installable), version)
+		if len(pkgs) == 0 {
+			return fmt.Errorf("service not present in catalog: %s %s", serviceName, version)
+		}
+
+		for _, nixpkg := range pkgs {
 			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
 		}
 

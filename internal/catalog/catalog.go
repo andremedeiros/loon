@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+type Executer interface {
+	Execute([]string) error
+}
+
 type Package struct {
 	Package string
 	Version string `json:"version"`

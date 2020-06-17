@@ -10,10 +10,11 @@ type Installable interface {
 
 type Service interface {
 	String() string
+	Identifier() string
 	Environ(string, string) []string
-	Initialize(string, string) []string
-	Start(string, string) []string
-	Stop(string, string) error
+	Initialize(Executer, string, string) error
+	Start(Executer, string, string) error
+	Stop(Executer, string, string) error
 }
 
 func Packages(i Installable, version string) []nix.Package {

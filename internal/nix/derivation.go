@@ -2,33 +2,40 @@ package nix
 
 import (
 	"bytes"
-	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 )
 
 type Derivation struct {
 	Packages []Package
-	vdpath   string
+
+	tmpfile *os.File
+	once    sync.Once
 }
 
 func NewDerivation() *Derivation {
-	return &Derivation{}
+	tmpfile, _ := ioutil.TempFile("", "derivation.nix")
+	return &Derivation{tmpfile: tmpfile}
 }
 
 func (d *Derivation) Execute(args []string) error {
+	d.once.Do(d.generate)
 	cmd := strings.Join(args, " ")
-	fmt.Println(cmd)
 	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
-	exe.Stdout = os.Stdout
-	exe.Stderr = os.Stderr
+
+	if false {
+		exe.Stdout = os.Stdout
+		exe.Stderr = os.Stderr
+	}
+
 	return exe.Run()
 }
 
-func (d *Derivation) Install() error {
+func (d *Derivation) generate() {
 	tmpl := `
 { pkgs ? import <nixpkgs> { } }:
 let
@@ -53,16 +60,15 @@ in mkShell {
 	t := template.Must(template.New("nix").Parse(tmpl))
 	t.Execute(buf, d)
 
-	fd, _ := os.OpenFile(d.Path(), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-	defer fd.Close()
-	fd.Write(buf.Bytes())
+	d.tmpfile.Truncate(0)
+	d.tmpfile.Write(buf.Bytes())
+	d.tmpfile.Sync()
+}
 
-	exe := exec.Command("nix-shell", d.Path(), "--command", "true")
-	exe.Stdout = os.Stdout
-	exe.Stderr = os.Stderr
-	return exe.Run()
+func (d *Derivation) Install() error {
+	return d.Execute([]string{"true"})
 }
 
 func (d *Derivation) Path() string {
-	return filepath.Join("/tmp", "default.nix")
+	return d.tmpfile.Name()
 }

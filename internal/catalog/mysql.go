@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/andremedeiros/loon/internal/process"
 )
 
 type Mysql struct{}
@@ -14,17 +12,21 @@ func (m *Mysql) String() string {
 	return "MySQL"
 }
 
-func (m *Mysql) Initialize(ipaddr, vdpath string) []string {
-	vdPath := filepath.Join(vdpath, "mysql")
-	if _, err := os.Stat(vdPath); err == nil {
+func (m *Mysql) Identifier() string {
+	return "mysql"
+}
+
+func (m *Mysql) Initialize(exe Executer, ipaddr, vdpath string) error {
+	dataPath := filepath.Join(vdpath, "data", "mysql")
+	if _, err := os.Stat(filepath.Join(dataPath, "auto.cnf")); err == nil {
 		return nil
 	}
-	os.MkdirAll(vdPath, 0755)
-	return []string{
+
+	return exe.Execute([]string{
 		"mysqld",
 		"--initialize-insecure",
-		fmt.Sprintf("--datadir=%s", vdPath),
-	}
+		fmt.Sprintf("--datadir=%s", dataPath),
+	})
 }
 
 func (m *Mysql) Versions() map[string]Entry {
@@ -42,35 +44,32 @@ func (m *Mysql) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (m *Mysql) Start(ipaddr, vdpath string) []string {
-	pidsPath := filepath.Join(vdpath, "pids")
-	os.MkdirAll(pidsPath, 0755)
+func (m *Mysql) Start(exe Executer, ipaddr, vdpath string) error {
 	pidPath := filepath.Join(vdpath, "pids", "mysql.pid")
-	socketPath := filepath.Join(vdpath, "mysqld.sock")
+	dataPath := filepath.Join(vdpath, "data", "mysql")
+	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
-	vdPath := filepath.Join(vdpath, "mysql")
-
-	return []string{
+	return exe.Execute([]string{
 		"mysqld",
 		"--daemonize",
 		fmt.Sprintf("--pid-file=%s", pidPath),
-		fmt.Sprintf("--datadir=%s", vdPath),
+		fmt.Sprintf("--datadir=%s", dataPath),
 		fmt.Sprintf("--bind-address=%s", ipaddr),
 		fmt.Sprintf("--socket=%s", socketPath),
-	}
+	})
 }
 
-func (m *Mysql) Stop(ipaddr, vdpath string) error {
-	// TODO
+func (m *Mysql) Stop(exe Executer, ipaddr, vdpath string) error {
+	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
-	/*
-			mysqladmin
-			-u root
-			--socket=/Users/andremedeiros/src/github.com/andremedeiros
-		/loon/.loon/mysqld.sock shutdown
-	*/
-	pidPath := filepath.Join(vdpath, "pids", "mysql.pid")
-	p, _ := process.FromPidFile(pidPath)
-	_ = os.Remove(pidPath)
-	return p.Signal(os.Interrupt)
+	if _, err := os.Stat(socketPath); err != nil {
+		return nil
+	}
+
+	return exe.Execute([]string{
+		"mysqladmin",
+		"-u root",
+		fmt.Sprintf("--socket=%s", socketPath),
+		"shutdown",
+	})
 }

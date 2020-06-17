@@ -14,7 +14,11 @@ func (r *Redis) String() string {
 	return "Redis"
 }
 
-func (r *Redis) Initialize(_, _ string) []string {
+func (r *Redis) Identifier() string {
+	return "redis"
+}
+
+func (r *Redis) Initialize(_ Executer, _, _ string) error {
 	return nil
 }
 
@@ -33,26 +37,26 @@ func (r *Redis) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (r *Redis) Start(ipaddr, vdpath string) []string {
-	pidsPath := filepath.Join(vdpath, "pids")
-	os.MkdirAll(pidsPath, 0755)
+func (r *Redis) Start(exe Executer, ipaddr, vdpath string) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
+	dataPath := filepath.Join(vdpath, "data", "redis")
 
-	vdPath := filepath.Join(vdpath, "redis")
-	os.MkdirAll(vdPath, 0755)
-
-	return []string{
+	return exe.Execute([]string{
 		"redis-server",
 		"--daemonize yes",
 		"--port 6379",
-		fmt.Sprintf("--dir %s", vdPath),
+		fmt.Sprintf("--bind %s", ipaddr),
+		fmt.Sprintf("--dir %s", dataPath),
 		fmt.Sprintf("--pidfile %s", pidPath),
-	}
+	})
 }
 
-func (r *Redis) Stop(ipaddr, vdpath string) error {
+func (r *Redis) Stop(exe Executer, ipaddr, vdpath string) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
-	p, _ := process.FromPidFile(pidPath)
+	p, err := process.FromPidFile(pidPath)
+	if err != nil {
+		return nil
+	}
 	_ = os.Remove(pidPath)
 	return p.Signal(os.Interrupt)
 }

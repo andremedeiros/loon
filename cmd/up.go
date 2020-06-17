@@ -36,12 +36,10 @@ var upCommand = &cobra.Command{
 			fmt.Printf("starting %s...\n", srv.String())
 			srv := srv // otherwise it goes out of scope
 			g.Go(func() error {
-				cmd := srv.Initialize(proj.IPAddr(), proj.VDPath())
-				if len(cmd) > 0 {
-					proj.Execute(cmd)
+				if err := srv.Initialize(proj, proj.IPAddr(), proj.VDPath()); err != nil {
+					return err
 				}
-				cmd = srv.Start(proj.IPAddr(), proj.VDPath())
-				return proj.Execute(cmd)
+				return srv.Start(proj, proj.IPAddr(), proj.VDPath())
 			})
 		}
 		if err := g.Wait(); err != nil {
