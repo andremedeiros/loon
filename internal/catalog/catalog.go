@@ -3,13 +3,12 @@ package catalog
 import (
 	"encoding/json"
 	"path/filepath"
-	"sort"
 	"strings"
-)
 
-type Executer interface {
-	Execute([]string) error
-}
+	"github.com/andremedeiros/loon/internal/catalog/language"
+	"github.com/andremedeiros/loon/internal/catalog/service"
+	"github.com/andremedeiros/loon/internal/nix"
+)
 
 type Package struct {
 	Package string
@@ -39,10 +38,15 @@ func EntryFor(software string, version string) Entry {
 func List() []Entry {
 	es := []Entry{}
 
-	assets := AssetNames()
-	sort.Strings(assets)
+	assets := map[string][]byte{}
+	for _, an := range service.AssetNames() {
+		assets[an], _ = service.Asset(an)
+	}
+	for _, an := range language.AssetNames() {
+		assets[an], _ = language.Asset(an)
+	}
 
-	for _, asset := range assets {
+	for asset, b := range assets {
 		parts := strings.SplitN(asset, "/", 2)
 		ext := filepath.Ext(parts[1])
 		e := Entry{
@@ -51,7 +55,6 @@ func List() []Entry {
 		}
 
 		{
-			b, _ := Asset(asset)
 			pkgs := map[string]map[string]string{}
 			json.Unmarshal(b, &pkgs)
 			for name, pkg := range pkgs {
@@ -68,4 +71,31 @@ func List() []Entry {
 	}
 
 	return es
+}
+
+type Installable interface {
+	Versions() map[string][]string
+}
+
+func Packages(i Installable, version string) []nix.Package {
+	pkgs := []nix.Package{}
+
+	versions := i.Versions()
+	parts, ok := versions[version]
+	if !ok {
+		return pkgs
+	}
+
+	entry := EntryFor(parts[0], parts[1])
+	for _, pkg := range entry.Packages {
+		nixpkg := nix.Package{
+			Name:    pkg.Package,
+			Version: pkg.Version,
+			URL:     pkg.URL,
+			SHA256:  pkg.SHA256,
+		}
+		pkgs = append(pkgs, nixpkg)
+	}
+
+	return pkgs
 }

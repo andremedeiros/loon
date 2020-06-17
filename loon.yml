@@ -4,3 +4,5 @@ environment:
   LOON: Was here
 services:
   postgresql:
+languages:
+  ruby:

@@ -1,4 +1,4 @@
-package catalog
+package service
 
 import (
 	"fmt"
@@ -22,13 +22,13 @@ func (m *Memcached) Initialize(_ Executer, _, _ string) error {
 	return nil
 }
 
-func (m *Memcached) Versions() map[string]Entry {
-	return map[string]Entry{
-		"default": EntryFor("memcached", "1.6.6"),
-		"latest":  EntryFor("memcached", "1.6.6"),
+func (m *Memcached) Versions() map[string][]string {
+	return map[string][]string{
+		"default": {"memcached", "1.6.6"},
+		"latest":  {"memcached", "1.6.6"},
 
-		"1.6.6": EntryFor("memcached", "1.6.6"),
-		"1.6.5": EntryFor("memcached", "1.6.5"),
+		"1.6.6": {"memcached", "1.6.6"},
+		"1.6.5": {"memcached", "1.6.5"},
 	}
 }
 

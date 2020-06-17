@@ -2,7 +2,6 @@
   "mysql80": {
     "version": "8.0.17",
     "url": "https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.17.tar.gz",
-    "sha256": "1mjrlxn8vigi69r0r674j2dibdnkaar01ji5965gsyx7k60z7qy6",
-    "latest": true
+    "sha256": "1mjrlxn8vigi69r0r674j2dibdnkaar01ji5965gsyx7k60z7qy6"
   }
 }

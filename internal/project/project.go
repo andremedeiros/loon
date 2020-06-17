@@ -9,15 +9,18 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/andremedeiros/loon/internal/catalog"
+	"github.com/andremedeiros/loon/internal/catalog/language"
+	"github.com/andremedeiros/loon/internal/catalog/service"
 	"github.com/andremedeiros/loon/internal/nix"
 )
 
 type Project struct {
-	Name        string            `yaml:"name"`
-	URL         string            `yaml:"url"`
-	Provider    string            `yaml:"provider"`
-	Services    []catalog.Service `yaml:"services"`
-	Environment map[string]string `yaml:"environment"`
+	Name        string              `yaml:"name"`
+	URL         string              `yaml:"url"`
+	Provider    string              `yaml:"provider"`
+	Services    []service.Service   `yaml:"services"`
+	Languages   []language.Language `yaml:"languages"`
+	Environment map[string]string   `yaml:"environment"`
 	Path        string
 
 	derivation *nix.Derivation
@@ -137,7 +140,7 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			version = opts["version"]
 		}
 
-		svc, ok := catalog.Services[serviceName]
+		svc, ok := service.Services[serviceName]
 		if !ok {
 			return fmt.Errorf("service not supported: %s", serviceName)
 		}
@@ -152,6 +155,37 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		}
 
 		p.Services = append(p.Services, svc)
+	}
+
+	languageData := struct {
+		Languages map[string]map[string]string
+	}{}
+
+	if err := unmarshal(&languageData); err != nil {
+		return err
+	}
+
+	for languageName, opts := range languageData.Languages {
+		version := "default"
+		if _, ok := opts["version"]; ok {
+			version = opts["version"]
+		}
+
+		lang, ok := language.Languages[languageName]
+		if !ok {
+			return fmt.Errorf("language not supported: %s", languageName)
+		}
+
+		pkgs := catalog.Packages(lang.(catalog.Installable), version)
+		if len(pkgs) == 0 {
+			return fmt.Errorf("language not present in catalog: %s %s", languageName, version)
+		}
+
+		for _, nixpkg := range pkgs {
+			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
+		}
+
+		p.Languages = append(p.Languages, lang)
 	}
 
 	return nil

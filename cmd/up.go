@@ -33,13 +33,20 @@ var upCommand = &cobra.Command{
 
 		g, ctx := errgroup.WithContext(ctx)
 		for _, srv := range proj.Services {
-			fmt.Printf("starting %s...\n", srv.String())
 			srv := srv // otherwise it goes out of scope
 			g.Go(func() error {
+				fmt.Printf("starting %s...\n", srv.String())
 				if err := srv.Initialize(proj, proj.IPAddr(), proj.VDPath()); err != nil {
 					return err
 				}
 				return srv.Start(proj, proj.IPAddr(), proj.VDPath())
+			})
+		}
+		for _, lang := range proj.Languages {
+			lang := lang // otherwise it goes out of scope
+			g.Go(func() error {
+				fmt.Printf("setting up %s...\n", lang.String())
+				return lang.Initialize(proj, proj.VDPath())
 			})
 		}
 		if err := g.Wait(); err != nil {

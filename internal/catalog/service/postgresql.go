@@ -1,4 +1,4 @@
-package catalog
+package service
 
 import (
 	"fmt"
@@ -28,16 +28,16 @@ func (p *Postgres) Initialize(exe Executer, _, vdpath string) error {
 	})
 }
 
-func (p *Postgres) Versions() map[string]Entry {
-	return map[string]Entry{
-		"default": EntryFor("postgresql", "12.3"),
-		"latest":  EntryFor("postgresql", "12.3"),
+func (p *Postgres) Versions() map[string][]string {
+	return map[string][]string{
+		"default": {"postgresql", "12.3"},
+		"latest":  {"postgresql", "12.3"},
 
-		"12.3":   EntryFor("postgresql", "12.3"),
-		"11.8":   EntryFor("postgresql", "11.8"),
-		"10.13":  EntryFor("postgresql", "10.13"),
-		"9.6.18": EntryFor("postgresql", "9.6.18"),
-		"9.5.22": EntryFor("postgresql", "9.5.22"),
+		"12.3":   {"postgresql", "12.3"},
+		"11.8":   {"postgresql", "11.8"},
+		"10.13":  {"postgresql", "10.13"},
+		"9.6.18": {"postgresql", "9.6.18"},
+		"9.5.22": {"postgresql", "9.5.22"},
 	}
 }
 

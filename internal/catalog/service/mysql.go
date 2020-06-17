@@ -1,4 +1,4 @@
-package catalog
+package service
 
 import (
 	"fmt"
@@ -29,12 +29,12 @@ func (m *Mysql) Initialize(exe Executer, ipaddr, vdpath string) error {
 	})
 }
 
-func (m *Mysql) Versions() map[string]Entry {
-	return map[string]Entry{
-		"default": EntryFor("mysql", "8.0.17"),
-		"latest":  EntryFor("mysql", "8.0.17"),
+func (m *Mysql) Versions() map[string][]string {
+	return map[string][]string{
+		"default": {"mysql", "8.0.17"},
+		"latest":  {"mysql", "8.0.17"},
 
-		"8.0.17": EntryFor("mysql", "8.0.17"),
+		"8.0.17": {"mysql", "8.0.17"},
 	}
 }
 

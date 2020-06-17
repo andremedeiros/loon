@@ -27,7 +27,7 @@ func (d *Derivation) Execute(args []string) error {
 	cmd := strings.Join(args, " ")
 	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
 
-	if false {
+	if true {
 		exe.Stdout = os.Stdout
 		exe.Stderr = os.Stderr
 	}

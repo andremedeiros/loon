@@ -1,4 +1,4 @@
-package catalog
+package service
 
 import (
 	"fmt"
@@ -22,12 +22,12 @@ func (r *Redis) Initialize(_ Executer, _, _ string) error {
 	return nil
 }
 
-func (r *Redis) Versions() map[string]Entry {
-	return map[string]Entry{
-		"default": EntryFor("redis", "6.0.4"),
-		"latest":  EntryFor("redis", "6.0.4"),
+func (r *Redis) Versions() map[string][]string {
+	return map[string][]string{
+		"default": {"redis", "6.0.4"},
+		"latest":  {"redis", "6.0.4"},
 
-		"6.0.4": EntryFor("redis", "6.0.4"),
+		"6.0.4": {"redis", "6.0.4"},
 	}
 }
 

@@ -1,10 +1,20 @@
-catalog_files := $(wildcard internal/catalog/*/*.json)
+catalog_service_files := $(wildcard internal/catalog/service/*/*.json)
+catalog_language_files := $(wildcard internal/catalog/language/*/*.json)
 
-loon: catalog/bindata.go
+loon: catalog/language/bindata.go catalog/service/bindata.go
 	go build
 
-catalog/bindata.go: $(catalog_files)
-	go-bindata -pkg catalog -prefix internal/catalog/ -o ./internal/catalog/bindata.go $(catalog_files)
+catalog/service/bindata.go: $(catalog_service_files)
+	go-bindata -pkg service \
+		-prefix internal/catalog/service/ \
+		-o ./internal/catalog/service/bindata.go \
+		$(catalog_service_files)
+
+catalog/language/bindata.go: $(catalog_language_files)
+	go-bindata -pkg language \
+		-prefix internal/catalog/language/ \
+		-o ./internal/catalog/language/bindata.go \
+		$(catalog_language_files)
 
 test:
 	go test ./... -v
