@@ -4,5 +4,7 @@ environment:
   LOON: Was here
 services:
   postgresql:
+  memcached:
+  redis:
 languages:
   ruby:

@@ -31,6 +31,12 @@ var upCommand = &cobra.Command{
 			return err
 		}
 
+		fmt.Println("setting up networking...")
+		// TODO(andremedeiros): extract this into an OS dependent implementation
+		if err = proj.EnsureNetworking(); err != nil {
+			return err
+		}
+
 		g, ctx := errgroup.WithContext(ctx)
 		for _, srv := range proj.Services {
 			srv := srv // otherwise it goes out of scope

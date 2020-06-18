@@ -2,6 +2,7 @@ package project
 
 import (
 	"fmt"
+	"hash/crc32"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -27,8 +28,12 @@ type Project struct {
 }
 
 func (p *Project) IPAddr() string {
-	// TODO(andremedeiros): implement the thing
-	return "127.0.0.1"
+	crc32q := crc32.MakeTable(0xD5828281)
+	crc := crc32.Checksum([]byte(p.Path), crc32q) % (255 * 255)
+
+	part3 := crc / 255
+	part4 := crc - (part3 * 255)
+	return fmt.Sprintf("127.0.%d.%d", part3, part4)
 }
 
 func (p *Project) Execute(args []string) error {
@@ -37,6 +42,18 @@ func (p *Project) Execute(args []string) error {
 
 func (p *Project) EnsureDependencies() error {
 	return p.derivation.Install()
+}
+
+// TODO(andremedeiros): extract this into an OS dependent implementation
+func (p *Project) EnsureNetworking() error {
+	return p.derivation.Execute([]string{
+		"sudo",
+		"ifconfig",
+		"lo0",
+		"alias",
+		p.IPAddr(),
+		"255.255.255.0",
+	})
 }
 
 func FindInTree() (*Project, error) {
