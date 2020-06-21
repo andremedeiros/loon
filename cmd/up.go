@@ -32,7 +32,6 @@ var upCommand = &cobra.Command{
 		}
 
 		fmt.Println("setting up networking...")
-		// TODO(andremedeiros): extract this into an OS dependent implementation
 		if err = proj.EnsureNetworking(); err != nil {
 			return err
 		}
