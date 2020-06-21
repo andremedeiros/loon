@@ -8,7 +8,6 @@ import (
 var (
 	ErrInvalidSyntax             = errors.New("configuration has invalid syntax")
 	ErrInvalidDevTLD             = errors.New("invalid dev TLD")
-	ErrProviderNotSupported      = errors.New("provider not supported")
 	ErrRepositoryNotInSourceTree = errors.New("repository placeholder not in source tree")
 )
 

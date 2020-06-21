@@ -32,7 +32,6 @@ var shellCommand = &cobra.Command{
 		ex.Stdout = cmd.OutOrStdout()
 		ex.Stdin = cmd.InOrStdin()
 		ex.Stderr = cmd.ErrOrStderr()
-		ex.Start()
-		return ex.Wait()
+		return ex.Run()
 	}),
 }

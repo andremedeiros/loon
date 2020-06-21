@@ -3,9 +3,11 @@ package cmd
 import (
 	"context"
 
-	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/git"
 	"github.com/spf13/cobra"
+
+	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/finalizer"
+	"github.com/andremedeiros/loon/internal/git"
 )
 
 func init() {
@@ -26,6 +28,11 @@ Some accepted values are:
 	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		repo := git.NewRepository(args[0])
 		path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
-		return repo.Clone(path)
+		err := repo.Clone(path)
+		if err != nil {
+			return err
+		}
+		finalizer.Write("chdir", path)
+		return nil
 	}),
 }

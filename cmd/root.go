@@ -7,8 +7,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/andremedeiros/loon/internal/config"
 	"github.com/spf13/cobra"
+
+	"github.com/andremedeiros/loon/internal/config"
 )
 
 var rootCmd = &cobra.Command{
