@@ -35,7 +35,7 @@ var runTask = func(ctx context.Context, cfg *config.Config, args []string) error
 		os.Chmod(tmp.Name(), 0770)
 		defer os.Remove(tmp.Name())
 		tmp.Write([]byte(task.Command))
-		proj.Execute([]string{tmp.Name()})
+		return proj.Execute([]string{tmp.Name()})
 	}
 	return fmt.Errorf("task not found: %s", taskName)
 }
