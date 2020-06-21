@@ -12,7 +12,8 @@ tasks:
   build:
     description: Builds Loon
     command: |
-      go build
+      go build \
+        -ldflags="-X github.com/andremedeiros/loon/cmd.version=$(git rev-parse --short HEAD)"
   test:
     description: Runs go tests
     command: go test ./... -v
