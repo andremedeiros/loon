@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -23,33 +24,33 @@ var shellRCCommand = &cobra.Command{
 	Args:   cobra.ExactArgs(0),
 	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		absPath, _ := filepath.Abs(os.Args[0])
-		shell := fmt.Sprintf(`
+		shell := strings.TrimSpace(fmt.Sprintf(`
 __loon_path="%s"
 
 _l() {
-	local tmp ret finalizer
+  local tmp ret finalizer
 
-	tmp="$(mktemp -u)"
-	exec 9>"${tmp}"
-	exec 8<"${tmp}"
-	rm ${tmp}
+  tmp="$(mktemp -u)"
+  exec 9>"${tmp}"
+  exec 8<"${tmp}"
+  rm ${tmp}
 
-	"${__loon_path}" "$@"
-	ret=$?
+  "${__loon_path}" "$@"
+  ret=$?
 
-	while read -r finalizer; do
-		case "${finalizer}" in
-			chdir:*) cd "${finalizer//chdir:/}" ;;
-			*) ;;
-		esac
-	done <&8
+  while read -r finalizer; do
+    case "${finalizer}" in
+      chdir:*) cd "${finalizer//chdir:/}" ;;
+      *) ;;
+    esac
+  done <&8
 
-	exec 8<&-
-	exec 9<&-
+  exec 8<&-
+  exec 9<&-
 
-	return ${ret}
+  return ${ret}
 }
-		`, absPath)
+		`, absPath))
 
 		cmd.OutOrStdout().Write([]byte(shell))
 		return nil

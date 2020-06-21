@@ -16,10 +16,11 @@ func init() {
 }
 
 var upCommand = &cobra.Command{
-	Use:   "up",
-	Short: "INSTALLS ALL THE THINGS",
-	Long:  `Installs all the things`,
-	Args:  cobra.ExactArgs(0),
+	Use:     "up",
+	Aliases: []string{"fly"},
+	Short:   "INSTALLS ALL THE THINGS",
+	Long:    `Installs all the things`,
+	Args:    cobra.ExactArgs(0),
 	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
 		proj, err := project.FindInTree()
 		if err != nil {
