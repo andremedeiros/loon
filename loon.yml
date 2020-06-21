@@ -8,3 +8,8 @@ services:
   redis:
 languages:
   ruby:
+tasks:
+  generate:
+    description: Does this and that
+    command: |
+      go generate ...

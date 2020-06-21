@@ -2,29 +2,25 @@ package cmd
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/peterbourgon/usage"
 )
 
-func init() {
-	rootCmd.AddCommand(shellRCCommand)
-}
+var runShellRC = func(ctx context.Context, cfg *config.Config, args []string) error {
+	flagset := flag.NewFlagSet("shellrc", flag.ExitOnError)
+	flagset.Usage = usage.For(flagset, "loon shellrc")
+	if err := flagset.Parse(args); err != nil {
+		return err
+	}
 
-var shellRCCommand = &cobra.Command{
-	Hidden: true,
-	Use:    "shellrc",
-	Short:  "Returns the shell initialization to use loon",
-	Long:   `Returns the shell initialization to use loon`,
-	Args:   cobra.ExactArgs(0),
-	RunE: makeRunE(func(ctx context.Context, cfg *config.Config, cmd *cobra.Command, args []string) error {
-		absPath, _ := filepath.Abs(os.Args[0])
-		shell := strings.TrimSpace(fmt.Sprintf(`
+	absPath, _ := filepath.Abs(os.Args[0])
+	shell := strings.TrimSpace(fmt.Sprintf(`
 __loon_path="%s"
 
 _l() {
@@ -50,9 +46,8 @@ _l() {
 
   return ${ret}
 }
-		`, absPath))
+	`, absPath))
 
-		cmd.OutOrStdout().Write([]byte(shell))
-		return nil
-	}),
+	os.Stdout.Write([]byte(shell))
+	return nil
 }
