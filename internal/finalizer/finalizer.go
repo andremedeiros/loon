@@ -6,6 +6,6 @@ import (
 )
 
 func Write(typ string, f string) {
-	s := fmt.Sprintf("%s:%s", typ, f)
+	s := fmt.Sprintf("%s:%s\n", typ, f)
 	syscall.Write(9, []byte(s))
 }
