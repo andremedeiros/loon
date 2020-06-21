@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -57,6 +56,24 @@ services:
 		if len(p.Services) != 2 {
 			t.Errorf("wanted 2 services, got %d", len(p.Services))
 		}
-		fmt.Println(p.Services)
+	})
+
+	t.Run("payload with tasks", func(t *testing.T) {
+		payload := `name: Awesome Tool
+tasks:
+  generate:
+    description: Generates this and that
+    command: generate foo
+  compile:
+    command: compile the thing
+`
+		p, err := fromPayload([]byte(payload))
+		if err != nil {
+			t.Errorf("got %q", err)
+			return
+		}
+		if len(p.Tasks) != 2 {
+			t.Errorf("wanted 2 tasks, got %d", len(p.Tasks))
+		}
 	})
 }

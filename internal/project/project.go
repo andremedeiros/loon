@@ -21,6 +21,7 @@ type Project struct {
 	Provider    string              `yaml:"provider"`
 	Services    []service.Service   `yaml:"services"`
 	Languages   []language.Language `yaml:"languages"`
+	Tasks       []Task              `yaml:"tasks"`
 	Environment map[string]string   `yaml:"environment"`
 	Path        string
 
@@ -143,18 +144,20 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	p.URL = projectData.URL
 	p.Environment = projectData.Environment
 
-	serviceData := struct {
-		Services map[string]map[string]string
+	configData := struct {
+		Languages map[string]map[string]string `yaml:"languages"`
+		Services  map[string]map[string]string `yaml:"services"`
+		Tasks     map[string]map[string]string `yaml:"tasks"`
 	}{}
 
-	if err := unmarshal(&serviceData); err != nil {
+	if err := unmarshal(&configData); err != nil {
 		return err
 	}
 
-	for serviceName, opts := range serviceData.Services {
+	for serviceName, opts := range configData.Services {
 		version := "default"
-		if _, ok := opts["version"]; ok {
-			version = opts["version"]
+		if ver, ok := opts["version"]; ok {
+			version = ver
 		}
 
 		svc, ok := service.Services[serviceName]
@@ -174,18 +177,14 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		p.Services = append(p.Services, svc)
 	}
 
-	languageData := struct {
-		Languages map[string]map[string]string
-	}{}
-
-	if err := unmarshal(&languageData); err != nil {
+	if err := unmarshal(&projectData); err != nil {
 		return err
 	}
 
-	for languageName, opts := range languageData.Languages {
+	for languageName, opts := range configData.Languages {
 		version := "default"
-		if _, ok := opts["version"]; ok {
-			version = opts["version"]
+		if ver, ok := opts["version"]; ok {
+			version = ver
 		}
 
 		lang, ok := language.Languages[languageName]
@@ -203,6 +202,17 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		}
 
 		p.Languages = append(p.Languages, lang)
+	}
+
+	for taskName, opts := range configData.Tasks {
+		task := Task{Name: taskName}
+		command, ok := opts["command"]
+		if !ok {
+			return fmt.Errorf("need command for task %s", taskName)
+		}
+		task.Command = command
+		task.Description = opts["description"]
+		p.Tasks = append(p.Tasks, task)
 	}
 
 	return nil

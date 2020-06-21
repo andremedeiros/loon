@@ -9,15 +9,17 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"text/tabwriter"
 
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/project"
 )
 
 type runHandler func(context.Context, *config.Config, []string) error
 
 var version = "dev"
 
-func rootUsage() {
+func rootUsage(p *project.Project) {
 	cmd := filepath.Base(os.Args[0])
 	fmt.Fprintf(os.Stderr, "USAGE\n")
 	fmt.Fprintf(os.Stderr, "  %s <command>\n", cmd)
@@ -29,14 +31,25 @@ func rootUsage() {
 	fmt.Fprintf(os.Stderr, "  shell     Starts a shell inheriting the current project's environment\n")
 	fmt.Fprintf(os.Stderr, "  up        Starts the current project's infrastructure\n")
 	fmt.Fprintf(os.Stderr, "  versions  Prints the versions of supported services and languages\n")
+	fmt.Fprintf(os.Stderr, "\n")
+	if p != nil && len(p.Tasks) > 0 {
+		fmt.Fprintf(os.Stderr, "PROJECT COMMANDS\n")
+		w := tabwriter.NewWriter(os.Stderr, 0, 2, 2, ' ', 0)
+		for _, t := range p.Tasks {
+			fmt.Fprintf(w, "\t%s\t%s\n", t.Name, t.Description)
+		}
+		w.Flush()
+		fmt.Fprintf(os.Stderr, "\n")
+	}
 	fmt.Fprintf(os.Stderr, "VERSION\n")
 	fmt.Fprintf(os.Stderr, "  %s (%s)\n", version, runtime.Version())
 	fmt.Fprintf(os.Stderr, "\n")
 }
 
 func Execute() error {
+	proj, _ := project.FindInTree()
 	if len(os.Args) < 2 {
-		rootUsage()
+		rootUsage(proj)
 		os.Exit(1)
 	}
 
@@ -59,10 +72,8 @@ func Execute() error {
 	case "versions":
 		run = runVersions
 	default:
-		rootUsage()
-		os.Exit(1)
+		run = runTask
 	}
-
 	cfg, err := config.Read()
 	if err != nil {
 		return err
