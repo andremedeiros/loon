@@ -8,7 +8,7 @@ import (
 
 func TestNewFromPayload(t *testing.T) {
 	t.Run("invalid payload", func(t *testing.T) {
-		if _, err := NewFromPayload([]byte(`!`)); err == nil {
+		if _, err := fromPayload([]byte(`!`)); err == nil {
 			t.Errorf("expected error but didn't get one")
 		}
 	})
@@ -20,7 +20,7 @@ environment:
   SOME: value
   SOME_OTHER: other value
 `
-		p, err := NewFromPayload([]byte(payload))
+		p, err := fromPayload([]byte(payload))
 		if err != nil {
 			t.Errorf("got %q", err)
 			return
@@ -43,13 +43,13 @@ environment:
 	t.Run("payload with services", func(t *testing.T) {
 		payload := `name: Awesome Tool
 services:
-  postgres:
+  postgresql:
     version: 12.3
   redis:
     version: 6.0.4
 `
 
-		p, err := NewFromPayload([]byte(payload))
+		p, err := fromPayload([]byte(payload))
 		if err != nil {
 			t.Errorf("got %q", err)
 			return
