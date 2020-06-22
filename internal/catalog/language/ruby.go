@@ -1,5 +1,7 @@
 package language
 
+import "github.com/andremedeiros/loon/internal/executer"
+
 type Ruby struct{}
 
 func (r *Ruby) String() string {
@@ -20,6 +22,7 @@ func (r *Ruby) Versions() map[string][]string {
 	}
 }
 
-func (r *Ruby) Initialize(exe Executer, _ string) error {
-	return exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
+func (r *Ruby) Initialize(exe executer.Executer, _ string, opts ...executer.Option) error {
+	_, err := exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
+	return err
 }

@@ -1,13 +1,11 @@
 package language
 
-type Executer interface {
-	Execute([]string) error
-}
+import "github.com/andremedeiros/loon/internal/executer"
 
 type Language interface {
 	String() string
 	Environ() []string
-	Initialize(Executer, string) error
+	Initialize(executer.Executer, string, ...executer.Option) error
 }
 
 var Languages = map[string]Language{

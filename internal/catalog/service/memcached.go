@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/process"
 )
 
@@ -18,7 +19,7 @@ func (m *Memcached) Identifier() string {
 	return "memcached"
 }
 
-func (m *Memcached) Initialize(_ Executer, _, _ string) error {
+func (m *Memcached) Initialize(_ executer.Executer, _, _ string, _ ...executer.Option) error {
 	return nil
 }
 
@@ -38,19 +39,19 @@ func (m *Memcached) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (m *Memcached) Start(exe Executer, ipaddr, vdpath string) error {
+func (m *Memcached) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
-
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"memcached",
 		"--daemon",
 		"--port=11211",
 		fmt.Sprintf("--listen=%s", ipaddr),
 		fmt.Sprintf("--pidfile=%s", pidPath),
-	})
+	}, opts...)
+	return err
 }
 
-func (m *Memcached) Stop(exe Executer, ipaddr, vdpath string) error {
+func (m *Memcached) Stop(exe executer.Executer, _, vdpath string, _ ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
 	p, err := process.FromPidFile(pidPath)
 	if err != nil {

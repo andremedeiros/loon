@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/process"
 )
 
@@ -18,7 +19,7 @@ func (r *Redis) Identifier() string {
 	return "redis"
 }
 
-func (r *Redis) Initialize(_ Executer, _, _ string) error {
+func (r *Redis) Initialize(_ executer.Executer, _, _ string, _ ...executer.Option) error {
 	return nil
 }
 
@@ -37,21 +38,22 @@ func (r *Redis) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (r *Redis) Start(exe Executer, ipaddr, vdpath string) error {
+func (r *Redis) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	dataPath := filepath.Join(vdpath, "data", "redis")
 
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"redis-server",
 		"--daemonize yes",
 		"--port 6379",
 		fmt.Sprintf("--bind %s", ipaddr),
 		fmt.Sprintf("--dir %s", dataPath),
 		fmt.Sprintf("--pidfile %s", pidPath),
-	})
+	}, opts...)
+	return err
 }
 
-func (r *Redis) Stop(exe Executer, ipaddr, vdpath string) error {
+func (r *Redis) Stop(exe executer.Executer, ipaddr, vdpath string, _ ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	p, err := process.FromPidFile(pidPath)
 	if err != nil {
