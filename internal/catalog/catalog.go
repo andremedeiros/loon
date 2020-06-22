@@ -12,6 +12,7 @@ import (
 
 type Package struct {
 	Package string
+	Inherit string `json:"inherit"`
 	Version string `json:"version"`
 	URL     string `json:"url"`
 	SHA256  string `json:"sha256"`
@@ -60,6 +61,7 @@ func List() []Entry {
 			for name, pkg := range pkgs {
 				e.Packages = append(e.Packages, Package{
 					Package: name,
+					Inherit: pkg["inherit"],
 					Version: pkg["version"],
 					URL:     pkg["url"],
 					SHA256:  pkg["sha256"],
@@ -90,6 +92,7 @@ func Packages(i Installable, version string) []nix.Package {
 	for _, pkg := range entry.Packages {
 		nixpkg := nix.Package{
 			Name:    pkg.Package,
+			Inherit: pkg.Inherit,
 			Version: pkg.Version,
 			URL:     pkg.URL,
 			SHA256:  pkg.SHA256,

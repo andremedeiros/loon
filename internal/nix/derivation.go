@@ -40,20 +40,24 @@ func (d *Derivation) generate() {
 { pkgs ? import <nixpkgs> { } }:
 let
 inherit (pkgs) fetchurl mkShell;
-{{range $package := $.Packages}}
-	{{$package.Name}} = pkgs.{{$package.Name}}.overrideAttrs (attrs: {
-		version = "{{$package.Version}}";
-		src = fetchurl {
-			url = "{{$package.URL}}";
-			sha256 = "{{$package.SHA256}}";
-		};
-	});
-{{end}}
+{{ range $package := $.Packages }}
+	{{ if eq $package.Inherit "" }}
+		{{ $package.Name }} = pkgs.{{ $package.Name }}.overrideAttrs (attrs: {
+			version = "{{ $package.Version }}";
+			src = fetchurl {
+				url = "{{ $package.URL }}";
+				sha256 = "{{ $package.SHA256 }}";
+			};
+		});
+	{{ else }}
+		{{ $package.Name }} = pkgs.{{ $package.Inherit }};
+	{{ end }}
+{{ end }}
 
 in mkShell {
-	buildInputs = [{{range $package := .Packages}}
-		{{$package.Name}}
-	{{end}}];
+	buildInputs = [{{ range $package := .Packages }}
+		{{ $package.Name }}
+	{{ end }}];
 }`
 
 	buf := bytes.NewBuffer([]byte{})
