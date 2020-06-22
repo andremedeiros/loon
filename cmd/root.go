@@ -103,5 +103,5 @@ func Execute() error {
 		}
 	}()
 
-	return run(ctx, cfg, os.Args[2:])
+	return run(ctx, cfg, os.Args[1:])
 }

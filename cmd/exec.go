@@ -18,12 +18,12 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 		return err
 	}
 	args = flagset.Args()
-	if len(args) < 1 {
+	if len(args) < 2 {
 		return errors.New("specify a command")
 	}
 	proj, err := project.FindInTree()
 	if err != nil {
 		return err
 	}
-	return proj.Execute(args)
+	return proj.Execute(args[1:])
 }
