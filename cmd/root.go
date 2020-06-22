@@ -29,6 +29,7 @@ func rootUsage(p *project.Project) {
 	fmt.Fprintf(os.Stderr, "  clone     Clones a Git repository into the working directory\n")
 	fmt.Fprintf(os.Stderr, "  doctor    Checks your system for potential problems\n")
 	fmt.Fprintf(os.Stderr, "  down      Stops the current project's infrastructure\n")
+	fmt.Fprintf(os.Stderr, "  exec      Executes command in project shell\n")
 	fmt.Fprintf(os.Stderr, "  shell     Starts a shell inheriting the current project's environment\n")
 	fmt.Fprintf(os.Stderr, "  up        Starts the current project's infrastructure\n")
 	fmt.Fprintf(os.Stderr, "  versions  Prints the versions of supported services and languages\n")
@@ -62,6 +63,8 @@ func Execute() error {
 		run = runClone
 	case "doctor":
 		run = runDoctor
+	case "exec":
+		run = runExec
 	case "down", "land":
 		run = runDown
 	case "shell":
@@ -100,5 +103,5 @@ func Execute() error {
 		}
 	}()
 
-	return run(ctx, cfg, os.Args[1:])
+	return run(ctx, cfg, os.Args[2:])
 }
