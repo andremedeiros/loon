@@ -6,9 +6,10 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/peterbourgon/usage"
+
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/project"
-	"github.com/peterbourgon/usage"
 )
 
 var runShell = func(ctx context.Context, cfg *config.Config, args []string) error {

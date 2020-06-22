@@ -5,11 +5,11 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/peterbourgon/usage"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/project"
-	"github.com/peterbourgon/usage"
 )
 
 var runDown = func(ctx context.Context, cfg *config.Config, args []string) error {
