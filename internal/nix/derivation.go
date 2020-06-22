@@ -22,10 +22,11 @@ func NewDerivation() *Derivation {
 	return &Derivation{tmpfile: tmpfile}
 }
 
-func (d *Derivation) Execute(args []string) error {
+func (d *Derivation) Execute(args []string, env []string) error {
 	d.once.Do(d.generate)
 	cmd := strings.Join(args, " ")
 	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
+	exe.Env = env
 
 	if true {
 		exe.Stdout = os.Stdout
@@ -70,7 +71,7 @@ in mkShell {
 }
 
 func (d *Derivation) Install() error {
-	return d.Execute([]string{"true"})
+	return d.Execute([]string{"true"}, nil)
 }
 
 func (d *Derivation) Path() string {

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -16,16 +17,16 @@ func (p *Postgres) Identifier() string {
 	return "postgres"
 }
 
-func (p *Postgres) Initialize(exe Executer, _, vdpath string) error {
+func (p *Postgres) Initialize(exe Executer, ipaddr, vdpath string) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	if _, err := os.Stat(filepath.Join(dataPath, "PG_VERSION")); err == nil {
 		return nil
 	}
-
-	return exe.Execute([]string{
-		"initdb",
-		dataPath,
-	})
+	if err := exe.Execute([]string{"initdb", dataPath}); err != nil {
+		return err
+	}
+	hbaConf := fmt.Sprintf("host\tall\tall\t%s/32\ttrust", ipaddr)
+	return ioutil.WriteFile(filepath.Join(dataPath, "pg_hba.conf"), []byte(hbaConf), 0600)
 }
 
 func (p *Postgres) Versions() map[string][]string {
@@ -43,7 +44,7 @@ func (p *Postgres) Versions() map[string][]string {
 
 func (p *Postgres) Environ(ipaddr, vdpath string) []string {
 	return []string{
-		fmt.Sprintf("DATABASE_URL=%s:5432", ipaddr),
+		fmt.Sprintf("DATABASE_URL=postgres://%s:5432", ipaddr),
 	}
 }
 
@@ -51,7 +52,14 @@ func (p *Postgres) Start(exe Executer, ipaddr, vdpath string) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	logFilePath := filepath.Join(vdpath, "data", "postgres", "postgres.log")
 	socketPath := filepath.Join(vdpath, "sockets")
-
+	fmt.Println([]string{
+		"pg_ctl",
+		fmt.Sprintf("-o '-h %s'", ipaddr),
+		fmt.Sprintf("-o '--unix_socket_directories=%s'", socketPath),
+		fmt.Sprintf("--pgdata=%s", dataPath),
+		fmt.Sprintf("--log=%s", logFilePath),
+		"start",
+	})
 	return exe.Execute([]string{
 		"pg_ctl",
 		fmt.Sprintf("-o '-h %s'", ipaddr),

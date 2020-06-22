@@ -38,7 +38,7 @@ func (p *Project) IPAddr() string {
 }
 
 func (p *Project) Execute(args []string) error {
-	return p.derivation.Execute(args)
+	return p.derivation.Execute(args, p.Environ())
 }
 
 func (p *Project) EnsureDependencies() error {
@@ -54,7 +54,7 @@ func (p *Project) EnsureNetworking() error {
 		"alias",
 		p.IPAddr(),
 		"255.255.255.0",
-	})
+	}, nil)
 }
 
 func FindInTree() (*Project, error) {
