@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"flag"
 	"fmt"
@@ -9,6 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
@@ -22,13 +25,34 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 	if err != nil {
 		return err
 	}
-
 	g, ctx := errgroup.WithContext(ctx)
 	for _, srv := range proj.Services {
-		fmt.Printf("stopping %s...\n", srv.String())
 		srv := srv // otherwise it goes out of scope
+		fmt.Printf("Stopping %s...\n", srv.String())
 		g.Go(func() error {
-			return srv.Stop(proj, proj.IPAddr(), proj.VDPath())
+			stdout := bytes.Buffer{}
+			stderr := bytes.Buffer{}
+			err := srv.Stop(
+				proj,
+				proj.IPAddr(),
+				proj.VDPath(),
+				executer.WithStdout(bufio.NewWriter(&stdout)),
+				executer.WithStderr(bufio.NewWriter(&stderr)),
+			)
+			if err != nil {
+				fmt.Printf("Something went wrong while stopping %s. Details:\n", srv.String())
+				if stdout.Len() > 0 {
+					fmt.Println("-------------------- 8< stdout 8< --------------------")
+					fmt.Println(stdout.String())
+					fmt.Println("------------------------------------------------------")
+				}
+				if stderr.Len() > 0 {
+					fmt.Println("-------------------- 8< stderr 8< --------------------")
+					fmt.Println(stderr.String())
+					fmt.Println("------------------------------------------------------")
+				}
+			}
+			return err
 		})
 	}
 	if err := g.Wait(); err != nil {

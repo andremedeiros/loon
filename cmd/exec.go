@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"os"
 
 	"github.com/peterbourgon/usage"
 
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
@@ -25,5 +27,12 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 	if err != nil {
 		return err
 	}
-	return proj.Execute(args[1:])
+	code, err := proj.Execute(
+		args[1:],
+		executer.WithStdin(os.Stdin),
+		executer.WithStdout(os.Stdout),
+		executer.WithStderr(os.Stderr),
+	)
+	os.Exit(code)
+	return err
 }

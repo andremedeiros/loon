@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/andremedeiros/loon/internal/executer"
 )
 
 type Mysql struct{}
@@ -16,17 +18,18 @@ func (m *Mysql) Identifier() string {
 	return "mysql"
 }
 
-func (m *Mysql) Initialize(exe Executer, ipaddr, vdpath string) error {
+func (m *Mysql) Initialize(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "mysql")
 	if _, err := os.Stat(filepath.Join(dataPath, "auto.cnf")); err == nil {
 		return nil
 	}
 
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"mysqld",
 		"--initialize-insecure",
 		fmt.Sprintf("--datadir=%s", dataPath),
-	})
+	}, opts...)
+	return err
 }
 
 func (m *Mysql) Versions() map[string][]string {
@@ -44,32 +47,34 @@ func (m *Mysql) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (m *Mysql) Start(exe Executer, ipaddr, vdpath string) error {
+func (m *Mysql) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "mysql.pid")
 	dataPath := filepath.Join(vdpath, "data", "mysql")
 	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"mysqld",
 		"--daemonize",
 		fmt.Sprintf("--pid-file=%s", pidPath),
 		fmt.Sprintf("--datadir=%s", dataPath),
 		fmt.Sprintf("--bind-address=%s", ipaddr),
 		fmt.Sprintf("--socket=%s", socketPath),
-	})
+	}, opts...)
+	return err
 }
 
-func (m *Mysql) Stop(exe Executer, ipaddr, vdpath string) error {
+func (m *Mysql) Stop(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
 	if _, err := os.Stat(socketPath); err != nil {
 		return nil
 	}
 
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"mysqladmin",
 		"-u root",
 		fmt.Sprintf("--socket=%s", socketPath),
 		"shutdown",
-	})
+	}, opts...)
+	return err
 }

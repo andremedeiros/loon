@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/andremedeiros/loon/internal/executer"
 )
 
 type Postgres struct{}
@@ -17,12 +19,12 @@ func (p *Postgres) Identifier() string {
 	return "postgres"
 }
 
-func (p *Postgres) Initialize(exe Executer, ipaddr, vdpath string) error {
+func (p *Postgres) Initialize(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	if _, err := os.Stat(filepath.Join(dataPath, "PG_VERSION")); err == nil {
 		return nil
 	}
-	if err := exe.Execute([]string{"initdb", dataPath}); err != nil {
+	if _, err := exe.Execute([]string{"initdb", dataPath}, opts...); err != nil {
 		return err
 	}
 	hbaConf := fmt.Sprintf("host\tall\tall\t%s/32\ttrust", ipaddr)
@@ -48,33 +50,27 @@ func (p *Postgres) Environ(ipaddr, vdpath string) []string {
 	}
 }
 
-func (p *Postgres) Start(exe Executer, ipaddr, vdpath string) error {
+func (p *Postgres) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	logFilePath := filepath.Join(vdpath, "data", "postgres", "postgres.log")
 	socketPath := filepath.Join(vdpath, "sockets")
-	fmt.Println([]string{
+	_, err := exe.Execute([]string{
 		"pg_ctl",
 		fmt.Sprintf("-o '-h %s'", ipaddr),
 		fmt.Sprintf("-o '--unix_socket_directories=%s'", socketPath),
 		fmt.Sprintf("--pgdata=%s", dataPath),
 		fmt.Sprintf("--log=%s", logFilePath),
 		"start",
-	})
-	return exe.Execute([]string{
-		"pg_ctl",
-		fmt.Sprintf("-o '-h %s'", ipaddr),
-		fmt.Sprintf("-o '--unix_socket_directories=%s'", socketPath),
-		fmt.Sprintf("--pgdata=%s", dataPath),
-		fmt.Sprintf("--log=%s", logFilePath),
-		"start",
-	})
+	}, opts...)
+	return err
 }
 
-func (p *Postgres) Stop(exe Executer, ipaddr, vdpath string) error {
+func (p *Postgres) Stop(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
-	return exe.Execute([]string{
+	_, err := exe.Execute([]string{
 		"pg_ctl",
 		fmt.Sprintf("--pgdata=%s", dataPath),
 		"stop",
-	})
+	}, opts...)
+	return err
 }

@@ -8,6 +8,8 @@ import (
 	"strings"
 	"sync"
 	"text/template"
+
+	"github.com/andremedeiros/loon/internal/executer"
 )
 
 type Derivation struct {
@@ -22,18 +24,18 @@ func NewDerivation() *Derivation {
 	return &Derivation{tmpfile: tmpfile}
 }
 
-func (d *Derivation) Execute(args []string, env []string) error {
+func (d *Derivation) Execute(args []string, opts ...executer.Option) (int, error) {
 	d.once.Do(d.generate)
 	cmd := strings.Join(args, " ")
 	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
-	exe.Env = env
 
-	if true {
-		exe.Stdout = os.Stdout
-		exe.Stderr = os.Stderr
+	for _, opt := range opts {
+		opt(exe)
 	}
 
-	return exe.Run()
+	err := exe.Run()
+	code := exe.ProcessState.ExitCode()
+	return code, err
 }
 
 func (d *Derivation) generate() {
@@ -71,7 +73,8 @@ in mkShell {
 }
 
 func (d *Derivation) Install() error {
-	return d.Execute([]string{"true"}, nil)
+	_, err := d.Execute([]string{"true"})
+	return err
 }
 
 func (d *Derivation) Path() string {

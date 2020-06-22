@@ -12,6 +12,7 @@ import (
 	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/catalog/language"
 	"github.com/andremedeiros/loon/internal/catalog/service"
+	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/nix"
 )
 
@@ -37,8 +38,9 @@ func (p *Project) IPAddr() string {
 	return fmt.Sprintf("127.0.%d.%d", part3, part4)
 }
 
-func (p *Project) Execute(args []string) error {
-	return p.derivation.Execute(args, p.Environ())
+func (p *Project) Execute(args []string, opts ...executer.Option) (int, error) {
+	opts = append(opts, executer.WithEnviron(p.Environ()))
+	return p.derivation.Execute(args, opts...)
 }
 
 func (p *Project) EnsureDependencies() error {
@@ -47,14 +49,15 @@ func (p *Project) EnsureDependencies() error {
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
 func (p *Project) EnsureNetworking() error {
-	return p.derivation.Execute([]string{
+	_, err := p.derivation.Execute([]string{
 		"sudo",
 		"ifconfig",
 		"lo0",
 		"alias",
 		p.IPAddr(),
 		"255.255.255.0",
-	}, nil)
+	})
+	return err
 }
 
 func FindInTree() (*Project, error) {
