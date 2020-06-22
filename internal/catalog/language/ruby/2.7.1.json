@@ -5,7 +5,7 @@
     "sha256": "d418483bdd0000576c1370571121a6eb24582116db0b7bb2005e90e250eae418"
   },
   "iconv": {
-    "inherit": "libiconvReal"
+    "inherit": "libiconv"
   },
   "zlib": {
     "inherit": "zlib"
