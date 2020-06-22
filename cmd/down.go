@@ -28,8 +28,11 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 	g, ctx := errgroup.WithContext(ctx)
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
-		fmt.Printf("Stopping %s...\n", srv.String())
 		g.Go(func() error {
+			if !srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
+				return nil
+			}
+			fmt.Printf("Stopping %s...\n", srv.String())
 			stdout := bytes.Buffer{}
 			stderr := bytes.Buffer{}
 			err := srv.Stop(
