@@ -9,5 +9,8 @@
   },
   "zlib": {
     "inherit": "zlib"
+  },
+  "openssl": {
+    "inherit": "openssl"
   }
 }
