@@ -21,8 +21,5 @@ func (r *Ruby) Versions() map[string][]string {
 }
 
 func (r *Ruby) Initialize(exe Executer, _ string) error {
-	return exe.Execute([]string{
-		"ruby",
-		"--version",
-	})
+	return exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
 }
