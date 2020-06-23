@@ -19,7 +19,7 @@ $ loon shellrc >> ~/.zshrc  # if you're a zsh user
 ### A simple payload
 
 ```yaml
-# your-project/loon.yml
+# ~/src/github.com/you/awesome-project/loon.yml
 name: Your Awesome Project
 url: https://github.com/you/awesome-project
 services:
