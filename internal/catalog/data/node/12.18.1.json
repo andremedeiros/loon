@@ -1,0 +1,8 @@
+{
+  "nodejs-12_x": {
+    "version": "12.18.1",
+    "url": "https://nodejs.org/dist/v12.18.1/node-v12.18.1.tar.gz",
+    "sha256": "be532894112d06e671cb3d9388e2a3fa2c690d40bdfa9e432921a9e078b3f241"
+  }
+}
+
