@@ -8,7 +8,11 @@ func (r *Ruby) String() string {
 	return "Ruby"
 }
 
-func (r *Ruby) Environ() []string {
+func (r *Ruby) Environ(_ string) []string {
+	return nil
+}
+
+func (r *Ruby) BinPaths(_ string) []string {
 	return nil
 }
 

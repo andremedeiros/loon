@@ -8,7 +8,11 @@ func (g *Golang) String() string {
 	return "Golang"
 }
 
-func (g *Golang) Environ() []string {
+func (g *Golang) Environ(_ string) []string {
+	return nil
+}
+
+func (g *Golang) BinPaths(_ string) []string {
 	return nil
 }
 

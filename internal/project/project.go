@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 
@@ -102,12 +103,19 @@ func fromPayload(b []byte) (*Project, error) {
 
 func (p *Project) Environ() []string {
 	environ := os.Environ()
+	paths := []string{}
 	for _, s := range p.Services {
 		environ = append(environ, s.Environ(p.IPAddr(), p.VDPath())...)
+	}
+	for _, l := range p.Languages {
+		environ = append(environ, l.Environ(p.VDPath())...)
+		paths = append(paths, l.BinPaths(p.VDPath())...)
 	}
 	for k, v := range p.Environment {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 	}
+	path := fmt.Sprintf("PATH=%s:%s", strings.Join(paths, ":"), os.Getenv("PATH"))
+	environ = append(environ, path)
 	return environ
 }
 
