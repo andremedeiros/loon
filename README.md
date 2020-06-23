@@ -1,5 +1,7 @@
 ![banner](https://user-images.githubusercontent.com/9689/85356663-8035c100-b4dd-11ea-99ec-4e969ccc87e2.png)
 
+Made with :heart: by [Andre Medeiros](https://andre.cool)
+
 ## Show, don't tell
 
 [![asciicast](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1.png)](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1)
