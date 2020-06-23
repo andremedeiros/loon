@@ -2,12 +2,8 @@ name: loon
 url: https://github.com/andremedeiros/loon
 environment:
   LOON: Was here
-services:
-  postgresql:
-  memcached:
-  redis:
 languages:
-  ruby:
+  golang:
 tasks:
   build:
     description: Builds Loon
