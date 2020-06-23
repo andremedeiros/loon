@@ -2,8 +2,10 @@ package service
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/andremedeiros/loon/internal/executer"
 )
@@ -45,6 +47,11 @@ func (m *Mysql) Environ(ipaddr, vdpath string) []string {
 	return []string{
 		fmt.Sprintf("DATABASE_URL=%s:3306", ipaddr),
 	}
+}
+
+func (m *Mysql) IsHealthy(ipaddr, _ string) bool {
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:3306", ipaddr), 100*time.Millisecond)
+	return err == nil
 }
 
 func (m *Mysql) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {

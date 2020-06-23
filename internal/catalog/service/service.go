@@ -7,6 +7,7 @@ type Service interface {
 	Identifier() string
 	Environ(string, string) []string
 	Initialize(executer.Executer, string, string, ...executer.Option) error
+	IsHealthy(string, string) bool
 	Start(executer.Executer, string, string, ...executer.Option) error
 	Stop(executer.Executer, string, string, ...executer.Option) error
 }

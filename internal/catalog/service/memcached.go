@@ -2,8 +2,10 @@ package service
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/process"
@@ -37,6 +39,11 @@ func (m *Memcached) Environ(ipaddr, vdpath string) []string {
 	return []string{
 		fmt.Sprintf("MEMCACHED_URL=%s:11211", ipaddr),
 	}
+}
+
+func (m *Memcached) IsHealthy(ipaddr, _ string) bool {
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:11211", ipaddr), 100*time.Millisecond)
+	return err == nil
 }
 
 func (m *Memcached) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {

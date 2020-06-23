@@ -2,8 +2,10 @@ package service
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/process"
@@ -36,6 +38,11 @@ func (r *Redis) Environ(ipaddr, vdpath string) []string {
 	return []string{
 		fmt.Sprintf("REDIS_URL=redis://%s:6379", ipaddr),
 	}
+}
+
+func (r *Redis) IsHealthy(ipaddr, _ string) bool {
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:6379", ipaddr), 100*time.Millisecond)
+	return err == nil
 }
 
 func (r *Redis) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {

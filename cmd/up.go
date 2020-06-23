@@ -36,8 +36,11 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	g, ctx := errgroup.WithContext(ctx)
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
-		fmt.Printf("Starting %s...\n", srv.String())
 		g.Go(func() error {
+			if srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
+				return nil
+			}
+			fmt.Printf("Starting %s...\n", srv.String())
 			// Initialize
 			{
 				stdout := bytes.Buffer{}

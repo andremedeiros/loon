@@ -3,8 +3,10 @@ package service
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/andremedeiros/loon/internal/executer"
 )
@@ -48,6 +50,11 @@ func (p *Postgres) Environ(ipaddr, vdpath string) []string {
 	return []string{
 		fmt.Sprintf("DATABASE_URL=postgres://%s:5432", ipaddr),
 	}
+}
+
+func (p *Postgres) IsHealthy(ipaddr, _ string) bool {
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:5432", ipaddr), 100*time.Millisecond)
+	return err == nil
 }
 
 func (p *Postgres) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
