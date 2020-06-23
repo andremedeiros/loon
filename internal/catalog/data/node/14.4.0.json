@@ -1,0 +1,7 @@
+{
+  "nodejs": {
+    "version": "14.4.0",
+    "url": "https://nodejs.org/dist/v14.4.0/node-v14.4.0.tar.gz",
+    "sha256": "5769ce6cf619e3f38dab9d64eab204722665b8b0f5bd2568ac171e2edc6db7f7"
+  }
+}

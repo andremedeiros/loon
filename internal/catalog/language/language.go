@@ -11,4 +11,5 @@ type Language interface {
 var Languages = map[string]Language{
 	"ruby":   &Ruby{},
 	"golang": &Golang{},
+	"node":   &Node{},
 }

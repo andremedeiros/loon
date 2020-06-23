@@ -5,6 +5,8 @@
 // internal/catalog/data/memcached/1.6.5.json (195B)
 // internal/catalog/data/memcached/1.6.6.json (195B)
 // internal/catalog/data/mysql/8.0.17.json (194B)
+// internal/catalog/data/node/12.18.1.json (203B)
+// internal/catalog/data/node/14.4.0.json (194B)
 // internal/catalog/data/postgresql/10.13.json (202B)
 // internal/catalog/data/postgresql/11.8.json (199B)
 // internal/catalog/data/postgresql/12.3.json (211B)
@@ -96,7 +98,7 @@ func golang11312Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.13.12.json", size: 190, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "golang/1.13.12.json", size: 190, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x3b, 0xdb, 0x43, 0xaa, 0x90, 0x18, 0xbb, 0x19, 0xfb, 0x6, 0xea, 0x2e, 0xea, 0xe7, 0x9b, 0xea, 0x3d, 0x7b, 0xd, 0x72, 0x4c, 0x9f, 0x42, 0xc8, 0x77, 0x6, 0x8b, 0x59, 0xe2, 0xdb, 0x10, 0x9c}}
 	return a, nil
 }
@@ -116,7 +118,7 @@ func golang1144Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.14.4.json", size: 183, mode: os.FileMode(0644), modTime: time.Unix(1592872412, 0)}
+	info := bindataFileInfo{name: "golang/1.14.4.json", size: 183, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x51, 0x9b, 0xa, 0x9a, 0x9, 0x61, 0x33, 0xda, 0xa9, 0xf0, 0x6d, 0x84, 0x92, 0x40, 0x3, 0xe1, 0xc8, 0xcc, 0xc1, 0x66, 0x15, 0x1d, 0xc7, 0x34, 0xff, 0x83, 0xec, 0x4b, 0x62, 0x5e, 0x5b, 0xe6}}
 	return a, nil
 }
@@ -136,7 +138,7 @@ func memcached165Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.5.json", size: 195, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.5.json", size: 195, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x92, 0xab, 0xe1, 0x72, 0xe0, 0x13, 0x8e, 0xa7, 0xce, 0xd8, 0x50, 0xd2, 0x62, 0x8c, 0x3f, 0x59, 0x1b, 0x1d, 0x8, 0x37, 0xf, 0xad, 0x28, 0xef, 0x66, 0xb8, 0xd2, 0xb3, 0xcf, 0xee, 0xf8, 0x3c}}
 	return a, nil
 }
@@ -156,7 +158,7 @@ func memcached166Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.6.json", size: 195, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.6.json", size: 195, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x80, 0x67, 0x5a, 0xb0, 0x67, 0x88, 0x70, 0x64, 0xb1, 0xec, 0x52, 0xc0, 0x56, 0x45, 0x9e, 0xdf, 0x59, 0xd0, 0x88, 0xe4, 0xed, 0x6f, 0xc2, 0x5, 0x66, 0x8d, 0xe1, 0xc7, 0x50, 0x44, 0x21, 0x20}}
 	return a, nil
 }
@@ -176,8 +178,48 @@ func mysql8017Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "mysql/8.0.17.json", size: 194, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "mysql/8.0.17.json", size: 194, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x11, 0x1, 0x48, 0xa5, 0x7d, 0x74, 0x70, 0x22, 0x12, 0x10, 0xb8, 0xb0, 0x7a, 0x51, 0xb, 0x4b, 0x1c, 0xf5, 0xfe, 0xbd, 0x45, 0xca, 0x49, 0xf, 0x46, 0x1c, 0xdd, 0xa0, 0xce, 0x24, 0x8a, 0xd6}}
+	return a, nil
+}
+
+var _node12181Json = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\x8c\x5d\x4e\xc5\x20\x10\x46\xdf\x59\xc5\x84\x67\x2f\x30\x03\x97\x42\x37\x63\xa0\xd0\x1f\x63\x5a\x03\xd8\x18\x4d\xf7\x6e\x6a\xed\xe3\x9c\x33\xdf\xf9\x61\x00\x7c\xdd\x52\x7e\xab\x0f\xa4\xd7\x2f\xde\xc3\x89\x00\xf8\x9e\x4b\x5d\xb6\x95\xf7\xc0\x91\x04\x3a\x81\xfc\xe5\x32\x9f\xe5\xfd\xa4\x73\x6b\x1f\xb5\x97\xf2\x5a\x8b\xad\x4c\x32\x2d\xb5\xc9\xfd\xff\xfd\x4f\x3c\xee\x4b\xb4\x50\xc4\xf4\x7d\x37\xea\x1c\xe8\x69\xcf\x4c\xcc\x4f\x4d\xce\x1b\x44\x4a\xca\x66\xdb\xe1\x10\x75\xf2\xda\xb9\x4c\x41\x8f\x81\x06\xeb\x55\x32\x2a\xa6\x31\xf8\x6c\x34\x79\xc2\xe0\xb3\xea\x5c\xd4\x23\x19\xe4\x0c\xe0\x60\x07\x63\xbf\x01\x00\x00\xff\xff\xd2\x46\x21\x44\xcb\x00\x00\x00")
+
+func node12181JsonBytes() ([]byte, error) {
+	return bindataRead(
+		_node12181Json,
+		"node/12.18.1.json",
+	)
+}
+
+func node12181Json() (*asset, error) {
+	bytes, err := node12181JsonBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "node/12.18.1.json", size: 203, mode: os.FileMode(0644), modTime: time.Unix(1592872982, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x4c, 0x13, 0x1c, 0x31, 0x71, 0x65, 0x42, 0x6b, 0x6d, 0x97, 0xe1, 0xe4, 0x45, 0x15, 0x4d, 0x2d, 0x5c, 0x2e, 0x83, 0xc1, 0xdc, 0xba, 0x10, 0xac, 0xc7, 0xf3, 0xf1, 0x62, 0x18, 0x4b, 0x2d, 0xc0}}
+	return a, nil
+}
+
+var _node1440Json = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x34\x8c\x4d\x0e\x83\x20\x10\x46\xf7\x9c\x62\xc2\xba\x05\x41\x18\xd4\xdb\xf0\xab\x36\x8d\x36\x40\x5d\xb4\xf1\xee\x8d\xb5\x5d\xbe\x37\xf3\xbd\x37\x01\xa0\xcb\x1a\xe2\xad\xd0\x01\x0e\x02\xa0\x5b\xcc\x65\x5e\x17\x3a\x00\x15\x8a\x29\xd6\xd0\xcb\x79\x78\xe6\xfb\x21\xa7\x5a\x1f\x65\xe0\xfc\xdc\xb1\x35\x8f\x3c\xcc\xa5\xf2\xed\xfc\xfe\xfa\xeb\x0f\x58\xb5\x99\x8d\xaf\x7f\xa1\x4c\x56\x6a\x3c\x22\xda\x60\xef\x23\xfa\x84\xa2\x8f\x6d\x6a\xbb\x60\x5d\x1f\x50\x45\xeb\x64\xa3\x8c\x94\x88\xda\x75\xae\x49\xda\x05\xa9\xb1\xb3\x5e\x18\x11\x65\x0c\x1e\x83\x33\xc9\x50\x02\xb0\x93\x9d\x7c\x02\x00\x00\xff\xff\x13\x41\xee\x74\xc2\x00\x00\x00")
+
+func node1440JsonBytes() ([]byte, error) {
+	return bindataRead(
+		_node1440Json,
+		"node/14.4.0.json",
+	)
+}
+
+func node1440Json() (*asset, error) {
+	bytes, err := node1440JsonBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "node/14.4.0.json", size: 194, mode: os.FileMode(0644), modTime: time.Unix(1592873102, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xa6, 0x8f, 0xbb, 0xb3, 0x5e, 0x49, 0x89, 0x7a, 0x4d, 0x8c, 0x17, 0x90, 0xf9, 0xfd, 0x96, 0xd3, 0x7f, 0x2f, 0x36, 0x83, 0xc6, 0xdf, 0xa4, 0x45, 0x9d, 0x4c, 0xd4, 0xc7, 0xfc, 0x5c, 0x49, 0x8f}}
 	return a, nil
 }
 
@@ -196,7 +238,7 @@ func postgresql1013Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/10.13.json", size: 202, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "postgresql/10.13.json", size: 202, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe0, 0xd9, 0x7, 0x35, 0xab, 0x5b, 0xf2, 0x48, 0x2e, 0xee, 0x6e, 0x8e, 0x38, 0x24, 0x2c, 0x80, 0xe3, 0x12, 0x2d, 0x3c, 0x4a, 0xa8, 0x86, 0x8d, 0x81, 0xdb, 0xe2, 0xc5, 0x2b, 0x58, 0x60, 0x57}}
 	return a, nil
 }
@@ -216,7 +258,7 @@ func postgresql118Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/11.8.json", size: 199, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "postgresql/11.8.json", size: 199, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x85, 0x9a, 0x6a, 0xec, 0xd0, 0xcc, 0x4f, 0x34, 0xd, 0x4f, 0x8, 0x7d, 0x34, 0x47, 0xac, 0xbe, 0x18, 0x44, 0x65, 0xd9, 0x30, 0xb0, 0x87, 0x5, 0xa3, 0x22, 0xec, 0x2e, 0x79, 0x3, 0x16, 0x98}}
 	return a, nil
 }
@@ -236,7 +278,7 @@ func postgresql123Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/12.3.json", size: 211, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "postgresql/12.3.json", size: 211, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xe1, 0xcc, 0x74, 0xa2, 0xfe, 0xc7, 0x83, 0x11, 0xb0, 0xe9, 0x95, 0x13, 0x83, 0x70, 0xa4, 0xbf, 0xd1, 0x2, 0x42, 0x52, 0x77, 0x54, 0x8f, 0xba, 0x39, 0xd2, 0xe, 0x15, 0x4e, 0x60, 0x2e, 0x84}}
 	return a, nil
 }
@@ -256,7 +298,7 @@ func postgresql9522Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.5.22.json", size: 205, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "postgresql/9.5.22.json", size: 205, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x8a, 0x55, 0x81, 0x84, 0xd8, 0x62, 0x2b, 0x14, 0xa, 0x1d, 0x6, 0x57, 0x86, 0xb3, 0xd9, 0x90, 0x67, 0x96, 0xc7, 0x81, 0x75, 0xd6, 0x68, 0x4d, 0xc9, 0xf1, 0x73, 0x4e, 0x70, 0x62, 0x78, 0x4a}}
 	return a, nil
 }
@@ -276,7 +318,7 @@ func postgresql9618Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.6.18.json", size: 205, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "postgresql/9.6.18.json", size: 205, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xa7, 0xc0, 0x7f, 0x90, 0x43, 0x6c, 0x60, 0x9d, 0xf3, 0xbc, 0xfb, 0xa0, 0x86, 0x0, 0x94, 0x8d, 0x63, 0x16, 0x89, 0x28, 0xf2, 0x19, 0x5e, 0x1a, 0x73, 0x7a, 0xbd, 0x3, 0x83, 0xba, 0xfa, 0xd9}}
 	return a, nil
 }
@@ -296,7 +338,7 @@ func redis604Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "redis/6.0.4.json", size: 193, mode: os.FileMode(0644), modTime: time.Unix(1592746161, 0)}
+	info := bindataFileInfo{name: "redis/6.0.4.json", size: 193, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x6a, 0xf6, 0xde, 0xf6, 0x98, 0x56, 0x85, 0xbc, 0x5c, 0x81, 0x53, 0xb5, 0x75, 0xb3, 0x4f, 0x9b, 0x49, 0xdc, 0xae, 0x4f, 0x8c, 0x83, 0x6d, 0x2c, 0x49, 0xa2, 0xab, 0xdd, 0x1, 0x88, 0x1c, 0x81}}
 	return a, nil
 }
@@ -316,7 +358,7 @@ func ruby266Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 326, mode: os.FileMode(0644), modTime: time.Unix(1592865941, 0)}
+	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 326, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xc3, 0xf7, 0x36, 0x81, 0x1f, 0x86, 0xf9, 0xc5, 0xdb, 0xac, 0x84, 0x64, 0x19, 0x66, 0x65, 0xf4, 0x54, 0xcf, 0x6b, 0x84, 0x1d, 0x53, 0xce, 0x2b, 0x8b, 0x65, 0x5f, 0xc, 0x99, 0xa4, 0xf5, 0x90}}
 	return a, nil
 }
@@ -336,7 +378,7 @@ func ruby271Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.7.1.json", size: 330, mode: os.FileMode(0644), modTime: time.Unix(1592865941, 0)}
+	info := bindataFileInfo{name: "ruby/2.7.1.json", size: 330, mode: os.FileMode(0644), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xb7, 0x7, 0x12, 0x14, 0xc4, 0xeb, 0xc4, 0xb7, 0xb4, 0xe6, 0x1c, 0xc0, 0xe6, 0xe2, 0x14, 0x1f, 0x1f, 0xcc, 0xf, 0x63, 0xc1, 0x50, 0x27, 0xbd, 0x23, 0x9d, 0x59, 0xcb, 0x4d, 0xce, 0x82, 0x79}}
 	return a, nil
 }
@@ -437,6 +479,8 @@ var _bindata = map[string]func() (*asset, error){
 	"memcached/1.6.5.json":   memcached165Json,
 	"memcached/1.6.6.json":   memcached166Json,
 	"mysql/8.0.17.json":      mysql8017Json,
+	"node/12.18.1.json":      node12181Json,
+	"node/14.4.0.json":       node1440Json,
 	"postgresql/10.13.json":  postgresql1013Json,
 	"postgresql/11.8.json":   postgresql118Json,
 	"postgresql/12.3.json":   postgresql123Json,
@@ -501,6 +545,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	}},
 	"mysql": &bintree{nil, map[string]*bintree{
 		"8.0.17.json": &bintree{mysql8017Json, map[string]*bintree{}},
+	}},
+	"node": &bintree{nil, map[string]*bintree{
+		"12.18.1.json": &bintree{node12181Json, map[string]*bintree{}},
+		"14.4.0.json":  &bintree{node1440Json, map[string]*bintree{}},
 	}},
 	"postgresql": &bintree{nil, map[string]*bintree{
 		"10.13.json":  &bintree{postgresql1013Json, map[string]*bintree{}},
