@@ -1,6 +1,11 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executer"
+import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/andremedeiros/loon/internal/executer"
+)
 
 type Node struct{}
 
@@ -8,8 +13,17 @@ func (n *Node) String() string {
 	return "Node"
 }
 
-func (n *Node) Environ() []string {
-	return nil
+func (n *Node) Environ(vdpath string) []string {
+	npmPath := filepath.Join(vdpath, "data", "npm")
+	return []string{
+		fmt.Sprintf("NPM_CONFIG_PREFIX=%s", npmPath),
+	}
+}
+
+func (n *Node) BinPaths(vdpath string) []string {
+	return []string{
+		filepath.Join(vdpath, "data", "npm", "bin"),
+	}
 }
 
 func (n *Node) Versions() map[string][]string {
