@@ -13,6 +13,7 @@ import (
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/project"
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
 var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
@@ -25,14 +26,27 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Ensuring software is installed...")
-	if err = proj.EnsureDependencies(); err != nil {
-		return err
+
+	{
+		success, failure := ui.Spinner("Ensuring software is installed...")
+		if err = proj.EnsureDependencies(); err != nil {
+			failure()
+			return err
+		}
+		success()
 	}
-	fmt.Println("Setting up networking...")
-	if err = proj.EnsureNetworking(); err != nil {
-		return err
+
+	{
+		success, failure := ui.Spinner("Setting up networking...")
+		if err = proj.EnsureNetworking(); err != nil {
+			failure()
+			return err
+		}
+		success()
 	}
+
+	success, failure := ui.Spinner("Starting...")
+	defer success()
 	g, ctx := errgroup.WithContext(ctx)
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
@@ -40,7 +54,6 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 			if srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
 				return nil
 			}
-			fmt.Printf("Starting %s...\n", srv.String())
 			// Initialize
 			{
 				stdout := bytes.Buffer{}
@@ -53,17 +66,12 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 					executer.WithStderr(bufio.NewWriter(&stderr)),
 				)
 				if err != nil {
-					fmt.Printf("Something went wrong while initializing %s. Details:\n", srv.String())
-					if stdout.Len() > 0 {
-						fmt.Println("-------------------- 8< stdout 8< --------------------")
-						fmt.Println(stdout.String())
-						fmt.Println("------------------------------------------------------")
-					}
-					if stderr.Len() > 0 {
-						fmt.Println("-------------------- 8< stderr 8< --------------------")
-						fmt.Println(stderr.String())
-						fmt.Println("------------------------------------------------------")
-					}
+					failure()
+					ui.ErrorWithOutput(
+						fmt.Sprintf("Something went wrong while initializing %s", srv.String()),
+						stdout,
+						stderr,
+					)
 					return err
 				}
 			}
@@ -80,26 +88,21 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 					executer.WithStderr(bufio.NewWriter(&stderr)),
 				)
 				if err != nil {
-					fmt.Printf("Something went wrong while starting %s. Details:\n", srv.String())
-					if stdout.Len() > 0 {
-						fmt.Println("-------------------- 8< stdout 8< --------------------")
-						fmt.Println(stdout.String())
-						fmt.Println("------------------------------------------------------")
-					}
-					if stderr.Len() > 0 {
-						fmt.Println("-------------------- 8< stderr 8< --------------------")
-						fmt.Println(stderr.String())
-						fmt.Println("------------------------------------------------------")
-					}
+					failure()
+					ui.ErrorWithOutput(
+						fmt.Sprintf("Something went wrong while starting %s", srv.String()),
+						stdout,
+						stderr,
+					)
 					return err
 				}
 			}
 			return nil
 		})
 	}
+
 	for _, lang := range proj.Languages {
 		lang := lang // otherwise it goes out of scope
-		fmt.Printf("Initializing %s...\n", lang.String())
 		g.Go(func() error {
 			stdout := bytes.Buffer{}
 			stderr := bytes.Buffer{}
@@ -110,17 +113,12 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 				executer.WithStderr(bufio.NewWriter(&stderr)),
 			)
 			if err != nil {
-				fmt.Printf("Something went wrong while initializing %s. Details:\n", lang.String())
-				if stdout.Len() > 0 {
-					fmt.Println("-------------------- 8< stdout 8< --------------------")
-					fmt.Println(stdout.String())
-					fmt.Println("------------------------------------------------------")
-				}
-				if stderr.Len() > 0 {
-					fmt.Println("-------------------- 8< stderr 8< --------------------")
-					fmt.Println(stderr.String())
-					fmt.Println("------------------------------------------------------")
-				}
+				failure()
+				ui.ErrorWithOutput(
+					fmt.Sprintf("Something went wrong while initializing %s", lang.String()),
+					stdout,
+					stderr,
+				)
 			}
 			return err
 		})
@@ -128,5 +126,6 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	if err := g.Wait(); err != nil {
 		return err
 	}
+	success()
 	return nil
 }

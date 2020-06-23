@@ -29,5 +29,8 @@ var runShell = func(ctx context.Context, cfg *config.Config, args []string) erro
 	ex.Stdout = os.Stdout
 	ex.Stdin = os.Stdin
 	ex.Stderr = os.Stderr
-	return ex.Run()
+	err = ex.Run()
+	code := ex.ProcessState.ExitCode()
+	os.Exit(code)
+	return err
 }

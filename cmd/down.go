@@ -13,6 +13,7 @@ import (
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/executer"
 	"github.com/andremedeiros/loon/internal/project"
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
 var runDown = func(ctx context.Context, cfg *config.Config, args []string) error {
@@ -25,6 +26,8 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 	if err != nil {
 		return err
 	}
+	success, failure := ui.Spinner("Stopping...")
+	defer success()
 	g, ctx := errgroup.WithContext(ctx)
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
@@ -32,7 +35,6 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 			if !srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
 				return nil
 			}
-			fmt.Printf("Stopping %s...\n", srv.String())
 			stdout := bytes.Buffer{}
 			stderr := bytes.Buffer{}
 			err := srv.Stop(
@@ -43,24 +45,15 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 				executer.WithStderr(bufio.NewWriter(&stderr)),
 			)
 			if err != nil {
-				fmt.Printf("Something went wrong while stopping %s. Details:\n", srv.String())
-				if stdout.Len() > 0 {
-					fmt.Println("-------------------- 8< stdout 8< --------------------")
-					fmt.Println(stdout.String())
-					fmt.Println("------------------------------------------------------")
-				}
-				if stderr.Len() > 0 {
-					fmt.Println("-------------------- 8< stderr 8< --------------------")
-					fmt.Println(stderr.String())
-					fmt.Println("------------------------------------------------------")
-				}
+				failure()
+				ui.ErrorWithOutput(
+					fmt.Sprintf("Something went wrong while stopping %s", srv.String()),
+					stdout,
+					stderr,
+				)
 			}
 			return err
 		})
 	}
-	if err := g.Wait(); err != nil {
-		return err
-	}
-
-	return nil
+	return g.Wait()
 }
