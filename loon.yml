@@ -12,19 +12,9 @@ tasks:
   build:
     description: Builds Loon
     command: |
+      go generate
       go build \
         -ldflags="-X github.com/andremedeiros/loon/cmd.version=$(git rev-parse --short HEAD)"
   test:
     description: Runs go tests
     command: go test ./... -v
-  generate:
-    description: Generates bindata files from catalog
-    command: |
-      go-bindata -pkg service \
-        -prefix internal/catalog/service/ \
-        -o ./internal/catalog/service/bindata.go \
-        internal/catalog/service/**/*.json
-      go-bindata -pkg language \
-        -prefix internal/catalog/language/ \
-        -o ./internal/catalog/language/bindata.go \
-        internal/catalog/language/**/*.json
