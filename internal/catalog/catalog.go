@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/andremedeiros/loon/internal/catalog/language"
-	"github.com/andremedeiros/loon/internal/catalog/service"
 	"github.com/andremedeiros/loon/internal/nix"
 )
 
@@ -39,15 +37,8 @@ func EntryFor(software string, version string) Entry {
 func List() []Entry {
 	es := []Entry{}
 
-	assets := map[string][]byte{}
-	for _, an := range service.AssetNames() {
-		assets[an], _ = service.Asset(an)
-	}
-	for _, an := range language.AssetNames() {
-		assets[an], _ = language.Asset(an)
-	}
-
-	for asset, b := range assets {
+	for _, asset := range AssetNames() {
+		b := MustAsset(asset)
 		parts := strings.SplitN(asset, "/", 2)
 		ext := filepath.Ext(parts[1])
 		e := Entry{
