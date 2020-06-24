@@ -22,7 +22,7 @@ var runCd = func(ctx context.Context, cfg *config.Config, args []string) error {
 	if len(args) <= 0 {
 		return errors.New("specify a partial project name")
 	}
-	repo := git.NewRepository(args[0])
+	repo := git.NewRepository(args[1])
 	path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
 	finalizer.Write("chdir", path)
 	return nil
