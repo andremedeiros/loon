@@ -81,24 +81,15 @@ func FindInTree() (*Project, error) {
 }
 
 func fromPath(path string) (*Project, error) {
-	body, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	p, err := fromPayload(body)
-	if err != nil {
-		return nil, err
-	}
+	p := &Project{}
 	p.Path = filepath.Dir(path)
-	return p, nil
-}
+	p.derivation = nix.NewDerivation(p.VDPath())
 
-func fromPayload(b []byte) (*Project, error) {
-	project := &Project{derivation: nix.NewDerivation()}
-	if err := yaml.Unmarshal(b, project); err != nil {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
 		return nil, err
 	}
-	return project, nil
+	return p, yaml.Unmarshal(b, p)
 }
 
 func (p *Project) Environ() []string {

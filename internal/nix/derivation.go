@@ -2,9 +2,9 @@ package nix
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"text/template"
@@ -15,13 +15,14 @@ import (
 type Derivation struct {
 	Packages []Package
 
-	tmpfile *os.File
-	once    sync.Once
+	fd   *os.File
+	once sync.Once
 }
 
-func NewDerivation() *Derivation {
-	tmpfile, _ := ioutil.TempFile("", "derivation.nix")
-	return &Derivation{tmpfile: tmpfile}
+func NewDerivation(path string) *Derivation {
+	dpath := filepath.Join(path, "derivation.nix")
+	fd, _ := os.OpenFile(dpath, os.O_RDWR|os.O_CREATE, 0755)
+	return &Derivation{fd: fd}
 }
 
 func (d *Derivation) Execute(args []string, opts ...executer.Option) (int, error) {
@@ -57,9 +58,9 @@ in mkShell {
 	t := template.Must(template.New("nix").Parse(tmpl))
 	t.Execute(buf, d)
 
-	d.tmpfile.Truncate(0)
-	d.tmpfile.Write(buf.Bytes())
-	d.tmpfile.Sync()
+	d.fd.Truncate(0)
+	d.fd.Write(buf.Bytes())
+	d.fd.Sync()
 }
 
 func (d *Derivation) Install() error {
@@ -68,5 +69,5 @@ func (d *Derivation) Install() error {
 }
 
 func (d *Derivation) Path() string {
-	return d.tmpfile.Name()
+	return d.fd.Name()
 }

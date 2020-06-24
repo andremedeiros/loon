@@ -1,13 +1,23 @@
 package project
 
 import (
+	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
 
+func fromPayload(body string) (*Project, error) {
+	tmp, _ := ioutil.TempFile("", "loon.yml")
+	defer os.Remove(tmp.Name())
+	tmp.WriteString(body)
+	tmp.Close()
+	return fromPath(tmp.Name())
+}
+
 func TestNewFromPayload(t *testing.T) {
 	t.Run("invalid payload", func(t *testing.T) {
-		if _, err := fromPayload([]byte(`!`)); err == nil {
+		if _, err := fromPayload(`!`); err == nil {
 			t.Errorf("expected error but didn't get one")
 		}
 	})
@@ -19,7 +29,7 @@ environment:
   SOME: value
   SOME_OTHER: other value
 `
-		p, err := fromPayload([]byte(payload))
+		p, err := fromPayload(payload)
 		if err != nil {
 			t.Errorf("got %q", err)
 			return
@@ -48,7 +58,7 @@ services:
     version: 6.0.4
 `
 
-		p, err := fromPayload([]byte(payload))
+		p, err := fromPayload(payload)
 		if err != nil {
 			t.Errorf("got %q", err)
 			return
@@ -67,7 +77,7 @@ tasks:
   compile:
     command: compile the thing
 `
-		p, err := fromPayload([]byte(payload))
+		p, err := fromPayload(payload)
 		if err != nil {
 			t.Errorf("got %q", err)
 			return
