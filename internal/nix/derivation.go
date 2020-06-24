@@ -42,19 +42,9 @@ func (d *Derivation) generate() {
 	tmpl := `
 { pkgs ? import <nixpkgs> { } }:
 let
-inherit (pkgs) fetchurl mkShell;
+inherit (pkgs) stdenv fetchurl mkShell;
 {{ range $package := $.Packages }}
-	{{ if eq $package.Inherit "" }}
-		{{ $package.Name }} = pkgs.{{ $package.Name }}.overrideAttrs (attrs: {
-			version = "{{ $package.Version }}";
-			src = fetchurl {
-				url = "{{ $package.URL }}";
-				sha256 = "{{ $package.SHA256 }}";
-			};
-		});
-	{{ else }}
-		{{ $package.Name }} = pkgs.{{ $package.Inherit }};
-	{{ end }}
+	{{ $package.Nix }}
 {{ end }}
 
 in mkShell {
@@ -73,7 +63,7 @@ in mkShell {
 }
 
 func (d *Derivation) Install() error {
-	_, err := d.Execute([]string{"true"})
+	_, err := d.Execute([]string{"true"}, executer.WithStdout(os.Stdout))
 	return err
 }
 
