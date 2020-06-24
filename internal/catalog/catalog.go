@@ -8,15 +8,7 @@ import (
 	"github.com/andremedeiros/loon/internal/nix"
 )
 
-type Package struct {
-	Package string
-	Inherit string `json:"inherit"`
-	Version string `json:"version"`
-	URL     string `json:"url"`
-	SHA256  string `json:"sha256"`
-}
-
-type PackageList []Package
+type PackageList []nix.Package
 
 type Entry struct {
 	Name     string
@@ -50,13 +42,8 @@ func List() []Entry {
 			pkgs := map[string]map[string]string{}
 			json.Unmarshal(b, &pkgs)
 			for name, pkg := range pkgs {
-				e.Packages = append(e.Packages, Package{
-					Package: name,
-					Inherit: pkg["inherit"],
-					Version: pkg["version"],
-					URL:     pkg["url"],
-					SHA256:  pkg["sha256"],
-				})
+				p := nix.NewPackage(name, pkg)
+				e.Packages = append(e.Packages, p)
 			}
 		}
 
@@ -71,25 +58,12 @@ type Installable interface {
 }
 
 func Packages(i Installable, version string) []nix.Package {
-	pkgs := []nix.Package{}
-
 	versions := i.Versions()
 	parts, ok := versions[version]
 	if !ok {
-		return pkgs
+		return nil
 	}
 
 	entry := EntryFor(parts[0], parts[1])
-	for _, pkg := range entry.Packages {
-		nixpkg := nix.Package{
-			Name:    pkg.Package,
-			Inherit: pkg.Inherit,
-			Version: pkg.Version,
-			URL:     pkg.URL,
-			SHA256:  pkg.SHA256,
-		}
-		pkgs = append(pkgs, nixpkg)
-	}
-
-	return pkgs
+	return entry.Packages
 }
