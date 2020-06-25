@@ -2,40 +2,52 @@ package nix
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
-	"sync"
 	"text/template"
+	"time"
 
 	"github.com/andremedeiros/loon/internal/executer"
 )
 
 type Derivation struct {
 	Packages []Package
-
-	tmpfile *os.File
-	once    sync.Once
+	NixPath  string
+	DrvPath  string
 }
 
-func NewDerivation() *Derivation {
-	tmpfile, _ := ioutil.TempFile("", "derivation.nix")
-	return &Derivation{tmpfile: tmpfile}
+func NewDerivation(vdpath string) *Derivation {
+	nixPath := filepath.Join(vdpath, "default.nix")
+	drvPath := filepath.Join(vdpath, "loon.drv")
+	return &Derivation{NixPath: nixPath, DrvPath: drvPath}
+}
+
+func (d *Derivation) execute(cmd []string, opts ...executer.Option) (int, error) {
+	name := cmd[0]
+	args := cmd[1:]
+	{
+		cmd := exec.Command(name, args...)
+
+		for _, opt := range opts {
+			opt(cmd)
+		}
+
+		err := cmd.Run()
+		code := cmd.ProcessState.ExitCode()
+		return code, err
+	}
 }
 
 func (d *Derivation) Execute(args []string, opts ...executer.Option) (int, error) {
-	d.once.Do(d.generate)
-	cmd := strings.Join(args, " ")
-	exe := exec.Command("nix-shell", d.Path(), "--command", cmd)
-
-	for _, opt := range opts {
-		opt(exe)
+	cmd := []string{
+		"nix-shell",
+		d.DrvPath,
+		"--command",
+		strings.Join(args, " "),
 	}
-
-	err := exe.Run()
-	code := exe.ProcessState.ExitCode()
-	return code, err
+	return d.execute(cmd, opts...)
 }
 
 func (d *Derivation) generate() {
@@ -57,16 +69,27 @@ in mkShell {
 	t := template.Must(template.New("nix").Parse(tmpl))
 	t.Execute(buf, d)
 
-	d.tmpfile.Truncate(0)
-	d.tmpfile.Write(buf.Bytes())
-	d.tmpfile.Sync()
+	fd, _ := os.OpenFile(d.NixPath, os.O_RDWR|os.O_CREATE, 0660)
+	defer fd.Close()
+	fd.Truncate(0)
+	fd.Write(buf.Bytes())
+}
+
+func (d *Derivation) NeedsUpdate(since time.Time) bool {
+	fi, err := os.Stat(d.NixPath)
+	if err != nil {
+		return true
+	}
+	return fi.ModTime().Before(since)
 }
 
 func (d *Derivation) Install() error {
+	d.generate()
+	d.execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath})
 	_, err := d.Execute([]string{"true"}, executer.WithStdout(os.Stdout))
 	return err
 }
 
 func (d *Derivation) Path() string {
-	return d.tmpfile.Name()
+	return d.NixPath
 }
