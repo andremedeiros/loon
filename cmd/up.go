@@ -28,12 +28,14 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	}
 
 	{
-		success, failure := ui.Spinner("Ensuring software is installed...")
-		if err = proj.EnsureDependencies(); err != nil {
-			failure()
-			return err
+		if proj.NeedsUpdate() {
+			success, failure := ui.Spinner("Ensuring software is installed...")
+			if err = proj.EnsureDependencies(); err != nil {
+				failure()
+				return err
+			}
+			success()
 		}
-		success()
 	}
 
 	{

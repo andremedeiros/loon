@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"os"
 	"os/exec"
@@ -22,7 +23,9 @@ var runShell = func(ctx context.Context, cfg *config.Config, args []string) erro
 	if err != nil {
 		return err
 	}
-
+	if proj.NeedsUpdate() {
+		return errors.New("project needs update, run `loon up`")
+	}
 	shell := os.Getenv("SHELL")
 	ex := exec.Command(shell)
 	ex.Env = proj.Environ()

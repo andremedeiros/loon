@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v2"
 
@@ -26,6 +27,7 @@ type Project struct {
 	Tasks       []Task              `yaml:"tasks"`
 	Environment map[string]string   `yaml:"environment"`
 	Path        string
+	ModTime     time.Time
 
 	derivation *nix.Derivation
 }
@@ -44,7 +46,14 @@ func (p *Project) Execute(args []string, opts ...executer.Option) (int, error) {
 	return p.derivation.Execute(args, opts...)
 }
 
+func (p *Project) NeedsUpdate() bool {
+	return p.derivation.NeedsUpdate(p.ModTime)
+}
+
 func (p *Project) EnsureDependencies() error {
+	if !p.derivation.NeedsUpdate(p.ModTime) {
+		return nil
+	}
 	return p.derivation.Install()
 }
 
@@ -81,24 +90,19 @@ func FindInTree() (*Project, error) {
 }
 
 func fromPath(path string) (*Project, error) {
-	body, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	p, err := fromPayload(body)
-	if err != nil {
-		return nil, err
-	}
+	p := &Project{}
 	p.Path = filepath.Dir(path)
-	return p, nil
-}
-
-func fromPayload(b []byte) (*Project, error) {
-	project := &Project{derivation: nix.NewDerivation()}
-	if err := yaml.Unmarshal(b, project); err != nil {
+	p.derivation = nix.NewDerivation(p.VDPath())
+	fi, err := os.Stat(path)
+	if err != nil {
 		return nil, err
 	}
-	return project, nil
+	p.ModTime = fi.ModTime()
+	b, err := ioutil.ReadFile(path)
+	if err := yaml.Unmarshal(b, p); err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 func (p *Project) Environ() []string {

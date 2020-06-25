@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/fatih/color"
@@ -22,4 +23,9 @@ func ErrorWithOutput(banner string, stdout bytes.Buffer, stderr bytes.Buffer) {
 	}
 	fmt.Println("------------------------------------------------------")
 	color.Unset()
+}
+
+func Error(err error) {
+	color.New(color.FgRed, color.Bold).Fprint(os.Stderr, "Error: ")
+	fmt.Fprintf(os.Stderr, "%s\n", err)
 }

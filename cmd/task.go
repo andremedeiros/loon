@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -24,6 +25,9 @@ var runTask = func(ctx context.Context, cfg *config.Config, args []string) error
 	proj, err := project.FindInTree()
 	if err != nil {
 		return err
+	}
+	if proj.NeedsUpdate() {
+		return errors.New("project needs update, run `loon up`")
 	}
 	for _, task := range proj.Tasks {
 		if task.Name != taskName {
