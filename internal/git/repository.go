@@ -2,10 +2,11 @@ package git
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"os/user"
+	"path/filepath"
 	"strings"
-
-	gogit "github.com/go-git/go-git/v5"
 )
 
 type Repository interface {
@@ -42,11 +43,14 @@ func NewRepository(nameWithOwner string) Repository {
 }
 
 func (ghr *GitHubRepository) Clone(path string) error {
-	_, err := gogit.PlainClone(path, false, &gogit.CloneOptions{
-		URL: ghr.CheckoutURL(true),
-	})
-
-	return err
+	remote := ghr.CheckoutURL(true)
+	workdir := filepath.Dir(path)
+	os.MkdirAll(workdir, 0755)
+	cmd := exec.Command("git", "-C", workdir, "clone", remote)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func (ghr *GitHubRepository) Host() string {
