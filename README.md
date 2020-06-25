@@ -85,6 +85,7 @@ Redis|6.0.4
 
 **Language**|**Versions**
 -----|-----
+Crystal|0.35.1
 Golang|1.13.12, 1.14.4
 Node|12.18.1, 14.4.0
 Ruby|2.6.6, 2.7.1
