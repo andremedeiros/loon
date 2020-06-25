@@ -1,15 +1,19 @@
 package service
 
-import "github.com/andremedeiros/loon/internal/executer"
+import (
+	"net"
+
+	"github.com/andremedeiros/loon/internal/executer"
+)
 
 type Service interface {
 	String() string
 	Identifier() string
-	Environ(string, string) []string
-	Initialize(executer.Executer, string, string, ...executer.Option) error
-	IsHealthy(string, string) bool
-	Start(executer.Executer, string, string, ...executer.Option) error
-	Stop(executer.Executer, string, string, ...executer.Option) error
+	Environ(net.IP, string) []string
+	Initialize(executer.Executer, net.IP, string, ...executer.Option) error
+	IsHealthy(net.IP, string) bool
+	Start(executer.Executer, net.IP, string, ...executer.Option) error
+	Stop(executer.Executer, net.IP, string, ...executer.Option) error
 }
 
 var Services = map[string]Service{

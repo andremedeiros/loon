@@ -27,18 +27,16 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 		return err
 	}
 
-	{
-		if proj.NeedsUpdate() {
-			success, failure := ui.Spinner("Ensuring software is installed...")
-			if err = proj.EnsureDependencies(); err != nil {
-				failure()
-				return err
-			}
-			success()
+	if proj.NeedsUpdate() {
+		success, failure := ui.Spinner("Ensuring software is installed...")
+		if err = proj.EnsureDependencies(); err != nil {
+			failure()
+			return err
 		}
+		success()
 	}
 
-	{
+	if proj.NeedsNetworking() {
 		success, failure := ui.Spinner("Setting up networking...")
 		if err = proj.EnsureNetworking(); err != nil {
 			failure()
@@ -53,7 +51,7 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
 		g.Go(func() error {
-			if srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
+			if srv.IsHealthy(proj.IP, proj.VDPath()) {
 				return nil
 			}
 			// Initialize
@@ -62,7 +60,7 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 				stderr := bytes.Buffer{}
 				err := srv.Initialize(
 					proj,
-					proj.IPAddr(),
+					proj.IP,
 					proj.VDPath(),
 					executer.WithStdout(bufio.NewWriter(&stdout)),
 					executer.WithStderr(bufio.NewWriter(&stderr)),
@@ -84,7 +82,7 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 				stderr := bytes.Buffer{}
 				err := srv.Start(
 					proj,
-					proj.IPAddr(),
+					proj.IP,
 					proj.VDPath(),
 					executer.WithStdout(bufio.NewWriter(&stdout)),
 					executer.WithStderr(bufio.NewWriter(&stderr)),

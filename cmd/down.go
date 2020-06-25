@@ -32,14 +32,14 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
 		g.Go(func() error {
-			if !srv.IsHealthy(proj.IPAddr(), proj.VDPath()) {
+			if !srv.IsHealthy(proj.IP, proj.VDPath()) {
 				return nil
 			}
 			stdout := bytes.Buffer{}
 			stderr := bytes.Buffer{}
 			err := srv.Stop(
 				proj,
-				proj.IPAddr(),
+				proj.IP,
 				proj.VDPath(),
 				executer.WithStdout(bufio.NewWriter(&stdout)),
 				executer.WithStderr(bufio.NewWriter(&stderr)),
