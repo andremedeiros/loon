@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,17 +29,18 @@ type Project struct {
 	Environment map[string]string   `yaml:"environment"`
 	Path        string
 	ModTime     time.Time
+	IP          net.IP
 
 	derivation *nix.Derivation
 }
 
-func (p *Project) IPAddr() string {
+func ipFromPath(path string) net.IP {
 	crc32q := crc32.MakeTable(0xD5828281)
-	crc := crc32.Checksum([]byte(p.Path), crc32q) % (255 * 255)
-
+	crc := crc32.Checksum([]byte(path), crc32q) % (255 * 255)
 	part3 := crc / 255
 	part4 := crc - (part3 * 255)
-	return fmt.Sprintf("127.0.%d.%d", part3, part4)
+	addr := fmt.Sprintf("127.0.%d.%d", part3, part4)
+	return net.ParseIP(addr)
 }
 
 func (p *Project) Execute(args []string, opts ...executer.Option) (int, error) {
@@ -57,6 +59,27 @@ func (p *Project) EnsureDependencies() error {
 	return p.derivation.Install()
 }
 
+func (p *Project) NeedsNetworking() bool {
+	ifis, err := net.Interfaces()
+	if err != nil {
+		return true
+	}
+	for _, ifi := range ifis {
+		addrs, err := ifi.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, addr := range addrs {
+			if ipnet, ok := addr.(*net.IPNet); ok {
+				if ipnet.IP.Equal(p.IP) {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
 // TODO(andremedeiros): extract this into an OS dependent implementation
 func (p *Project) EnsureNetworking() error {
 	_, err := p.derivation.Execute([]string{
@@ -64,7 +87,7 @@ func (p *Project) EnsureNetworking() error {
 		"ifconfig",
 		"lo0",
 		"alias",
-		p.IPAddr(),
+		p.IP.String(),
 		"255.255.255.0",
 	})
 	return err
@@ -92,6 +115,7 @@ func FindInTree() (*Project, error) {
 func fromPath(path string) (*Project, error) {
 	p := &Project{}
 	p.Path = filepath.Dir(path)
+	p.IP = ipFromPath(path)
 	p.derivation = nix.NewDerivation(p.VDPath())
 	fi, err := os.Stat(path)
 	if err != nil {
@@ -109,7 +133,7 @@ func (p *Project) Environ() []string {
 	environ := os.Environ()
 	paths := []string{}
 	for _, s := range p.Services {
-		environ = append(environ, s.Environ(p.IPAddr(), p.VDPath())...)
+		environ = append(environ, s.Environ(p.IP, p.VDPath())...)
 	}
 	for _, l := range p.Languages {
 		environ = append(environ, l.Environ(p.VDPath())...)

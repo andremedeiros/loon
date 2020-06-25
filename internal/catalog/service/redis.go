@@ -21,7 +21,7 @@ func (r *Redis) Identifier() string {
 	return "redis"
 }
 
-func (r *Redis) Initialize(_ executer.Executer, _, _ string, _ ...executer.Option) error {
+func (r *Redis) Initialize(_ executer.Executer, _ net.IP, _ string, _ ...executer.Option) error {
 	return nil
 }
 
@@ -34,18 +34,19 @@ func (r *Redis) Versions() map[string][]string {
 	}
 }
 
-func (r *Redis) Environ(ipaddr, vdpath string) []string {
+func (r *Redis) Environ(ip net.IP, vdpath string) []string {
 	return []string{
-		fmt.Sprintf("REDIS_URL=redis://%s:6379", ipaddr),
+		fmt.Sprintf("REDIS_URL=redis://%s:6379", ip),
 	}
 }
 
-func (r *Redis) IsHealthy(ipaddr, _ string) bool {
-	_, err := net.DialTimeout("tcp", fmt.Sprintf("%s:6379", ipaddr), 100*time.Millisecond)
+func (r *Redis) IsHealthy(ip net.IP, _ string) bool {
+	hp := fmt.Sprintf("%s:6379", ip)
+	_, err := net.DialTimeout("tcp", hp, 100*time.Millisecond)
 	return err == nil
 }
 
-func (r *Redis) Start(exe executer.Executer, ipaddr, vdpath string, opts ...executer.Option) error {
+func (r *Redis) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	dataPath := filepath.Join(vdpath, "data", "redis")
 
@@ -53,14 +54,14 @@ func (r *Redis) Start(exe executer.Executer, ipaddr, vdpath string, opts ...exec
 		"redis-server",
 		"--daemonize yes",
 		"--port 6379",
-		fmt.Sprintf("--bind %s", ipaddr),
+		fmt.Sprintf("--bind %s", ip),
 		fmt.Sprintf("--dir %s", dataPath),
 		fmt.Sprintf("--pidfile %s", pidPath),
 	}, opts...)
 	return err
 }
 
-func (r *Redis) Stop(exe executer.Executer, ipaddr, vdpath string, _ ...executer.Option) error {
+func (r *Redis) Stop(exe executer.Executer, _ net.IP, vdpath string, _ ...executer.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	p, err := process.FromPidFile(pidPath)
 	if err != nil {
