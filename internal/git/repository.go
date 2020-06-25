@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/user"
 	"path/filepath"
 	"strings"
 )
@@ -32,8 +31,7 @@ func NewRepository(nameWithOwner string) Repository {
 		owner = split[0]
 		name = split[1]
 	} else {
-		user, _ := user.Current()
-		owner = user.Username
+		owner = User()
 	}
 
 	return &GitHubRepository{
