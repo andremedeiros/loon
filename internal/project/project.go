@@ -34,6 +34,16 @@ type Project struct {
 	derivation *nix.Derivation
 }
 
+func (p *Project) Task(name string) (Task, error) {
+	for _, task := range p.Tasks {
+		if task.Name == name {
+			return task, nil
+		}
+	}
+
+	return Task{}, fmt.Errorf("task not found: %s", name)
+}
+
 func ipFromPath(path string) net.IP {
 	crc32q := crc32.MakeTable(0xD5828281)
 	crc := crc32.Checksum([]byte(path), crc32q) % (255 * 255)
@@ -81,7 +91,7 @@ func (p *Project) NeedsNetworking() bool {
 }
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
-func (p *Project) EnsureNetworking() error {
+func (p *Project) EnsureNetworking(opts ...executer.Option) error {
 	_, err := p.derivation.Execute([]string{
 		"sudo",
 		"ifconfig",
@@ -89,7 +99,7 @@ func (p *Project) EnsureNetworking() error {
 		"alias",
 		p.IP.String(),
 		"255.255.255.0",
-	})
+	}, opts...)
 	return err
 }
 

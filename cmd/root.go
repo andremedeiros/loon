@@ -76,7 +76,7 @@ func Execute() error {
 	case "versions":
 		run = runVersions
 	default:
-		run = runTask
+		run = runTask(os.Args[1])
 	}
 	cfg, err := config.Read()
 	if err != nil {
@@ -103,5 +103,5 @@ func Execute() error {
 		}
 	}()
 
-	return run(ctx, cfg, os.Args[1:])
+	return run(ctx, cfg, os.Args[2:])
 }

@@ -19,10 +19,10 @@ var runClone = func(ctx context.Context, cfg *config.Config, args []string) erro
 		return err
 	}
 	args = flagset.Args()
-	if len(args) <= 0 {
+	if flagset.NArg() < 1 {
 		return errors.New("specify an owner and name")
 	}
-	repo := git.NewRepository(args[1])
+	repo := git.NewRepository(flagset.Arg(0))
 	path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
 	err := repo.Clone(path)
 	if err != nil {

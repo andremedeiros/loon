@@ -38,8 +38,19 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 
 	if proj.NeedsNetworking() {
 		success, failure := ui.Spinner("Setting up networking...")
-		if err = proj.EnsureNetworking(); err != nil {
+		stdout := bytes.Buffer{}
+		stderr := bytes.Buffer{}
+		err = proj.EnsureNetworking(
+			executer.WithStdout(bufio.NewWriter(&stdout)),
+			executer.WithStderr(bufio.NewWriter(&stderr)),
+		)
+		if err != nil {
 			failure()
+			ui.ErrorWithOutput(
+				"Something went wrong while setting up network",
+				stdout,
+				stderr,
+			)
 			return err
 		}
 		success()

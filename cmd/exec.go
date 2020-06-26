@@ -19,8 +19,7 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 	if err := flagset.Parse(args); err != nil {
 		return err
 	}
-	args = flagset.Args()
-	if len(args) < 2 {
+	if flagset.NArg() < 1 {
 		return errors.New("specify a command")
 	}
 	proj, err := project.FindInTree()
@@ -31,7 +30,7 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 		return errors.New("project needs update, run `loon up`")
 	}
 	code, err := proj.Execute(
-		args[1:],
+		flagset.Args(),
 		executer.WithStdin(os.Stdin),
 		executer.WithStdout(os.Stdout),
 		executer.WithStderr(os.Stderr),

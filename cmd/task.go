@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -15,23 +14,21 @@ import (
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-var runTask = func(ctx context.Context, cfg *config.Config, args []string) error {
-	taskName := args[0]
-	flagset := flag.NewFlagSet(taskName, flag.ExitOnError)
-	flagset.Usage = usage.For(flagset, fmt.Sprintf("loon %s", taskName))
-	if err := flagset.Parse(args); err != nil {
-		return err
-	}
-	proj, err := project.FindInTree()
-	if err != nil {
-		return err
-	}
-	if proj.NeedsUpdate() {
-		return errors.New("project needs update, run `loon up`")
-	}
-	for _, task := range proj.Tasks {
-		if task.Name != taskName {
-			continue
+var runTask = func(taskName string) runHandler {
+	return func(ctx context.Context, cfg *config.Config, args []string) error {
+		flagset := flag.NewFlagSet(taskName, flag.ContinueOnError)
+		flagset.Usage = usage.For(flagset, "loon <task>")
+		flagset.Parse(args)
+		proj, err := project.FindInTree()
+		if err != nil {
+			return err
+		}
+		if proj.NeedsUpdate() {
+			return errors.New("project needs update, run `loon up`")
+		}
+		task, err := proj.Task(taskName)
+		if err != nil {
+			return err
 		}
 		tmp, err := ioutil.TempFile("", "loon.sh")
 		if err != nil {
@@ -41,7 +38,7 @@ var runTask = func(ctx context.Context, cfg *config.Config, args []string) error
 		defer os.Remove(tmp.Name())
 		tmp.Write([]byte(task.Command))
 		code, err := proj.Execute(
-			[]string{tmp.Name()},
+			append([]string{tmp.Name()}, flagset.Args()...),
 			executer.WithStdin(os.Stdin),
 			executer.WithStdout(os.Stdout),
 			executer.WithStderr(os.Stderr),
@@ -49,5 +46,4 @@ var runTask = func(ctx context.Context, cfg *config.Config, args []string) error
 		os.Exit(code)
 		return err
 	}
-	return fmt.Errorf("task not found: %s", taskName)
 }

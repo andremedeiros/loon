@@ -18,11 +18,10 @@ var runCd = func(ctx context.Context, cfg *config.Config, args []string) error {
 	if err := flagset.Parse(args); err != nil {
 		return err
 	}
-	args = flagset.Args()
-	if len(args) <= 0 {
+	if flagset.NArg() < 1 {
 		return errors.New("specify a partial project name")
 	}
-	repo := git.NewRepository(args[1])
+	repo := git.NewRepository(flagset.Arg(0))
 	path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
 	finalizer.Write("chdir", path)
 	return nil
