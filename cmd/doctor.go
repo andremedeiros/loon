@@ -4,11 +4,12 @@ import (
 	"context"
 	"flag"
 
+	"github.com/peterbourgon/usage"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/andremedeiros/loon/internal/check"
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/ui"
-	"github.com/peterbourgon/usage"
-	"golang.org/x/sync/errgroup"
 )
 
 var checks = []func() error{

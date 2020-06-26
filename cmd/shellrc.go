@@ -8,8 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/andremedeiros/loon/internal/config"
 	"github.com/peterbourgon/usage"
+
+	"github.com/andremedeiros/loon/internal/config"
 )
 
 var runShellRC = func(ctx context.Context, cfg *config.Config, args []string) error {
