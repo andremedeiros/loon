@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Mysql struct{}
@@ -20,7 +20,7 @@ func (m *Mysql) Identifier() string {
 	return "mysql"
 }
 
-func (m *Mysql) Initialize(exe executer.Executer, _ net.IP, vdpath string, opts ...executer.Option) error {
+func (m *Mysql) Initialize(exe executor.Executor, _ net.IP, vdpath string, opts ...executor.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "mysql")
 	if _, err := os.Stat(filepath.Join(dataPath, "auto.cnf")); err == nil {
 		return nil
@@ -55,7 +55,7 @@ func (m *Mysql) IsHealthy(ip net.IP, _ string) bool {
 	return err == nil
 }
 
-func (m *Mysql) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
+func (m *Mysql) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "mysql.pid")
 	dataPath := filepath.Join(vdpath, "data", "mysql")
 	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
@@ -71,7 +71,7 @@ func (m *Mysql) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...e
 	return err
 }
 
-func (m *Mysql) Stop(exe executer.Executer, _ net.IP, vdpath string, opts ...executer.Option) error {
+func (m *Mysql) Stop(exe executor.Executor, _ net.IP, vdpath string, opts ...executor.Option) error {
 	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
 	if _, err := os.Stat(socketPath); err != nil {

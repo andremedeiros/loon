@@ -1,4 +1,4 @@
-package executer
+package executor
 
 import (
 	"io"

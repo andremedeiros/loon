@@ -3,17 +3,17 @@ package service
 import (
 	"net"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Service interface {
 	String() string
 	Identifier() string
 	Environ(net.IP, string) []string
-	Initialize(executer.Executer, net.IP, string, ...executer.Option) error
+	Initialize(executor.Executor, net.IP, string, ...executor.Option) error
 	IsHealthy(net.IP, string) bool
-	Start(executer.Executer, net.IP, string, ...executer.Option) error
-	Stop(executer.Executer, net.IP, string, ...executer.Option) error
+	Start(executor.Executor, net.IP, string, ...executor.Option) error
+	Stop(executor.Executor, net.IP, string, ...executor.Option) error
 }
 
 var Services = map[string]Service{

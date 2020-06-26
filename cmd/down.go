@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
@@ -41,8 +41,8 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 				proj,
 				proj.IP,
 				proj.VDPath(),
-				executer.WithStdout(bufio.NewWriter(&stdout)),
-				executer.WithStderr(bufio.NewWriter(&stderr)),
+				executor.WithStdout(bufio.NewWriter(&stdout)),
+				executor.WithStderr(bufio.NewWriter(&stderr)),
 			)
 			if err != nil {
 				failure()

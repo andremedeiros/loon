@@ -9,7 +9,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Derivation struct {
@@ -24,7 +24,7 @@ func NewDerivation(vdpath string) *Derivation {
 	return &Derivation{NixPath: nixPath, DrvPath: drvPath}
 }
 
-func (d *Derivation) execute(cmd []string, opts ...executer.Option) (int, error) {
+func (d *Derivation) execute(cmd []string, opts ...executor.Option) (int, error) {
 	name := cmd[0]
 	args := cmd[1:]
 	{
@@ -40,7 +40,7 @@ func (d *Derivation) execute(cmd []string, opts ...executer.Option) (int, error)
 	}
 }
 
-func (d *Derivation) Execute(args []string, opts ...executer.Option) (int, error) {
+func (d *Derivation) Execute(args []string, opts ...executor.Option) (int, error) {
 	cmd := []string{
 		"nix-shell",
 		d.DrvPath,
@@ -86,7 +86,7 @@ func (d *Derivation) NeedsUpdate(since time.Time) bool {
 func (d *Derivation) Install() error {
 	d.generate()
 	d.execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath})
-	_, err := d.Execute([]string{"true"}, executer.WithStdout(os.Stdout))
+	_, err := d.Execute([]string{"true"}, executor.WithStdout(os.Stdout))
 	return err
 }
 

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Postgres struct{}
@@ -21,7 +21,7 @@ func (p *Postgres) Identifier() string {
 	return "postgres"
 }
 
-func (p *Postgres) Initialize(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
+func (p *Postgres) Initialize(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	if _, err := os.Stat(filepath.Join(dataPath, "PG_VERSION")); err == nil {
 		return nil
@@ -58,7 +58,7 @@ func (p *Postgres) IsHealthy(ip net.IP, _ string) bool {
 	return err == nil
 }
 
-func (p *Postgres) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
+func (p *Postgres) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	logFilePath := filepath.Join(vdpath, "data", "postgres", "postgres.log")
 	socketPath := filepath.Join(vdpath, "sockets")
@@ -73,7 +73,7 @@ func (p *Postgres) Start(exe executer.Executer, ip net.IP, vdpath string, opts .
 	return err
 }
 
-func (p *Postgres) Stop(exe executer.Executer, _ net.IP, vdpath string, opts ...executer.Option) error {
+func (p *Postgres) Stop(exe executor.Executor, _ net.IP, vdpath string, opts ...executor.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	_, err := exe.Execute([]string{
 		"pg_ctl",

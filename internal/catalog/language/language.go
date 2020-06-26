@@ -1,12 +1,12 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executer"
+import "github.com/andremedeiros/loon/internal/executor"
 
 type Language interface {
 	String() string
 	Environ(string) []string
 	BinPaths(string) []string
-	Initialize(executer.Executer, string, ...executer.Option) error
+	Initialize(executor.Executor, string, ...executor.Option) error
 }
 
 var Languages = map[string]Language{

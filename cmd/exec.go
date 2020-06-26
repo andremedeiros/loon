@@ -9,7 +9,7 @@ import (
 	"github.com/peterbourgon/usage"
 
 	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
@@ -31,9 +31,9 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 	}
 	code, err := proj.Execute(
 		flagset.Args(),
-		executer.WithStdin(os.Stdin),
-		executer.WithStdout(os.Stdout),
-		executer.WithStderr(os.Stderr),
+		executor.WithStdin(os.Stdin),
+		executor.WithStdout(os.Stdout),
+		executor.WithStderr(os.Stderr),
 	)
 	os.Exit(code)
 	return err

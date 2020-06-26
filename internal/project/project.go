@@ -15,7 +15,7 @@ import (
 	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/catalog/language"
 	"github.com/andremedeiros/loon/internal/catalog/service"
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/nix"
 )
 
@@ -53,8 +53,8 @@ func ipFromPath(path string) net.IP {
 	return net.ParseIP(addr)
 }
 
-func (p *Project) Execute(args []string, opts ...executer.Option) (int, error) {
-	opts = append(opts, executer.WithEnviron(p.Environ()))
+func (p *Project) Execute(args []string, opts ...executor.Option) (int, error) {
+	opts = append(opts, executor.WithEnviron(p.Environ()))
 	return p.derivation.Execute(args, opts...)
 }
 
@@ -91,7 +91,7 @@ func (p *Project) NeedsNetworking() bool {
 }
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
-func (p *Project) EnsureNetworking(opts ...executer.Option) error {
+func (p *Project) EnsureNetworking(opts ...executor.Option) error {
 	_, err := p.derivation.Execute([]string{
 		"sudo",
 		"ifconfig",

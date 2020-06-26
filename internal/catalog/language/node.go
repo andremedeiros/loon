@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Node struct{}
@@ -36,7 +36,7 @@ func (n *Node) Versions() map[string][]string {
 	}
 }
 
-func (n *Node) Initialize(exe executer.Executer, _ string, opts ...executer.Option) error {
+func (n *Node) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
 	_, err := exe.Execute([]string{"npm", "install", "-g", "yarn"})
 	return err
 }

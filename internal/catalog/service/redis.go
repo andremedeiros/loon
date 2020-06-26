@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/process"
 )
 
@@ -21,7 +21,7 @@ func (r *Redis) Identifier() string {
 	return "redis"
 }
 
-func (r *Redis) Initialize(_ executer.Executer, _ net.IP, _ string, _ ...executer.Option) error {
+func (r *Redis) Initialize(_ executor.Executor, _ net.IP, _ string, _ ...executor.Option) error {
 	return nil
 }
 
@@ -46,7 +46,7 @@ func (r *Redis) IsHealthy(ip net.IP, _ string) bool {
 	return err == nil
 }
 
-func (r *Redis) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
+func (r *Redis) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	dataPath := filepath.Join(vdpath, "data", "redis")
 
@@ -61,7 +61,7 @@ func (r *Redis) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...e
 	return err
 }
 
-func (r *Redis) Stop(exe executer.Executer, _ net.IP, vdpath string, _ ...executer.Option) error {
+func (r *Redis) Stop(exe executor.Executor, _ net.IP, vdpath string, _ ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	p, err := process.FromPidFile(pidPath)
 	if err != nil {

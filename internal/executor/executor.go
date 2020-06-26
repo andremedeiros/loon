@@ -1,5 +1,5 @@
-package executer
+package executor
 
-type Executer interface {
+type Executor interface {
 	Execute([]string, ...Option) (int, error)
 }

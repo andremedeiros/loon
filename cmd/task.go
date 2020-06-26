@@ -10,7 +10,7 @@ import (
 	"github.com/peterbourgon/usage"
 
 	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
@@ -39,9 +39,9 @@ var runTask = func(taskName string) runHandler {
 		tmp.Write([]byte(task.Command))
 		code, err := proj.Execute(
 			append([]string{tmp.Name()}, flagset.Args()...),
-			executer.WithStdin(os.Stdin),
-			executer.WithStdout(os.Stdout),
-			executer.WithStderr(os.Stderr),
+			executor.WithStdin(os.Stdin),
+			executor.WithStdout(os.Stdout),
+			executor.WithStderr(os.Stderr),
 		)
 		os.Exit(code)
 		return err

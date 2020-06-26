@@ -1,6 +1,6 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executer"
+import "github.com/andremedeiros/loon/internal/executor"
 
 type Crystal struct{}
 
@@ -25,6 +25,6 @@ func (c *Crystal) Versions() map[string][]string {
 	}
 }
 
-func (c *Crystal) Initialize(exe executer.Executer, _ string, opts ...executer.Option) error {
+func (c *Crystal) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
 	return nil
 }

@@ -1,6 +1,6 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executer"
+import "github.com/andremedeiros/loon/internal/executor"
 
 type Golang struct{}
 
@@ -26,7 +26,7 @@ func (g *Golang) Versions() map[string][]string {
 	}
 }
 
-func (g *Golang) Initialize(exe executer.Executer, _ string, opts ...executer.Option) error {
+func (g *Golang) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
 	_, err := exe.Execute([]string{
 		"go",
 		"version",

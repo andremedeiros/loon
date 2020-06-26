@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/executer"
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/process"
 )
 
@@ -21,7 +21,7 @@ func (m *Memcached) Identifier() string {
 	return "memcached"
 }
 
-func (m *Memcached) Initialize(_ executer.Executer, _ net.IP, _ string, _ ...executer.Option) error {
+func (m *Memcached) Initialize(_ executor.Executor, _ net.IP, _ string, _ ...executor.Option) error {
 	return nil
 }
 
@@ -45,7 +45,7 @@ func (m *Memcached) IsHealthy(ip net.IP, _ string) bool {
 	return err == nil
 }
 
-func (m *Memcached) Start(exe executer.Executer, ip net.IP, vdpath string, opts ...executer.Option) error {
+func (m *Memcached) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
 	_, err := exe.Execute([]string{
 		"memcached",
@@ -57,7 +57,7 @@ func (m *Memcached) Start(exe executer.Executer, ip net.IP, vdpath string, opts 
 	return err
 }
 
-func (m *Memcached) Stop(exe executer.Executer, _ net.IP, vdpath string, _ ...executer.Option) error {
+func (m *Memcached) Stop(exe executor.Executor, _ net.IP, vdpath string, _ ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
 	p, err := process.FromPidFile(pidPath)
 	if err != nil {

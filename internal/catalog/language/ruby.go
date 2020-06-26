@@ -1,6 +1,6 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executer"
+import "github.com/andremedeiros/loon/internal/executor"
 
 type Ruby struct{}
 
@@ -26,7 +26,7 @@ func (r *Ruby) Versions() map[string][]string {
 	}
 }
 
-func (r *Ruby) Initialize(exe executer.Executer, _ string, opts ...executer.Option) error {
+func (r *Ruby) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
 	_, err := exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
 	return err
 }
