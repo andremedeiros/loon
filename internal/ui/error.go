@@ -4,28 +4,26 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"strings"
 
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/fatih/color"
 )
 
-func ErrorWithOutput(banner string, stdout bytes.Buffer, stderr bytes.Buffer) {
-	color.Set(color.FgRed)
-	fmt.Println()
-	fmt.Println(banner)
-	if stdout.Len() > 0 {
-		fmt.Println("-------------------- 8< stdout 8< --------------------")
-		fmt.Println(strings.TrimSpace(stdout.String()))
-	}
-	if stderr.Len() > 0 {
-		fmt.Println("-------------------- 8< stderr 8< --------------------")
-		fmt.Println(strings.TrimSpace(stderr.String()))
-	}
-	fmt.Println("------------------------------------------------------")
-	color.Unset()
-}
-
 func Error(err error) {
+	msg := err.Error()
+	switch err := err.(type) {
+	case executor.ExecutionError:
+		buf := bytes.Buffer{}
+		if stdout := err.Stdout(); stdout.Size() > 0 {
+			buf.WriteString("-------------------- 8< stdout 8< --------------------\n")
+			stdout.WriteTo(&buf)
+		}
+		if stderr := err.Stderr(); stderr.Size() > 0 {
+			buf.WriteString("-------------------- 8< stderr 8< --------------------\n")
+			stderr.WriteTo(&buf)
+		}
+		msg = fmt.Sprintf("command invocation failed.\n%s", buf.String())
+	}
 	color.New(color.FgRed, color.Bold).Fprint(os.Stderr, "Error: ")
-	fmt.Fprintf(os.Stderr, "%s\n", err)
+	fmt.Fprintf(os.Stderr, "%s\n", msg)
 }

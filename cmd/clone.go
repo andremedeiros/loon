@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"os"
 
 	"github.com/peterbourgon/usage"
 
@@ -24,9 +25,11 @@ var runClone = func(ctx context.Context, cfg *config.Config, args []string) erro
 	}
 	repo := git.NewRepository(flagset.Arg(0))
 	path := cfg.SourceTree.Resolve(repo.Host(), repo.Owner(), repo.Name())
-	err := repo.Clone(path)
-	if err != nil {
-		return err
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err := repo.Clone(path)
+		if err != nil {
+			return err
+		}
 	}
 	finalizer.Write("chdir", path)
 	return nil

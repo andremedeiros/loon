@@ -1,17 +1,13 @@
 package cmd
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"flag"
-	"fmt"
 
 	"github.com/peterbourgon/usage"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
@@ -35,24 +31,11 @@ var runDown = func(ctx context.Context, cfg *config.Config, args []string) error
 			if !srv.IsHealthy(proj.IP, proj.VDPath()) {
 				return nil
 			}
-			stdout := bytes.Buffer{}
-			stderr := bytes.Buffer{}
-			err := srv.Stop(
-				proj,
-				proj.IP,
-				proj.VDPath(),
-				executor.WithStdout(bufio.NewWriter(&stdout)),
-				executor.WithStderr(bufio.NewWriter(&stderr)),
-			)
-			if err != nil {
+			if err := srv.Stop(proj, proj.IP, proj.VDPath()); err != nil {
 				failure()
-				ui.ErrorWithOutput(
-					fmt.Sprintf("Something went wrong while stopping %s", srv.String()),
-					stdout,
-					stderr,
-				)
+				return err
 			}
-			return err
+			return nil
 		})
 	}
 	return g.Wait()

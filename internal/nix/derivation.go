@@ -1,6 +1,7 @@
 package nix
 
 import (
+	"bufio"
 	"bytes"
 	"os"
 	"os/exec"
@@ -27,8 +28,12 @@ func NewDerivation(vdpath string) *Derivation {
 func (d *Derivation) execute(cmd []string, opts ...executor.Option) (int, error) {
 	name := cmd[0]
 	args := cmd[1:]
+	stdout := bytes.Buffer{}
+	stderr := bytes.Buffer{}
 	{
 		cmd := exec.Command(name, args...)
+		cmd.Stdout = bufio.NewWriter(&stdout)
+		cmd.Stderr = bufio.NewWriter(&stderr)
 
 		for _, opt := range opts {
 			opt(cmd)
@@ -36,6 +41,9 @@ func (d *Derivation) execute(cmd []string, opts ...executor.Option) (int, error)
 
 		err := cmd.Run()
 		code := cmd.ProcessState.ExitCode()
+		if err != nil {
+			err = executor.NewExecutionError(err, stdout, stderr)
+		}
 		return code, err
 	}
 }

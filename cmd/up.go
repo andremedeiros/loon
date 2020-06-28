@@ -1,17 +1,13 @@
 package cmd
 
 import (
-	"bufio"
-	"bytes"
 	"context"
 	"flag"
-	"fmt"
 
 	"github.com/peterbourgon/usage"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/andremedeiros/loon/internal/config"
-	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
@@ -38,19 +34,8 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 
 	if proj.NeedsNetworking() {
 		success, failure := ui.Spinner("Setting up networking...")
-		stdout := bytes.Buffer{}
-		stderr := bytes.Buffer{}
-		err = proj.EnsureNetworking(
-			executor.WithStdout(bufio.NewWriter(&stdout)),
-			executor.WithStderr(bufio.NewWriter(&stderr)),
-		)
-		if err != nil {
+		if err := proj.EnsureNetworking(); err != nil {
 			failure()
-			ui.ErrorWithOutput(
-				"Something went wrong while setting up network",
-				stdout,
-				stderr,
-			)
 			return err
 		}
 		success()
@@ -65,48 +50,13 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 			if srv.IsHealthy(proj.IP, proj.VDPath()) {
 				return nil
 			}
-			// Initialize
-			{
-				stdout := bytes.Buffer{}
-				stderr := bytes.Buffer{}
-				err := srv.Initialize(
-					proj,
-					proj.IP,
-					proj.VDPath(),
-					executor.WithStdout(bufio.NewWriter(&stdout)),
-					executor.WithStderr(bufio.NewWriter(&stderr)),
-				)
-				if err != nil {
-					failure()
-					ui.ErrorWithOutput(
-						fmt.Sprintf("Something went wrong while initializing %s", srv.String()),
-						stdout,
-						stderr,
-					)
-					return err
-				}
+			if err := srv.Initialize(proj, proj.IP, proj.VDPath()); err != nil {
+				failure()
+				return err
 			}
-
-			// Start
-			{
-				stdout := bytes.Buffer{}
-				stderr := bytes.Buffer{}
-				err := srv.Start(
-					proj,
-					proj.IP,
-					proj.VDPath(),
-					executor.WithStdout(bufio.NewWriter(&stdout)),
-					executor.WithStderr(bufio.NewWriter(&stderr)),
-				)
-				if err != nil {
-					failure()
-					ui.ErrorWithOutput(
-						fmt.Sprintf("Something went wrong while starting %s", srv.String()),
-						stdout,
-						stderr,
-					)
-					return err
-				}
+			if err := srv.Start(proj, proj.IP, proj.VDPath()); err != nil {
+				failure()
+				return err
 			}
 			return nil
 		})
@@ -115,21 +65,9 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 	for _, lang := range proj.Languages {
 		lang := lang // otherwise it goes out of scope
 		g.Go(func() error {
-			stdout := bytes.Buffer{}
-			stderr := bytes.Buffer{}
-			err := lang.Initialize(
-				proj,
-				proj.VDPath(),
-				executor.WithStdout(bufio.NewWriter(&stdout)),
-				executor.WithStderr(bufio.NewWriter(&stderr)),
-			)
+			err := lang.Initialize(proj, proj.VDPath())
 			if err != nil {
 				failure()
-				ui.ErrorWithOutput(
-					fmt.Sprintf("Something went wrong while initializing %s", lang.String()),
-					stdout,
-					stderr,
-				)
 			}
 			return err
 		})
