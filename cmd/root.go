@@ -61,13 +61,13 @@ func Execute() error {
 		run = runCd
 	case "clone":
 		run = runClone
-	case "doctor":
+	case "doc", "doctor":
 		run = runDoctor
 	case "exec":
 		run = runExec
 	case "down", "land":
 		run = runDown
-	case "shell":
+	case "sh", "shell":
 		run = runShell
 	case "shellrc":
 		run = runShellRC
