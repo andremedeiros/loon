@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"github.com/andremedeiros/loon/internal/version"
+	"github.com/andremedeiros/loon/pkg/version"
 )
 
 var minVersion = version.New([]byte("2.3.6"))
