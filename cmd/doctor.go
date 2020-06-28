@@ -29,6 +29,7 @@ var runDoctor = func(ctx context.Context, cfg *config.Config, args []string) err
 		g.Go(func() error {
 			if err := check(); err != nil {
 				ui.Error(err)
+				return err
 			}
 			return nil
 		})
