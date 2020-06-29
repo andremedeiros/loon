@@ -2,15 +2,12 @@ package ui
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 
 	"github.com/andremedeiros/loon/internal/executor"
-	"github.com/fatih/color"
 )
 
 func Error(err error) {
-	msg := err.Error()
 	switch err := err.(type) {
 	case executor.ExecutionError:
 		buf := bytes.Buffer{}
@@ -22,8 +19,9 @@ func Error(err error) {
 			buf.WriteString("-------------------- 8< stderr 8< --------------------\n")
 			stderr.WriteTo(&buf)
 		}
-		msg = fmt.Sprintf("command invocation failed.\n%s", buf.String())
+		Fprintf(os.Stderr, "{red:{bold:Error:} Command invocation failed:}\n")
+		Fprintf(os.Stderr, "%s\n", buf.String())
+	default:
+		Fprintf(os.Stderr, "{red:{bold:Error:} %s}\n", err)
 	}
-	color.New(color.FgRed, color.Bold).Fprint(os.Stderr, "Error: ")
-	fmt.Fprintf(os.Stderr, "%s\n", msg)
 }
