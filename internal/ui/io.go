@@ -6,6 +6,6 @@ import (
 )
 
 func Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
-	str := Parse(fmt.Sprintf(format, a...))
+	str := MustParse(fmt.Sprintf(format, a...))
 	return fmt.Fprint(w, str)
 }

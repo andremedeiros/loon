@@ -2,9 +2,10 @@ package ui
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
-	"github.com/looplab/fsm"
+	"github.com/dyrkin/fsm"
 )
 
 type InstructionType int
@@ -75,92 +76,95 @@ type parser struct {
 	out   bytes.Buffer
 	pos   int
 	stack [][]InstructionType
+	tail  []InstructionType
 	fsm   *fsm.FSM
+	iters int
+	err   error
 }
 
 func NewParser(b []byte) *parser {
-	p := &parser{b: b, out: bytes.Buffer{}, pos: 0, stack: nil}
-	p.fsm = fsm.NewFSM(
-		"begin",
-		fsm.Events{
-			{Name: "start_string_block", Src: []string{"begin", "end_formatting_block"}, Dst: "string_block"},
-			{Name: "start_formatting_instructions_block", Src: []string{"string_block"}, Dst: "formatting_instructions_block"},
-			{Name: "end_formatting_instructions_block", Src: []string{"formatting_instructions_block"}, Dst: "string_block"},
-			{Name: "end", Src: []string{"string_block"}, Dst: "eof"},
-		},
-		fsm.Callbacks{},
-	)
-	return p
-}
+	p := &parser{b: b, out: bytes.Buffer{}, pos: 0, stack: nil, fsm: fsm.NewFSM()}
 
-func (p *parser) readStringBlock() {
-	fmt.Println("entering string block")
-
-}
-
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (p *parser) Parse() (string, error) {
-	curstack := []InstructionType{}
-	if err := p.fsm.Event("start_string_block"); err != nil {
-		return "", err
-	}
-	for i := p.pos; i < len(p.b); i++ {
-		switch p.fsm.Current() {
-		case "string_block":
+	p.fsm.StartWith("string_block", nil)
+	p.fsm.When("string_block")(func(event *fsm.Event) *fsm.NextState {
+		for i := p.pos; i < len(p.b); i++ {
 			switch p.b[i] {
 			case '{':
+				p.out.Write(p.b[p.pos:i])
 				p.pos = i + 1
-				if err := p.fsm.Event("start_formatting_instructions_block"); err != nil {
-					return p.out.String(), err
-				}
-				break
+				return p.fsm.Goto("start_formatting_block")
 			case '}':
+				p.out.Write(p.b[p.pos:i])
 				p.pos = i + 1
-				p.stack = p.stack[:len(p.stack)-1]
-				p.out.WriteString(Reset.String())
-				for _, s := range p.stack {
-					for _, i := range s {
-						p.out.WriteString(i.String())
-					}
-				}
-				break
-			default:
-				p.out.WriteByte(p.b[i])
+				return p.fsm.Goto("end_formatting_block")
 			}
-			break
-		case "formatting_block":
-			if err := p.fsm.Event("start_formatting_instructions_block"); err != nil {
-				return p.out.String(), err
-			}
-			break
-		case "formatting_instructions_block":
+		}
+		p.out.Write(p.b[p.pos:len(p.b)])
+		return p.fsm.Goto("done")
+	})
+	p.fsm.When("start_formatting_block")(func(event *fsm.Event) *fsm.NextState {
+		p.tail = []InstructionType{}
+		return p.fsm.Goto("start_formatting_instructions_block")
+	})
+	p.fsm.When("start_formatting_instructions_block")(func(event *fsm.Event) *fsm.NextState {
+		for i := p.pos; i < len(p.b); i++ {
 			if p.b[i] == ',' || p.b[i] == ':' {
-				instr := string(p.b[p.pos:i])
-				curstack = append(curstack, InstructionCodes[instr])
+				ins := InstructionCodes[string(p.b[p.pos:i])]
+				p.tail = append(p.tail, ins)
+				p.out.WriteString(ins.String())
 				p.pos = i + 1
 			}
 			if p.b[i] == ':' {
-				for _, i := range curstack {
-					p.out.WriteString(i.String())
-				}
-				p.stack = append(p.stack, curstack)
-				curstack = []InstructionType{}
-				if err := p.fsm.Event("end_formatting_instructions_block"); err != nil {
-					return p.out.String(), err
-				}
+				return p.fsm.Goto("end_formatting_instructions_block")
 			}
 		}
-	}
-	return p.out.String(), nil
+		return nil
+	})
+	p.fsm.When("end_formatting_instructions_block")(func(event *fsm.Event) *fsm.NextState {
+		p.stack = append(p.stack, p.tail)
+		p.tail = []InstructionType{}
+		return p.fsm.Goto("string_block")
+	})
+	p.fsm.When("end_formatting_block")(func(event *fsm.Event) *fsm.NextState {
+		if len(p.stack) == 0 {
+			p.err = errors.New("tried to pop from empty stack")
+			return p.fsm.Goto("done")
+		}
+		p.stack = p.stack[:len(p.stack)-1]
+		p.out.WriteString(Reset.String())
+		for _, s := range p.stack {
+			for _, i := range s {
+				p.out.WriteString(i.String())
+			}
+		}
+		return p.fsm.Goto("string_block")
+	})
+	p.fsm.When("done")(func(event *fsm.Event) *fsm.NextState { return nil })
+	return p
 }
 
-func Parse(src string) string {
-	p := NewParser([]byte(src))
-	out, _ := p.Parse()
+func (p *parser) Parse() (string, error) {
+	iterations := 0
+	for p.fsm.CurrentState() != "done" {
+		p.fsm.Send(nil)
+		if p.err != nil {
+			break
+		}
+		if iterations++; iterations == 1000 {
+			p.err = errors.New("entered infinite loop")
+		}
+	}
+	return p.out.String(), p.err
+}
+
+func Parse(src string) (string, error) {
+	return NewParser([]byte(src)).Parse()
+}
+
+func MustParse(src string) string {
+	out, err := Parse(src)
+	if err != nil {
+		panic(err)
+	}
 	return out
 }
