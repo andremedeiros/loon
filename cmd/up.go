@@ -23,58 +23,55 @@ var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
 		return err
 	}
 
-	if proj.NeedsUpdate() {
-		success, failure := ui.Spinner("Ensuring software is installed...")
-		if err = proj.EnsureDependencies(); err != nil {
-			failure()
-			return err
-		}
-		success()
-	}
-
-	if proj.NeedsNetworking() {
-		success, failure := ui.Spinner("Setting up networking...")
-		if err := proj.EnsureNetworking(); err != nil {
-			failure()
-			return err
-		}
-		success()
-	}
-
-	success, failure := ui.Spinner("Starting...")
-	defer success()
+	sg := ui.NewSpinnerGroup()
 	g, ctx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		if !proj.NeedsUpdate() {
+			return nil
+		}
+		s := sg.NewSpinner("Installing dependencies...")
+		return s.Do(proj.EnsureDependencies)
+	})
+
+	g.Go(func() error {
+		if !proj.NeedsNetworking() {
+			return nil
+		}
+		s := sg.NewSpinner("Setting up networking...")
+		return s.Do(proj.EnsureNetworking)
+	})
+
+	if err := g.Wait(); err != nil {
+		return err
+	}
+
 	for _, srv := range proj.Services {
 		srv := srv // otherwise it goes out of scope
 		g.Go(func() error {
-			if srv.IsHealthy(proj.IP, proj.VDPath()) {
+			s := sg.NewSpinner("Starting {cyan:%s}...", srv.String())
+			return s.Do(func() error {
+				if srv.IsHealthy(proj.IP, proj.VDPath()) {
+					return nil
+				}
+				if err := srv.Initialize(proj, proj.IP, proj.VDPath()); err != nil {
+					return err
+				}
+				if err := srv.Start(proj, proj.IP, proj.VDPath()); err != nil {
+					return err
+				}
 				return nil
-			}
-			if err := srv.Initialize(proj, proj.IP, proj.VDPath()); err != nil {
-				failure()
-				return err
-			}
-			if err := srv.Start(proj, proj.IP, proj.VDPath()); err != nil {
-				failure()
-				return err
-			}
-			return nil
+			})
 		})
 	}
 
 	for _, lang := range proj.Languages {
 		lang := lang // otherwise it goes out of scope
 		g.Go(func() error {
-			err := lang.Initialize(proj, proj.VDPath())
-			if err != nil {
-				failure()
-			}
-			return err
+			s := sg.NewSpinner("Setting up {cyan:%s}...", lang.String())
+			return s.Do(func() error {
+				return lang.Initialize(proj, proj.VDPath())
+			})
 		})
 	}
-	if err := g.Wait(); err != nil {
-		return err
-	}
-	success()
-	return nil
+	return g.Wait()
 }

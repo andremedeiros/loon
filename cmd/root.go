@@ -13,6 +13,7 @@ import (
 
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/project"
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
 type runHandler func(context.Context, *config.Config, []string) error
@@ -21,31 +22,31 @@ var version = "dev"
 
 func rootUsage(p *project.Project) {
 	cmd := filepath.Base(os.Args[0])
-	fmt.Fprintf(os.Stderr, "USAGE\n")
-	fmt.Fprintf(os.Stderr, "  %s <command>\n", cmd)
-	fmt.Fprintf(os.Stderr, "\n")
-	fmt.Fprintf(os.Stderr, "COMMANDS\n")
-	fmt.Fprintf(os.Stderr, "  cd        Switches directories to project root\n")
-	fmt.Fprintf(os.Stderr, "  clone     Clones a Git repository into the working directory\n")
-	fmt.Fprintf(os.Stderr, "  doctor    Checks your system for potential problems\n")
-	fmt.Fprintf(os.Stderr, "  down      Stops the current project's infrastructure\n")
-	fmt.Fprintf(os.Stderr, "  exec      Executes command in project shell\n")
-	fmt.Fprintf(os.Stderr, "  shell     Starts a shell inheriting the current project's environment\n")
-	fmt.Fprintf(os.Stderr, "  up        Starts the current project's infrastructure\n")
-	fmt.Fprintf(os.Stderr, "  versions  Prints the versions of supported services and languages\n")
-	fmt.Fprintf(os.Stderr, "\n")
+	ui.Fprintf(os.Stderr, "{bold:USAGE}\n")
+	ui.Fprintf(os.Stderr, "  %s {cyan:<command>}\n", cmd)
+	ui.Fprintf(os.Stderr, "\n")
+	ui.Fprintf(os.Stderr, "{bold:COMMANDS}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:cd}        {yellow:Switches directories to project root}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:clone}     {yellow:Clones a Git repository into the working directory}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:doctor}    {yellow:Checks your system for potential problems}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:down}      {yellow:Stops the current project's infrastructure}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:exec}      {yellow:Executes command in project shell}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:shell}     {yellow:Starts a shell inheriting the current project's environment}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:up}        {yellow:Starts the current project's infrastructure}\n")
+	ui.Fprintf(os.Stderr, "  {cyan:versions}  {yellow:Prints the versions of supported services and languages}\n")
+	ui.Fprintf(os.Stderr, "\n")
 	if p != nil && len(p.Tasks) > 0 {
-		fmt.Fprintf(os.Stderr, "PROJECT COMMANDS\n")
+		ui.Fprintf(os.Stderr, "{bold:PROJECT COMMANDS}\n")
 		w := tabwriter.NewWriter(os.Stderr, 0, 2, 2, ' ', 0)
 		for _, t := range p.Tasks {
-			fmt.Fprintf(w, "\t%s\t%s\n", t.Name, t.Description)
+			ui.Fprintf(w, "\t{cyan:%s}\t{yellow:%s}\n", t.Name, t.Description)
 		}
 		w.Flush()
-		fmt.Fprintf(os.Stderr, "\n")
+		ui.Fprintf(os.Stderr, "\n")
 	}
-	fmt.Fprintf(os.Stderr, "VERSION\n")
-	fmt.Fprintf(os.Stderr, "  %s (%s)\n", version, runtime.Version())
-	fmt.Fprintf(os.Stderr, "\n")
+	ui.Fprintf(os.Stderr, "{bold:VERSION}\n")
+	ui.Fprintf(os.Stderr, "  %s (%s)\n", version, runtime.Version())
+	ui.Fprintf(os.Stderr, "\n")
 }
 
 func Execute() error {
