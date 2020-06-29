@@ -92,7 +92,7 @@ func (p *Project) NeedsNetworking() bool {
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
 func (p *Project) EnsureNetworking(opts ...executor.Option) error {
-	_, err := p.derivation.Execute([]string{
+	_, err := executor.Execute([]string{
 		"sudo",
 		"ifconfig",
 		"lo0",

@@ -1,10 +1,8 @@
 package nix
 
 import (
-	"bufio"
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -25,29 +23,6 @@ func NewDerivation(vdpath string) *Derivation {
 	return &Derivation{NixPath: nixPath, DrvPath: drvPath}
 }
 
-func (d *Derivation) execute(cmd []string, opts ...executor.Option) (int, error) {
-	name := cmd[0]
-	args := cmd[1:]
-	stdout := bytes.Buffer{}
-	stderr := bytes.Buffer{}
-	{
-		cmd := exec.Command(name, args...)
-		cmd.Stdout = bufio.NewWriter(&stdout)
-		cmd.Stderr = bufio.NewWriter(&stderr)
-
-		for _, opt := range opts {
-			opt(cmd)
-		}
-
-		err := cmd.Run()
-		code := cmd.ProcessState.ExitCode()
-		if err != nil {
-			err = executor.NewExecutionError(err, stdout, stderr)
-		}
-		return code, err
-	}
-}
-
 func (d *Derivation) Execute(args []string, opts ...executor.Option) (int, error) {
 	cmd := []string{
 		"nix-shell",
@@ -55,7 +30,7 @@ func (d *Derivation) Execute(args []string, opts ...executor.Option) (int, error
 		"--command",
 		strings.Join(args, " "),
 	}
-	return d.execute(cmd, opts...)
+	return executor.Execute(cmd, opts...)
 }
 
 func (d *Derivation) generate() {
@@ -93,7 +68,7 @@ func (d *Derivation) NeedsUpdate(since time.Time) bool {
 
 func (d *Derivation) Install() error {
 	d.generate()
-	d.execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath})
+	executor.Execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath})
 	_, err := d.Execute([]string{"true"}, executor.WithStdout(os.Stdout))
 	return err
 }
