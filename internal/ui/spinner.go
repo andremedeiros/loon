@@ -3,35 +3,75 @@ package ui
 import (
 	"fmt"
 	"os"
-	"time"
-
-	"github.com/briandowns/spinner"
-	"github.com/fatih/color"
 )
 
-func Spinner(title string) (func(), func()) {
-	s := spinner.New(
-		spinner.CharSets[11],
-		100*time.Millisecond,
-		spinner.WithWriter(os.Stdout),
-		spinner.WithColor("cyan"),
-		spinner.WithSuffix(fmt.Sprintf(" %s", title)),
-	)
-	s.Start()
+var spinnerTheme = []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
 
-	failed := false
+type SpinnerState int
 
-	success := func() {
-		if failed {
-			return
-		}
-		s.FinalMSG = fmt.Sprintf("%s %s\n", color.New(color.FgGreen).Sprintf("\u2713"), title)
-		s.Stop()
+const (
+	Working SpinnerState = iota
+	Succeeded
+	Failed
+)
+
+func (ss SpinnerState) String(s *Spinner) string {
+	switch ss {
+	case Succeeded:
+		return "{green:\u2713}"
+	case Failed:
+		return "{red:\u2717}"
+	default:
+		s.curIdx = (s.curIdx + 1) % len(spinnerTheme)
+		return fmt.Sprintf("{cyan:%s}", spinnerTheme[s.curIdx])
 	}
-	failure := func() {
-		failed = true
-		s.FinalMSG = fmt.Sprintf("%s %s\n", color.New(color.FgRed).Sprintf("\u2717"), title)
-		s.Stop()
+}
+
+type Spinner struct {
+	Label string
+	Theme []string
+	State SpinnerState
+
+	sg     *SpinnerGroup
+	curIdx int
+}
+
+func NewSpinner(label string) *Spinner {
+	return NewSpinnerWithGroup(label, nil)
+}
+
+func NewSpinnerWithGroup(label string, sg *SpinnerGroup) *Spinner {
+	return &Spinner{label, spinnerTheme, Working, sg, 0}
+}
+
+func (s *Spinner) Do(fun func() error) error {
+	if err := fun(); err != nil {
+		s.Fail()
+		return err
 	}
-	return success, failure
+	s.Succeed()
+	return nil
+}
+
+func (s *Spinner) Update() {
+	if s.sg != nil {
+		s.sg.Update()
+		return
+	}
+	Fprintf(os.Stdout, s.String())
+}
+
+func (s *Spinner) Fail() {
+	s.State = Failed
+	s.Update()
+}
+
+func (s *Spinner) Succeed() {
+	s.State = Succeeded
+	s.Update()
+}
+
+func (s *Spinner) String() string {
+	// Figure out how many cycles
+	return fmt.Sprintf("\r\x1b[2K%s %s", s.State.String(s), s.Label)
 }

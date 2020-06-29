@@ -91,7 +91,7 @@ func (p *Project) NeedsNetworking() bool {
 }
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
-func (p *Project) EnsureNetworking(opts ...executor.Option) error {
+func (p *Project) EnsureNetworking() error {
 	_, err := executor.Execute([]string{
 		"sudo",
 		"ifconfig",
@@ -99,7 +99,7 @@ func (p *Project) EnsureNetworking(opts ...executor.Option) error {
 		"alias",
 		p.IP.String(),
 		"255.255.255.0",
-	}, opts...)
+	})
 	return err
 }
 
