@@ -16,7 +16,11 @@ func TestParse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.have, func(t *testing.T) {
-			if parsed := Parse(tt.have); parsed != tt.want {
+			parsed, err := Parse(tt.have)
+			if err != nil {
+				t.Errorf("got error %w", err)
+			}
+			if parsed != tt.want {
 				t.Errorf("wanted %q but got %q", tt.want, parsed)
 			}
 		})
