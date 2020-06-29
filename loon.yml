@@ -14,3 +14,6 @@ tasks:
   test:
     description: Runs go tests
     command: go test ./... -v $@
+  bench:
+    description: Runs go tests with benchmark
+    command: go test ./... -v -bench=. $@

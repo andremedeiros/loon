@@ -26,3 +26,9 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkParser(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		MustParse("{blue:{bold:Info:} %s}")
+	}
+}
