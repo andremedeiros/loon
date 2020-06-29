@@ -65,6 +65,12 @@ func (i InstructionType) String() string {
 	return fmt.Sprintf("\x1b[%dm", i)
 }
 
+var (
+	ErrUnbalancedFormattingBlocks = errors.New("unbalanced formatting blocks")
+	ErrInstructionNotFound        = errors.New("instruction not found")
+	ErrInfiniteLoop               = errors.New("infinite loop")
+)
+
 // Parse parses strings with special formatting instructions that
 // stylize text.
 //
@@ -109,7 +115,12 @@ func NewParser(b []byte) *parser {
 	p.fsm.When("start_formatting_instructions_block")(func(event *fsm.Event) *fsm.NextState {
 		for i := p.pos; i < len(p.b); i++ {
 			if p.b[i] == ',' || p.b[i] == ':' {
-				ins := InstructionCodes[string(p.b[p.pos:i])]
+				instr := string(p.b[p.pos:i])
+				ins, ok := InstructionCodes[instr]
+				if !ok {
+					p.err = ErrInstructionNotFound
+					return p.fsm.Goto("done")
+				}
 				p.tail = append(p.tail, ins)
 				p.out.WriteString(ins.String())
 				p.pos = i + 1
@@ -127,7 +138,7 @@ func NewParser(b []byte) *parser {
 	})
 	p.fsm.When("end_formatting_block")(func(event *fsm.Event) *fsm.NextState {
 		if len(p.stack) == 0 {
-			p.err = errors.New("tried to pop from empty stack")
+			p.err = ErrUnbalancedFormattingBlocks
 			return p.fsm.Goto("done")
 		}
 		p.stack = p.stack[:len(p.stack)-1]
@@ -151,7 +162,7 @@ func (p *parser) Parse() (string, error) {
 			break
 		}
 		if iterations++; iterations == 1000 {
-			p.err = errors.New("entered infinite loop")
+			p.err = ErrInfiniteLoop
 		}
 	}
 	return p.out.String(), p.err
