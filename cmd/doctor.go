@@ -9,6 +9,7 @@ import (
 
 	"github.com/andremedeiros/loon/internal/check"
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
 
@@ -17,7 +18,7 @@ var checks = []func() error{
 	check.Nix,
 }
 
-var runDoctor = func(ctx context.Context, cfg *config.Config, args []string) error {
+var runDoctor = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("doctor", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon doctor")
 	if err := flagset.Parse(args); err != nil {

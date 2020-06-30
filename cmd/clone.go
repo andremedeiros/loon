@@ -11,9 +11,10 @@ import (
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/finalizer"
 	"github.com/andremedeiros/loon/internal/git"
+	"github.com/andremedeiros/loon/internal/project"
 )
 
-var runClone = func(ctx context.Context, cfg *config.Config, args []string) error {
+var runClone = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("clone", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon clone <owner and name>")
 	if err := flagset.Parse(args); err != nil {

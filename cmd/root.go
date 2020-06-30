@@ -16,7 +16,7 @@ import (
 	"github.com/andremedeiros/loon/internal/ui"
 )
 
-type runHandler func(context.Context, *config.Config, []string) error
+type runHandler func(context.Context, *config.Config, *project.Project, []string) error
 
 var version = "dev"
 
@@ -104,5 +104,5 @@ func Execute() error {
 		}
 	}()
 
-	return run(ctx, cfg, os.Args[2:])
+	return run(ctx, cfg, proj, os.Args[2:])
 }

@@ -11,9 +11,10 @@ import (
 	"github.com/peterbourgon/usage"
 
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/project"
 )
 
-var runShellRC = func(ctx context.Context, cfg *config.Config, args []string) error {
+var runShellRC = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("shellrc", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon shellrc")
 	if err := flagset.Parse(args); err != nil {

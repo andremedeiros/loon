@@ -12,17 +12,15 @@ import (
 	"github.com/andremedeiros/loon/internal/ui"
 )
 
-var runUp = func(ctx context.Context, cfg *config.Config, args []string) error {
+var runUp = func(ctx context.Context, cfg *config.Config, proj *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("up", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon up")
 	if err := flagset.Parse(args); err != nil {
 		return err
 	}
-	proj, err := project.FindInTree()
-	if err != nil {
-		return err
+	if proj == nil {
+		return project.ErrProjectPayloadNotFound
 	}
-
 	sg := ui.NewSpinnerGroup()
 	g, ctx := errgroup.WithContext(ctx)
 	g.Go(func() error {

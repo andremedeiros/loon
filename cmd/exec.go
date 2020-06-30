@@ -13,7 +13,7 @@ import (
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-var runExec = func(ctx context.Context, cfg *config.Config, args []string) error {
+var runExec = func(ctx context.Context, cfg *config.Config, proj *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("exec", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon exec <cmd> [arg1] [arg2]")
 	if err := flagset.Parse(args); err != nil {
@@ -22,14 +22,13 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 	if flagset.NArg() < 1 {
 		return errors.New("specify a command")
 	}
-	proj, err := project.FindInTree()
-	if err != nil {
-		return err
+	if proj == nil {
+		return project.ErrProjectPayloadNotFound
 	}
 	if proj.NeedsUpdate() {
 		return errors.New("project needs update, run `loon up`")
 	}
-	if err = proj.Execute(
+	if err := proj.Execute(
 		flagset.Args(),
 		executor.WithStdin(os.Stdin),
 		executor.WithStdout(os.Stdout),

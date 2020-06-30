@@ -15,13 +15,12 @@ import (
 )
 
 var runTask = func(taskName string) runHandler {
-	return func(ctx context.Context, cfg *config.Config, args []string) error {
+	return func(ctx context.Context, cfg *config.Config, proj *project.Project, args []string) error {
 		flagset := flag.NewFlagSet(taskName, flag.ContinueOnError)
 		flagset.Usage = usage.For(flagset, "loon <task>")
 		flagset.Parse(args)
-		proj, err := project.FindInTree()
-		if err != nil {
-			return err
+		if proj == nil {
+			return project.ErrProjectPayloadNotFound
 		}
 		if proj.NeedsUpdate() {
 			return errors.New("project needs update, run `loon up`")
