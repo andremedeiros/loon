@@ -53,7 +53,7 @@ func ipFromPath(path string) net.IP {
 	return net.ParseIP(addr)
 }
 
-func (p *Project) Execute(args []string, opts ...executor.Option) (int, error) {
+func (p *Project) Execute(args []string, opts ...executor.Option) error {
 	opts = append(opts, executor.WithEnviron(p.Environ()))
 	return p.derivation.Execute(args, opts...)
 }
@@ -92,7 +92,7 @@ func (p *Project) NeedsNetworking() bool {
 
 // TODO(andremedeiros): extract this into an OS dependent implementation
 func (p *Project) EnsureNetworking() error {
-	_, err := executor.Execute([]string{
+	return executor.Execute([]string{
 		"sudo",
 		"ifconfig",
 		"lo0",
@@ -100,7 +100,6 @@ func (p *Project) EnsureNetworking() error {
 		p.IP.String(),
 		"255.255.255.0",
 	})
-	return err
 }
 
 func FindInTree() (*Project, error) {
@@ -152,7 +151,7 @@ func (p *Project) Environ() []string {
 	for k, v := range p.Environment {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 	}
-	path := fmt.Sprintf("PATH=%s:%s", strings.Join(paths, ":"), os.Getenv("PATH"))
+	path := fmt.Sprintf("PATH=$HOST_PATH:%s:%s", strings.Join(paths, ":"), os.Getenv("PATH"))
 	environ = append(environ, path)
 	return environ
 }

@@ -7,12 +7,13 @@ import (
 
 type ExecutionError struct {
 	err    error
+	code   int
 	stdout bytes.Buffer
 	stderr bytes.Buffer
 }
 
-func NewExecutionError(err error, stdout bytes.Buffer, stderr bytes.Buffer) error {
-	return ExecutionError{err, stdout, stderr}
+func NewExecutionError(err error, code int, stdout bytes.Buffer, stderr bytes.Buffer) error {
+	return ExecutionError{err, code, stdout, stderr}
 }
 
 func (e ExecutionError) Error() string {
@@ -25,4 +26,8 @@ func (e ExecutionError) Stdout() *bufio.Reader {
 
 func (e ExecutionError) Stderr() *bufio.Reader {
 	return bufio.NewReader(&e.stderr)
+}
+
+func (e ExecutionError) Code() int {
+	return e.code
 }

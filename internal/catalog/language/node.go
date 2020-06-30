@@ -37,6 +37,5 @@ func (n *Node) Versions() map[string][]string {
 }
 
 func (n *Node) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
-	_, err := exe.Execute([]string{"npm", "install", "-g", "yarn"})
-	return err
+	return exe.Execute([]string{"npm", "install", "-g", "yarn"})
 }

@@ -50,7 +50,7 @@ func (r *Redis) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...e
 	pidPath := filepath.Join(vdpath, "pids", "redis.pid")
 	dataPath := filepath.Join(vdpath, "data", "redis")
 
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"redis-server",
 		"--daemonize yes",
 		"--port 6379",
@@ -58,7 +58,6 @@ func (r *Redis) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...e
 		fmt.Sprintf("--dir %s", dataPath),
 		fmt.Sprintf("--pidfile %s", pidPath),
 	}, opts...)
-	return err
 }
 
 func (r *Redis) Stop(exe executor.Executor, _ net.IP, vdpath string, _ ...executor.Option) error {

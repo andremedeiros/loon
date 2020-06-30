@@ -29,12 +29,15 @@ var runExec = func(ctx context.Context, cfg *config.Config, args []string) error
 	if proj.NeedsUpdate() {
 		return errors.New("project needs update, run `loon up`")
 	}
-	code, err := proj.Execute(
+	if err = proj.Execute(
 		flagset.Args(),
 		executor.WithStdin(os.Stdin),
 		executor.WithStdout(os.Stdout),
 		executor.WithStderr(os.Stderr),
-	)
-	os.Exit(code)
-	return err
+	); err != nil {
+		err := err.(executor.ExecutionError)
+		os.Exit(err.Code())
+		return err
+	}
+	return nil
 }

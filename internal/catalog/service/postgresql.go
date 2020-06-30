@@ -26,7 +26,7 @@ func (p *Postgres) Initialize(exe executor.Executor, ip net.IP, vdpath string, o
 	if _, err := os.Stat(filepath.Join(dataPath, "PG_VERSION")); err == nil {
 		return nil
 	}
-	if _, err := exe.Execute([]string{"initdb", dataPath}, opts...); err != nil {
+	if err := exe.Execute([]string{"initdb", dataPath}, opts...); err != nil {
 		return err
 	}
 	hbaConf := fmt.Sprintf("host\tall\tall\t%s/32\ttrust", ip)
@@ -62,7 +62,7 @@ func (p *Postgres) Start(exe executor.Executor, ip net.IP, vdpath string, opts .
 	dataPath := filepath.Join(vdpath, "data", "postgres")
 	logFilePath := filepath.Join(vdpath, "data", "postgres", "postgres.log")
 	socketPath := filepath.Join(vdpath, "sockets")
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"pg_ctl",
 		fmt.Sprintf("-o '-h %s'", ip),
 		fmt.Sprintf("-o '--unix_socket_directories=%s'", socketPath),
@@ -70,15 +70,13 @@ func (p *Postgres) Start(exe executor.Executor, ip net.IP, vdpath string, opts .
 		fmt.Sprintf("--log=%s", logFilePath),
 		"start",
 	}, opts...)
-	return err
 }
 
 func (p *Postgres) Stop(exe executor.Executor, _ net.IP, vdpath string, opts ...executor.Option) error {
 	dataPath := filepath.Join(vdpath, "data", "postgres")
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"pg_ctl",
 		fmt.Sprintf("--pgdata=%s", dataPath),
 		"stop",
 	}, opts...)
-	return err
 }

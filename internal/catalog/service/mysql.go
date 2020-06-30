@@ -26,12 +26,11 @@ func (m *Mysql) Initialize(exe executor.Executor, _ net.IP, vdpath string, opts 
 		return nil
 	}
 
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"mysqld",
 		"--initialize-insecure",
 		fmt.Sprintf("--datadir=%s", dataPath),
 	}, opts...)
-	return err
 }
 
 func (m *Mysql) Versions() map[string][]string {
@@ -60,7 +59,7 @@ func (m *Mysql) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...e
 	dataPath := filepath.Join(vdpath, "data", "mysql")
 	socketPath := filepath.Join(vdpath, "sockets", "mysqld.sock")
 
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"mysqld",
 		"--daemonize",
 		fmt.Sprintf("--pid-file=%s", pidPath),
@@ -68,7 +67,6 @@ func (m *Mysql) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...e
 		fmt.Sprintf("--bind-address=%s", ip),
 		fmt.Sprintf("--socket=%s", socketPath),
 	}, opts...)
-	return err
 }
 
 func (m *Mysql) Stop(exe executor.Executor, _ net.IP, vdpath string, opts ...executor.Option) error {
@@ -78,11 +76,10 @@ func (m *Mysql) Stop(exe executor.Executor, _ net.IP, vdpath string, opts ...exe
 		return nil
 	}
 
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"mysqladmin",
 		"-u root",
 		fmt.Sprintf("--socket=%s", socketPath),
 		"shutdown",
 	}, opts...)
-	return err
 }
