@@ -7,10 +7,10 @@ import (
 )
 
 type Executor interface {
-	Execute([]string, ...Option) (int, error)
+	Execute([]string, ...Option) error
 }
 
-func Execute(cmd []string, opts ...Option) (int, error) {
+func Execute(cmd []string, opts ...Option) error {
 	name := cmd[0]
 	args := cmd[1:]
 	stdout := bytes.Buffer{}
@@ -27,8 +27,8 @@ func Execute(cmd []string, opts ...Option) (int, error) {
 		err := cmd.Run()
 		code := cmd.ProcessState.ExitCode()
 		if err != nil {
-			err = NewExecutionError(err, stdout, stderr)
+			err = NewExecutionError(err, code, stdout, stderr)
 		}
-		return code, err
+		return err
 	}
 }

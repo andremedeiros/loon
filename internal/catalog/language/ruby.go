@@ -1,6 +1,12 @@
 package language
 
-import "github.com/andremedeiros/loon/internal/executor"
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/andremedeiros/loon/internal/executor"
+)
 
 type Ruby struct{}
 
@@ -8,12 +14,20 @@ func (r *Ruby) String() string {
 	return "Ruby"
 }
 
-func (r *Ruby) Environ(_ string) []string {
-	return nil
+func (r *Ruby) gemHome(vdpath string) string {
+	return filepath.Join(vdpath, "data", "gem")
 }
 
-func (r *Ruby) BinPaths(_ string) []string {
-	return nil
+func (r *Ruby) Environ(vdpath string) []string {
+	gemHome := r.gemHome(vdpath)
+	return []string{
+		fmt.Sprintf("GEM_HOME=%s", gemHome),
+		fmt.Sprintf("GEM_PATH=%s", gemHome),
+	}
+}
+
+func (r *Ruby) BinPaths(vdpath string) []string {
+	return []string{r.gemHome(vdpath)}
 }
 
 func (r *Ruby) Versions() map[string][]string {
@@ -26,7 +40,10 @@ func (r *Ruby) Versions() map[string][]string {
 	}
 }
 
-func (r *Ruby) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
-	_, err := exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
-	return err
+func (r *Ruby) Initialize(exe executor.Executor, vdpath string, opts ...executor.Option) error {
+	bundlerBinPath := filepath.Join(r.gemHome(vdpath), "bin", "bundle")
+	if _, err := os.Stat(bundlerBinPath); os.IsNotExist(err) {
+		return exe.Execute([]string{"gem", "install", "bundler", "--no-document"})
+	}
+	return nil
 }

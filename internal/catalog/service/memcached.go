@@ -47,14 +47,13 @@ func (m *Memcached) IsHealthy(ip net.IP, _ string) bool {
 
 func (m *Memcached) Start(exe executor.Executor, ip net.IP, vdpath string, opts ...executor.Option) error {
 	pidPath := filepath.Join(vdpath, "pids", "memcached.pid")
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"memcached",
 		"--daemon",
 		"--port=11211",
 		fmt.Sprintf("--listen=%s", ip),
 		fmt.Sprintf("--pidfile=%s", pidPath),
 	}, opts...)
-	return err
 }
 
 func (m *Memcached) Stop(exe executor.Executor, _ net.IP, vdpath string, _ ...executor.Option) error {

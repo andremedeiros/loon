@@ -37,13 +37,16 @@ var runTask = func(taskName string) runHandler {
 		os.Chmod(tmp.Name(), 0770)
 		defer os.Remove(tmp.Name())
 		tmp.Write([]byte(task.Command))
-		code, err := proj.Execute(
+		if err := proj.Execute(
 			append([]string{tmp.Name()}, flagset.Args()...),
 			executor.WithStdin(os.Stdin),
 			executor.WithStdout(os.Stdout),
 			executor.WithStderr(os.Stderr),
-		)
-		os.Exit(code)
-		return err
+		); err != nil {
+			err := err.(executor.ExecutionError)
+			os.Exit(err.Code())
+			return err
+		}
+		return nil
 	}
 }

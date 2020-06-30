@@ -27,9 +27,8 @@ func (g *Golang) Versions() map[string][]string {
 }
 
 func (g *Golang) Initialize(exe executor.Executor, _ string, opts ...executor.Option) error {
-	_, err := exe.Execute([]string{
+	return exe.Execute([]string{
 		"go",
 		"version",
 	}, opts...)
-	return err
 }
