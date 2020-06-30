@@ -27,7 +27,8 @@ func (r *Ruby) Environ(vdpath string) []string {
 }
 
 func (r *Ruby) BinPaths(vdpath string) []string {
-	return []string{r.gemHome(vdpath)}
+	gemBin := filepath.Join(r.gemHome(vdpath), "bin")
+	return []string{gemBin}
 }
 
 func (r *Ruby) Versions() map[string][]string {

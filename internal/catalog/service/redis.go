@@ -34,7 +34,7 @@ func (r *Redis) Versions() map[string][]string {
 	}
 }
 
-func (r *Redis) Environ(ip net.IP, vdpath string) []string {
+func (r *Redis) Environ(ip net.IP, _ string) []string {
 	return []string{
 		fmt.Sprintf("REDIS_URL=redis://%s:6379", ip),
 	}
