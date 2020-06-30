@@ -23,14 +23,15 @@ func New(ver []byte) Version {
 	parts := strings.SplitN(string(match), ".", 4)
 	v := Version{}
 	v.Major = parseInt(parts[0])
-	if len(parts) > 1 {
-		v.Minor = parseInt(parts[1])
-	}
-	if len(parts) > 2 {
-		v.Patch = parseInt(parts[2])
-	}
-	if len(parts) > 3 {
+	switch len(parts) {
+	case 4:
 		v.Other = parts[3]
+		fallthrough
+	case 3:
+		v.Patch = parseInt(parts[2])
+		fallthrough
+	case 2:
+		v.Minor = parseInt(parts[1])
 	}
 	return v
 }
