@@ -162,14 +162,16 @@ func (p *Project) ensurePaths() {
 		filepath.Join(p.VDPath(), "pids"),
 		filepath.Join(p.VDPath(), "sockets"),
 	}
-
 	for _, svc := range p.Services {
 		svcPath := filepath.Join(p.VDPath(), "data", svc.Identifier())
 		paths = append(paths, svcPath)
 	}
-
 	for _, p := range paths {
 		os.MkdirAll(p, 0755)
+	}
+	gitignorePath := filepath.Join(p.VDPath(), ".gitignore")
+	if _, err := os.Stat(gitignorePath); os.IsNotExist(err) {
+		ioutil.WriteFile(gitignorePath, []byte{'*'}, 0600)
 	}
 }
 
