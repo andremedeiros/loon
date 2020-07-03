@@ -63,43 +63,7 @@ func (p *Project) NeedsUpdate() bool {
 }
 
 func (p *Project) EnsureDependencies() error {
-	if !p.derivation.NeedsUpdate(p.ModTime) {
-		return nil
-	}
 	return p.derivation.Install()
-}
-
-func (p *Project) NeedsNetworking() bool {
-	ifis, err := net.Interfaces()
-	if err != nil {
-		return true
-	}
-	for _, ifi := range ifis {
-		addrs, err := ifi.Addrs()
-		if err != nil {
-			continue
-		}
-		for _, addr := range addrs {
-			if ipnet, ok := addr.(*net.IPNet); ok {
-				if ipnet.IP.Equal(p.IP) {
-					return false
-				}
-			}
-		}
-	}
-	return true
-}
-
-// TODO(andremedeiros): extract this into an OS dependent implementation
-func (p *Project) EnsureNetworking() error {
-	return executor.Execute([]string{
-		"sudo",
-		"ifconfig",
-		"lo0",
-		"alias",
-		p.IP.String(),
-		"255.255.255.0",
-	})
 }
 
 func FindInTree() (*Project, error) {
@@ -173,6 +137,19 @@ func (p *Project) ensurePaths() {
 	if _, err := os.Stat(gitignorePath); os.IsNotExist(err) {
 		ioutil.WriteFile(gitignorePath, []byte{'*'}, 0600)
 	}
+}
+
+func (p *Project) HostExecutor() executor.Executor {
+	return p
+}
+
+func (p *Project) DerivationExecutor() executor.Executor {
+	return p.derivation
+}
+
+func (p *Project) VariableDataPath(parts ...string) string {
+	parts = append([]string{p.Path, ".loon"}, parts...)
+	return filepath.Join(parts...)
 }
 
 func (p *Project) VDPath() string {

@@ -4,6 +4,7 @@ environment:
   LOON: Was here
 languages:
   golang:
+  ruby:
 tasks:
   build:
     description: Builds Loon
