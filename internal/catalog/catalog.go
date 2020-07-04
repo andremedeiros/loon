@@ -31,7 +31,7 @@ func List() []Entry {
 	es := []Entry{}
 
 	for _, asset := range AssetNames() {
-		b := MustAsset(asset)
+		b, _ := Asset(asset)
 		parts := strings.SplitN(asset, "/", 2)
 		ext := filepath.Ext(parts[1])
 		e := Entry{
