@@ -44,10 +44,6 @@ func RunsAfter(on string, what string) {
 	graph.AddEdge(on, what)
 }
 
-func RunsBefore(what string, on string) {
-	RunsAfter(on, what)
-}
-
 func checkHealth(ip net.IP, port int, waitUp bool) bool {
 	done := make(chan bool)
 	go func() {
