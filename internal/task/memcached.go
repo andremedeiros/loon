@@ -52,10 +52,10 @@ func (*MemcachedStop) Header() string {
 }
 
 func (ms *MemcachedStop) Check(_ context.Context, p *project.Project) (bool, error) {
-	if !checkProjectHasDep(p, "memcached") || ms.killed {
+	if !checkProjectHasDep(p, "memcached") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 11211, false), nil
+	return !checkHealth(p.IP, 11211, ms.killed), nil
 }
 
 func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project) error {
