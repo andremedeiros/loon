@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
@@ -34,17 +33,6 @@ func (n *Networking) Check(_ context.Context, p *project.Project) (bool, error) 
 		}
 	}
 	return false, nil
-}
-
-func (*Networking) Resolve(_ context.Context, p *project.Project) error {
-	return executor.Execute([]string{
-		"sudo",
-		"ifconfig",
-		"lo0",
-		"alias",
-		p.IP.String(),
-		"255.255.255.0",
-	})
 }
 
 func (*Networking) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {

@@ -5,6 +5,11 @@ environment:
 deps:
   - golang: 1.14.4
 tasks:
+  setup:
+    description: Pulls dependencies
+    command: |
+      go get -u github.com/go-bindata/go-bindata/...
+      go mod download
   build:
     description: Builds Loon
     command: |

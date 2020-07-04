@@ -69,7 +69,9 @@ func (d *Derivation) NeedsUpdate(since time.Time) bool {
 
 func (d *Derivation) Install() error {
 	d.generate()
-	executor.Execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath})
+	if err := executor.Execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath}); err != nil {
+		return err
+	}
 	return d.Execute([]string{"true"}, executor.WithStdout(os.Stdout))
 }
 

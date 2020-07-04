@@ -35,6 +35,7 @@ var runTask = func(taskName string) runHandler {
 			os.Chmod(tmp.Name(), 0770)
 			defer os.Remove(tmp.Name())
 			tmp.Write([]byte(t.Command))
+			tmp.Close()
 			if err := proj.Execute(
 				append([]string{tmp.Name()}, flagset.Args()...),
 				executor.WithStdin(os.Stdin),
