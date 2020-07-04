@@ -18,7 +18,7 @@ var checks = []func() error{
 	check.Nix,
 }
 
-var runDoctor = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
+var runDoctor = func(ctx context.Context, ui ui.UI, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("doctor", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon doctor")
 	if err := flagset.Parse(args); err != nil {

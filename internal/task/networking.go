@@ -1,6 +1,8 @@
 package task
 
 import (
+	"context"
+	"fmt"
 	"net"
 
 	"github.com/andremedeiros/loon/internal/executor"
@@ -13,7 +15,7 @@ func (*Networking) Header() string {
 	return "Setting up project networking"
 }
 
-func (n *Networking) Check(p *project.Project) (bool, error) {
+func (n *Networking) Check(_ context.Context, p *project.Project) (bool, error) {
 	ifis, err := net.Interfaces()
 	if err != nil {
 		return false, err
@@ -34,7 +36,7 @@ func (n *Networking) Check(p *project.Project) (bool, error) {
 	return false, nil
 }
 
-func (n *Networking) Resolve(p *project.Project) error {
+func (*Networking) Resolve(_ context.Context, p *project.Project) error {
 	return executor.Execute([]string{
 		"sudo",
 		"ifconfig",
@@ -45,9 +47,13 @@ func (n *Networking) Resolve(p *project.Project) error {
 	})
 }
 
+func (*Networking) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+	return []string{fmt.Sprintf("PROJECT_IP=%s", p.IP)}, nil
+}
+
 func init() {
 	RegisterTask("networking:start", &Networking{})
-	Depends("networking:start", "command:up")
-	Depends("networking:start", "command:task")
-	Depends("networking:start", "command:exec")
+	RunsAfter("command:up", "networking:start")
+	RunsAfter("command:task", "networking:start")
+	RunsAfter("command:exec", "networking:start")
 }

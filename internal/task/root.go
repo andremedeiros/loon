@@ -1,7 +1,10 @@
 package task
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"strings"
 	"sync"
 
 	"github.com/andremedeiros/loon/internal/project"
@@ -12,7 +15,9 @@ type Root struct {
 	Name string
 }
 
-func RunRoot(name string, p *project.Project) error {
+func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun func([]string) error) error {
+	bins := []string{}
+	envs := []string{}
 	wg := &sync.WaitGroup{}
 	wgs := make(map[string]*sync.WaitGroup)
 	errs := make(chan error)
@@ -42,18 +47,21 @@ func RunRoot(name string, p *project.Project) error {
 					dwg.Wait()
 				}
 			}
-			done, err := te.Check(p)
+			done, err := te.Check(ctx, p)
 			if err != nil {
 				errs <- err
 				return
 			}
+			e, b := te.Environ(ctx, p)
+			envs = append(envs, e...)
+			bins = append(bins, b...)
 			if !done {
 				s := sg.NewSpinner(te.Header())
-				if err := te.Resolve(p); err != nil {
+				if err := te.Resolve(ctx, p); err != nil {
 					s.Fail()
 					errs <- err
 				} else {
-					done, err := te.Check(p)
+					done, err := te.Check(ctx, p)
 					if err != nil {
 						s.Fail()
 						errs <- err
@@ -67,7 +75,15 @@ func RunRoot(name string, p *project.Project) error {
 		}(t)
 	}
 	go func() {
+		// Wait for everyone to be done
 		wg.Wait()
+		// Set up environment
+		sg.Finish()
+		path := os.Getenv("PATH")
+		envs = append(envs, fmt.Sprintf("%s:%s", strings.Join(bins, ":"), path))
+		if err := fun(envs); err != nil {
+			errs <- err
+		}
 		close(errs)
 	}()
 	for {

@@ -2,6 +2,6 @@ package project
 
 type Task struct {
 	Name        string
-	Description string
-	Command     string
+	Description string `yaml:"desc"`
+	Command     string `yaml:"cmd"`
 }

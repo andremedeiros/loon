@@ -1,4 +1,4 @@
-package ui
+package color
 
 import (
 	"fmt"
@@ -6,6 +6,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
 type SpinnerGroup struct {
@@ -14,11 +16,12 @@ type SpinnerGroup struct {
 	ticker    *time.Ticker
 	refresh   bool
 	lastShown int
+	c         color
 	sync.Mutex
 }
 
-func NewSpinnerGroup() *SpinnerGroup {
-	sg := &SpinnerGroup{ticker: time.NewTicker(100 * time.Millisecond)}
+func (c color) NewSpinnerGroup() ui.SpinnerGroup {
+	sg := &SpinnerGroup{ticker: time.NewTicker(100 * time.Millisecond), c: c}
 	go func() {
 		for {
 			select {
@@ -30,10 +33,10 @@ func NewSpinnerGroup() *SpinnerGroup {
 	return sg
 }
 
-func (sg *SpinnerGroup) NewSpinner(f string, a ...interface{}) *Spinner {
+func (sg *SpinnerGroup) NewSpinner(f string, a ...interface{}) ui.Spinner {
 	label := fmt.Sprintf(f, a...)
 	sg.Lock()
-	s := NewSpinnerWithGroup(label, sg)
+	s := sg.c.NewSpinnerWithGroup(label, sg)
 	sg.Spinners = append(sg.Spinners, s)
 	sg.Unlock()
 	sg.Update()
@@ -43,18 +46,22 @@ func (sg *SpinnerGroup) NewSpinner(f string, a ...interface{}) *Spinner {
 func (sg *SpinnerGroup) Update() {
 	sg.Lock()
 	defer sg.Unlock()
-	Fprintf(os.Stdout, sg.String())
+	sg.c.Fprintf(os.Stdout, sg.String())
+}
+
+func (sg *SpinnerGroup) Finish() {
+	sg.ticker.Stop()
 }
 
 func (sg *SpinnerGroup) String() string {
 	b := strings.Builder{}
 	if sg.lastShown > 0 {
-		Fprintf(os.Stdout, "\x1b[%dF", sg.lastShown)
+		sg.c.Fprintf(os.Stdout, "\x1b[%dF", sg.lastShown)
 	}
 	sg.lastShown = 0
 	for _, s := range sg.Spinners {
-		Fprintf(&b, s.String())
-		Fprintf(&b, "\n")
+		sg.c.Fprintf(&b, s.String())
+		sg.c.Fprintf(&b, "\n")
 		sg.lastShown++
 	}
 	return b.String()

@@ -12,9 +12,10 @@ import (
 
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/project"
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
-var runShellRC = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
+var runShellRC = func(ctx context.Context, ui ui.UI, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("shellrc", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon shellrc")
 	if err := flagset.Parse(args); err != nil {

@@ -1,6 +1,10 @@
 package task
 
-import "github.com/andremedeiros/loon/internal/project"
+import (
+	"context"
+
+	"github.com/andremedeiros/loon/internal/project"
+)
 
 type DerivationCurrent struct{}
 
@@ -8,17 +12,23 @@ func (*DerivationCurrent) Header() string {
 	return "Installing software"
 }
 
-func (*DerivationCurrent) Check(p *project.Project) (bool, error) {
+func (*DerivationCurrent) Check(_ context.Context, p *project.Project) (bool, error) {
 	return !p.NeedsUpdate(), nil
 }
 
-func (*DerivationCurrent) Resolve(p *project.Project) error {
+func (*DerivationCurrent) Resolve(_ context.Context, p *project.Project) error {
 	return p.EnsureDependencies()
 }
 
+func (*DerivationCurrent) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+	return nil, nil
+}
+
 func init() {
-	RegisterTask("derivation:current", &DerivationCurrent{})
-	Depends("derivation:current", "command:up")
-	Depends("derivation:current", "command:exec")
-	Depends("derivation:current", "command:task")
+	RegisterTask("derivation:current:up", &DerivationCurrent{})
+	RegisterTask("derivation:current:down", &DerivationCurrent{})
+	RunsAfter("command:up", "derivation:current:up")
+	RunsAfter("command:exec", "derivation:current:up")
+	RunsAfter("command:task", "derivation:current:up")
+	RunsAfter("command:down", "derivation:current:down")
 }

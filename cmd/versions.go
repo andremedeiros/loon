@@ -12,9 +12,10 @@ import (
 	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/config"
 	"github.com/andremedeiros/loon/internal/project"
+	"github.com/andremedeiros/loon/internal/ui"
 )
 
-var runVersions = func(ctx context.Context, cfg *config.Config, _ *project.Project, args []string) error {
+var runVersions = func(ctx context.Context, ui ui.UI, cfg *config.Config, _ *project.Project, args []string) error {
 	flagset := flag.NewFlagSet("versions", flag.ExitOnError)
 	flagset.Usage = usage.For(flagset, "loon versions")
 	if err := flagset.Parse(args); err != nil {

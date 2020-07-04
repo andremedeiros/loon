@@ -1,4 +1,4 @@
-package ui
+package parser
 
 import (
 	"bytes"
@@ -13,6 +13,8 @@ var (
 	ErrInfiniteLoop               = errors.New("infinite loop")
 )
 
+type InstructionTable map[string]string
+
 // Parse parses strings with special formatting instructions that
 // stylize text.
 //
@@ -23,14 +25,14 @@ type parser struct {
 	b     []byte
 	out   bytes.Buffer
 	pos   int
-	stack [][]InstructionType
-	tail  []InstructionType
+	stack [][]string
+	tail  []string
 	fsm   *fsm.FSM
 	iters int
 	err   error
 }
 
-func NewParser(b []byte) *parser {
+func NewParser(b []byte, instructionCodes InstructionTable) *parser {
 	p := &parser{b: b, out: bytes.Buffer{}, pos: 0, stack: nil, fsm: fsm.NewFSM()}
 
 	p.fsm.StartWith("string_block", nil)
@@ -51,20 +53,20 @@ func NewParser(b []byte) *parser {
 		return p.fsm.Goto("done")
 	})
 	p.fsm.When("start_formatting_block")(func(event *fsm.Event) *fsm.NextState {
-		p.tail = []InstructionType{}
+		p.tail = []string{}
 		return p.fsm.Goto("start_formatting_instructions_block")
 	})
 	p.fsm.When("start_formatting_instructions_block")(func(event *fsm.Event) *fsm.NextState {
 		for i := p.pos; i < len(p.b); i++ {
 			if p.b[i] == ',' || p.b[i] == ':' {
 				instr := string(p.b[p.pos:i])
-				ins, ok := InstructionCodes[instr]
+				ins, ok := instructionCodes[instr]
 				if !ok {
 					p.err = ErrInstructionNotFound
 					return p.fsm.Goto("done")
 				}
 				p.tail = append(p.tail, ins)
-				p.out.WriteString(ins.String())
+				p.out.WriteString(ins)
 				p.pos = i + 1
 			}
 			if p.b[i] == ':' {
@@ -75,7 +77,7 @@ func NewParser(b []byte) *parser {
 	})
 	p.fsm.When("end_formatting_instructions_block")(func(event *fsm.Event) *fsm.NextState {
 		p.stack = append(p.stack, p.tail)
-		p.tail = []InstructionType{}
+		p.tail = []string{}
 		return p.fsm.Goto("string_block")
 	})
 	p.fsm.When("end_formatting_block")(func(event *fsm.Event) *fsm.NextState {
@@ -84,10 +86,11 @@ func NewParser(b []byte) *parser {
 			return p.fsm.Goto("done")
 		}
 		p.stack = p.stack[:len(p.stack)-1]
-		p.out.WriteString(Reset.String())
+
+		p.out.WriteString(instructionCodes["reset"])
 		for _, s := range p.stack {
 			for _, i := range s {
-				p.out.WriteString(i.String())
+				p.out.WriteString(i)
 			}
 		}
 		return p.fsm.Goto("string_block")
@@ -110,12 +113,12 @@ func (p *parser) Parse() (string, error) {
 	return p.out.String(), p.err
 }
 
-func Parse(src string) (string, error) {
-	return NewParser([]byte(src)).Parse()
+func Parse(src string, instructionCodes map[string]string) (string, error) {
+	return NewParser([]byte(src), instructionCodes).Parse()
 }
 
-func MustParse(src string) string {
-	out, err := Parse(src)
+func MustParse(src string, instructionCodes map[string]string) string {
+	out, err := Parse(src, instructionCodes)
 	if err != nil {
 		panic(err)
 	}

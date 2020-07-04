@@ -1,6 +1,7 @@
 package task
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -22,8 +23,8 @@ func (*RubyInitialize) Header() string {
 	return "Setting up {blue:Ruby}"
 }
 
-func (*RubyInitialize) Check(p *project.Project) (bool, error) {
-	if !checkProjectHasLanguage(p, "Ruby") {
+func (*RubyInitialize) Check(_ context.Context, p *project.Project) (bool, error) {
+	if !checkProjectHasDep(p, "ruby") {
 		return true, nil
 	}
 	bundler := p.VariableDataPath("data", "gem", "bin", "bundle")
@@ -33,16 +34,23 @@ func (*RubyInitialize) Check(p *project.Project) (bool, error) {
 	return true, nil
 }
 
-func (*RubyInitialize) Resolve(p *project.Project) error {
+func (*RubyInitialize) Resolve(_ context.Context, p *project.Project) error {
 	exe := p.DerivationExecutor()
 	return exe.Execute(
 		[]string{"gem", "install", "bundler", "--no-document"},
 		executor.WithEnviron(rubyEnviron(p)),
-		executor.WithStdout(os.Stdout),
 	)
+}
+
+func (*RubyInitialize) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+	if !checkProjectHasDep(p, "ruby") {
+		return nil, nil
+	}
+	bin := p.VariableDataPath("data", "gem", "bin")
+	return nil, []string{bin}
 }
 
 func init() {
 	RegisterTask("ruby:initialize", &RubyInitialize{})
-	Depends("ruby:initialize", "derivation:current")
+	RunsAfter("derivation:current:up", "ruby:initialize")
 }

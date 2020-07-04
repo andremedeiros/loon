@@ -1,6 +1,7 @@
 package task
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"time"
@@ -11,25 +12,29 @@ import (
 )
 
 var (
-	graph                         = topsort.NewGraph()
-	deps  map[string][]string     = make(map[string][]string)
-	tasks map[string]TaskExecutor = make(map[string]TaskExecutor)
+	graph = topsort.NewGraph()
+	deps  = make(map[string][]string)
+	tasks = make(map[string]Executor)
 )
 
-type TaskExecutor interface {
+type Executor interface {
 	Header() string
-	Check(*project.Project) (bool, error)
-	Resolve(*project.Project) error
+	Check(context.Context, *project.Project) (bool, error)
+	Resolve(context.Context, *project.Project) error
+	Environ(context.Context, *project.Project) (Environ, BinPaths)
 }
 
-func RegisterTask(name string, t TaskExecutor) {
+type Environ []string
+type BinPaths []string
+
+func RegisterTask(name string, t Executor) {
 	if _, ok := tasks[name]; ok {
 		panic(name)
 	}
 	tasks[name] = t
 }
 
-func Depends(what string, on string) {
+func RunsAfter(on string, what string) {
 	if _, ok := deps[what]; !ok {
 		deps[what] = []string{}
 	}
@@ -39,42 +44,37 @@ func Depends(what string, on string) {
 	graph.AddEdge(on, what)
 }
 
-func Task(name string) TaskExecutor {
-	if task, ok := tasks[name]; ok {
-		return task
-	}
-	panic(name)
+func RunsBefore(what string, on string) {
+	RunsAfter(on, what)
 }
 
-func checkHealth(ip net.IP, port int) bool {
+func checkHealth(ip net.IP, port int, waitUp bool) bool {
 	done := make(chan bool)
 	go func() {
 		hp := fmt.Sprintf("%s:%d", ip, port)
 		for {
-			if _, err := net.Dial("tcp", hp); err == nil {
-				done <- true
+			conn, err := net.Dial("tcp", hp)
+			if conn != nil {
+				conn.Close()
 			}
+			isUp := (err == nil)
+			if !isUp && waitUp {
+				continue
+			}
+			done <- isUp
 		}
 	}()
 	select {
-	case <-done:
-		return true
-	case <-time.After(200 * time.Millisecond):
+	case healthy := <-done:
+		return healthy
+	case <-time.After(5000 * time.Millisecond):
 		return false
 	}
 }
 
-func checkProjectHasLanguage(p *project.Project, l string) bool {
-	for _, lang := range p.Languages {
-		if l == lang.String() {
-			return true
-		}
-	}
-	return false
-}
-func checkProjectHasService(p *project.Project, s string) bool {
-	for _, srv := range p.Services {
-		if s == srv.String() {
+func checkProjectHasDep(p *project.Project, d string) bool {
+	for _, dep := range p.Dependencies {
+		if d == dep.Name {
 			return true
 		}
 	}

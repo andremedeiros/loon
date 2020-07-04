@@ -1,4 +1,4 @@
-package ui
+package color
 
 import (
 	"fmt"
@@ -34,14 +34,15 @@ type Spinner struct {
 
 	sg     *SpinnerGroup
 	curIdx int
+	c      color
 }
 
-func NewSpinner(label string) *Spinner {
-	return NewSpinnerWithGroup(label, nil)
+func (c color) NewSpinner(label string) *Spinner {
+	return c.NewSpinnerWithGroup(label, nil)
 }
 
-func NewSpinnerWithGroup(label string, sg *SpinnerGroup) *Spinner {
-	return &Spinner{label, spinnerTheme, Working, sg, 0}
+func (c color) NewSpinnerWithGroup(label string, sg *SpinnerGroup) *Spinner {
+	return &Spinner{label, spinnerTheme, Working, sg, 0, c}
 }
 
 func (s *Spinner) Do(fun func() error) error {
@@ -58,7 +59,7 @@ func (s *Spinner) Update() {
 		s.sg.Update()
 		return
 	}
-	Fprintf(os.Stdout, s.String())
+	s.c.Fprintf(os.Stdout, s.String())
 }
 
 func (s *Spinner) Fail() {

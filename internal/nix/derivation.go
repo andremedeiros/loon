@@ -43,6 +43,7 @@ inherit (pkgs) stdenv fetchurl mkShell;
 {{ end }}
 
 in mkShell {
+	name = "loon";
 	buildInputs = [{{ range $package := .Packages }}
 		{{ $package.Name }}
 	{{ end }}];

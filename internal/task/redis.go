@@ -1,6 +1,7 @@
 package task
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -14,31 +15,41 @@ func (*RedisInitialize) Header() string {
 	return "Initializing {blue:Redis}"
 }
 
-func (*RedisInitialize) Check(p *project.Project) (bool, error) {
+func (*RedisInitialize) Check(_ context.Context, p *project.Project) (bool, error) {
+	if !checkProjectHasDep(p, "redis") {
+		return true, nil
+	}
 	data := p.VariableDataPath("data", "redis")
 	_, err := os.Stat(data)
 	return err == nil, nil
 }
 
-func (*RedisInitialize) Resolve(p *project.Project) error {
+func (*RedisInitialize) Resolve(_ context.Context, p *project.Project) error {
 	data := p.VariableDataPath("data", "redis")
 	return os.MkdirAll(data, 0755)
 }
 
-type RedisStart struct{}
+func (*RedisInitialize) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+	return nil, nil
+}
+
+type RedisStart struct {
+	started bool
+}
 
 func (*RedisStart) Header() string {
 	return "Starting {blue:Redis}"
 }
 
-func (*RedisStart) Check(p *project.Project) (bool, error) {
-	if !checkProjectHasService(p, "Redis") {
+func (rs *RedisStart) Check(_ context.Context, p *project.Project) (bool, error) {
+	if !checkProjectHasDep(p, "redis") {
 		return true, nil
 	}
-	return checkHealth(p.IP, 6379), nil
+	return checkHealth(p.IP, 6379, rs.started), nil
 }
 
-func (*RedisStart) Resolve(p *project.Project) error {
+func (rs *RedisStart) Resolve(_ context.Context, p *project.Project) error {
+	rs.started = true
 	pid := p.VariableDataPath("pids", "redis.pid")
 	data := p.VariableDataPath("data", "redis")
 	exe := p.DerivationExecutor()
@@ -53,6 +64,13 @@ func (*RedisStart) Resolve(p *project.Project) error {
 	})
 }
 
+func (*RedisStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+	if checkProjectHasDep(p, "redis") {
+		return []string{fmt.Sprintf("REDIS_URL=redis://%s:6379", p.IP)}, nil
+	}
+	return nil, nil
+}
+
 type RedisStop struct {
 	killed bool
 }
@@ -61,26 +79,30 @@ func (*RedisStop) Header() string {
 	return "Stopping {blue:Redis}"
 }
 
-func (rs *RedisStop) Check(p *project.Project) (bool, error) {
-	if !checkProjectHasService(p, "Redis") || rs.killed {
+func (rs *RedisStop) Check(_ context.Context, p *project.Project) (bool, error) {
+	if !checkProjectHasDep(p, "redis") || rs.killed {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 6379), nil
+	return !checkHealth(p.IP, 6379, false), nil
 }
 
-func (rs *RedisStop) Resolve(p *project.Project) error {
+func (rs *RedisStop) Resolve(_ context.Context, p *project.Project) error {
 	rs.killed = true
 	pid := p.VariableDataPath("pids", "redis.pid")
 	return process.InterruptFromPidFile(pid)
+}
+
+func (*RedisStop) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+	return nil, nil
 }
 
 func init() {
 	RegisterTask("redis:initialize", &RedisInitialize{})
 	RegisterTask("redis:start", &RedisStart{})
 	RegisterTask("redis:stop", &RedisStop{})
-	Depends("redis:initialize", "derivation:current")
-	Depends("redis:start", "redis:initialize")
-	Depends("redis:start", "networking:start")
-	Depends("redis:stop", "derivation:current")
-	Depends("redis:stop", "command:down")
+	RunsAfter("derivation:current:up", "redis:initialize")
+	RunsAfter("redis:initialize", "redis:start")
+	RunsAfter("networking:start", "redis:start")
+	RunsAfter("derivation:current:down", "redis:stop")
+	RunsAfter("command:down", "redis:stop")
 }
