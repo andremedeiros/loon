@@ -16,7 +16,7 @@ func fromPayload(payload string) (*Project, error) {
 
 func TestNewFromPayload(t *testing.T) {
 	t.Run("invalid payload", func(t *testing.T) {
-		if _, err := fromPayload(`!`); err == nil {
+		if _, err := fromPayload(`!!!!!`); err == nil {
 			t.Errorf("expected error but didn't get one")
 		}
 	})
@@ -48,13 +48,13 @@ environment:
 		}
 	})
 
-	t.Run("payload with services", func(t *testing.T) {
-		payload := `name: Awesome Tool
-services:
-  postgresql:
-    version: 12.3
-  redis:
-    version: 6.0.4
+	t.Run("payload with deps", func(t *testing.T) {
+		payload := `
+name: Awesome Tool
+deps:
+  - postgresql: 12.3
+  - redis: 6.0.4
+  - golang: 1
 `
 
 		p, err := fromPayload(payload)
@@ -62,8 +62,8 @@ services:
 			t.Errorf("got %q", err)
 			return
 		}
-		if len(p.Services) != 2 {
-			t.Errorf("wanted 2 services, got %d", len(p.Services))
+		if len(p.Dependencies) != 3 {
+			t.Errorf("wanted 3 deps, got %d", len(p.Dependencies))
 		}
 	})
 

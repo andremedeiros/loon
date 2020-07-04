@@ -4,7 +4,7 @@ Made with :heart: by [Andre Medeiros](https://andre.cool)
 
 ## Show, don't tell
 
-[![asciicast](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1.png)](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1)
+[![asciicast](https://asciinema.org/a/3R3uiG2jTnW6Pb1wo6gFwRnah.png)](https://asciinema.org/a/3R3uiG2jTnW6Pb1wo6gFwRnah)
 
 ## What is it?
 
@@ -24,13 +24,11 @@ $ loon shellrc >> ~/.zshrc  # if you're a zsh user
 # ~/src/github.com/you/awesome-project/loon.yml
 name: Your Awesome Project
 url: https://github.com/you/awesome-project
-services:
-  postgres:
-  redis:
-languages:
-  ruby:
-    version: 2.7.1
-  node:
+deps:
+  - postgres
+  - redis
+  - ruby: 2.7.1
+  - node: latest
 tasks:
   setup:
     description: Fetches dependencies and runs database migrations

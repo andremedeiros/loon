@@ -7,29 +7,25 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/andremedeiros/loon/internal/catalog"
-	"github.com/andremedeiros/loon/internal/catalog/language"
-	"github.com/andremedeiros/loon/internal/catalog/service"
 	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/nix"
+
+	"gopkg.in/yaml.v3"
 )
 
 type Project struct {
-	Name        string              `yaml:"name"`
-	URL         string              `yaml:"url"`
-	Provider    string              `yaml:"provider"`
-	Services    []service.Service   `yaml:"services"`
-	Languages   []language.Language `yaml:"languages"`
-	Tasks       []Task              `yaml:"tasks"`
-	Environment map[string]string   `yaml:"environment"`
-	Path        string
-	ModTime     time.Time
-	IP          net.IP
+	Name         string
+	URL          string
+	Provider     string
+	Dependencies []Dependency
+	Tasks        []Task
+	Environment  map[string]string
+	Path         string
+	ModTime      time.Time
+	IP           net.IP
 
 	derivation *nix.Derivation
 }
@@ -54,7 +50,6 @@ func ipFromPath(path string) net.IP {
 }
 
 func (p *Project) Execute(args []string, opts ...executor.Option) error {
-	opts = append(opts, executor.WithEnviron(p.Environ()))
 	return p.derivation.Execute(args, opts...)
 }
 
@@ -63,43 +58,7 @@ func (p *Project) NeedsUpdate() bool {
 }
 
 func (p *Project) EnsureDependencies() error {
-	if !p.derivation.NeedsUpdate(p.ModTime) {
-		return nil
-	}
 	return p.derivation.Install()
-}
-
-func (p *Project) NeedsNetworking() bool {
-	ifis, err := net.Interfaces()
-	if err != nil {
-		return true
-	}
-	for _, ifi := range ifis {
-		addrs, err := ifi.Addrs()
-		if err != nil {
-			continue
-		}
-		for _, addr := range addrs {
-			if ipnet, ok := addr.(*net.IPNet); ok {
-				if ipnet.IP.Equal(p.IP) {
-					return false
-				}
-			}
-		}
-	}
-	return true
-}
-
-// TODO(andremedeiros): extract this into an OS dependent implementation
-func (p *Project) EnsureNetworking() error {
-	return executor.Execute([]string{
-		"sudo",
-		"ifconfig",
-		"lo0",
-		"alias",
-		p.IP.String(),
-		"255.255.255.0",
-	})
 }
 
 func FindInTree() (*Project, error) {
@@ -138,33 +97,12 @@ func fromPath(path string) (*Project, error) {
 	return p, nil
 }
 
-func (p *Project) Environ() []string {
-	environ := os.Environ()
-	paths := []string{}
-	for _, s := range p.Services {
-		environ = append(environ, s.Environ(p.IP, p.VDPath())...)
-	}
-	for _, l := range p.Languages {
-		environ = append(environ, l.Environ(p.VDPath())...)
-		paths = append(paths, l.BinPaths(p.VDPath())...)
-	}
-	for k, v := range p.Environment {
-		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
-	}
-	path := fmt.Sprintf("PATH=$HOST_PATH:%s:%s", strings.Join(paths, ":"), os.Getenv("PATH"))
-	environ = append(environ, path)
-	return environ
-}
-
 func (p *Project) ensurePaths() {
 	paths := []string{
-		p.VDPath(),
-		filepath.Join(p.VDPath(), "pids"),
-		filepath.Join(p.VDPath(), "sockets"),
-	}
-	for _, svc := range p.Services {
-		svcPath := filepath.Join(p.VDPath(), "data", svc.Identifier())
-		paths = append(paths, svcPath)
+		p.VariableDataPath(),
+		p.VariableDataPath("pids"),
+		p.VariableDataPath("sockets"),
+		p.VariableDataPath("data"),
 	}
 	for _, p := range paths {
 		os.MkdirAll(p, 0755)
@@ -175,95 +113,83 @@ func (p *Project) ensurePaths() {
 	}
 }
 
+func (p *Project) HostExecutor() executor.Executor {
+	return p
+}
+
+func (p *Project) DerivationExecutor() executor.Executor {
+	return p.derivation
+}
+
+func (p *Project) VariableDataPath(parts ...string) string {
+	parts = append([]string{p.Path, ".loon"}, parts...)
+	return filepath.Join(parts...)
+}
+
 func (p *Project) VDPath() string {
 	return filepath.Join(p.Path, ".loon")
 }
 
 func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	projectData := struct {
+	pd := struct {
 		Name        string
 		URL         string
 		Environment map[string]string
+		Deps        []interface{}
+		Tasks       map[string]map[string]string
 	}{}
 
-	if err := unmarshal(&projectData); err != nil {
+	if err := unmarshal(&pd); err != nil {
 		return err
 	}
 
-	p.Name = projectData.Name
-	p.URL = projectData.URL
-	p.Environment = projectData.Environment
+	p.Name = pd.Name
+	p.URL = pd.URL
+	p.Environment = pd.Environment
 
-	configData := struct {
-		Languages map[string]map[string]string `yaml:"languages"`
-		Services  map[string]map[string]string `yaml:"services"`
-		Tasks     map[string]map[string]string `yaml:"tasks"`
-	}{}
-
-	if err := unmarshal(&configData); err != nil {
-		return err
-	}
-
-	for serviceName, opts := range configData.Services {
-		version := "default"
-		if ver, ok := opts["version"]; ok {
-			version = ver
+	for _, dep := range pd.Deps {
+		name := ""
+		version := "latest"
+		switch dep.(type) {
+		case string:
+			name = dep.(string)
+		case map[string]interface{}:
+			for n, v := range dep.(map[string]interface{}) {
+				name = n
+				switch v.(type) {
+				case string:
+					version = v.(string)
+				case float64:
+					version = fmt.Sprintf("%g", v)
+				}
+			}
+		default:
+			return fmt.Errorf("specify dependencies as `dep` or `dep: version`")
 		}
-
-		svc, ok := service.Services[serviceName]
-		if !ok {
-			return fmt.Errorf("service not supported: %s", serviceName)
+		pkgs, err := catalog.Packages(name, version)
+		if err != nil {
+			return err
 		}
-
-		pkgs := catalog.Packages(svc.(catalog.Installable), version)
-		if len(pkgs) == 0 {
-			return fmt.Errorf("service not present in catalog: %s %s", serviceName, version)
-		}
-
 		for _, nixpkg := range pkgs {
 			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
 		}
-
-		p.Services = append(p.Services, svc)
+		d := Dependency{name, version, pkgs}
+		p.Dependencies = append(p.Dependencies, d)
 	}
-
-	if err := unmarshal(&projectData); err != nil {
-		return err
-	}
-
-	for languageName, opts := range configData.Languages {
-		version := "default"
-		if ver, ok := opts["version"]; ok {
-			version = ver
-		}
-
-		lang, ok := language.Languages[languageName]
-		if !ok {
-			return fmt.Errorf("language not supported: %s", languageName)
-		}
-
-		pkgs := catalog.Packages(lang.(catalog.Installable), version)
-		if len(pkgs) == 0 {
-			return fmt.Errorf("language not present in catalog: %s %s", languageName, version)
-		}
-
-		for _, nixpkg := range pkgs {
-			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
-		}
-
-		p.Languages = append(p.Languages, lang)
-	}
-
-	for taskName, opts := range configData.Tasks {
-		task := Task{Name: taskName}
+	for tn, opts := range pd.Tasks {
+		t := Task{Name: tn}
 		command, ok := opts["command"]
 		if !ok {
-			return fmt.Errorf("need command for task %s", taskName)
+			return fmt.Errorf("need command for task %s", tn)
 		}
-		task.Command = command
-		task.Description = opts["description"]
-		p.Tasks = append(p.Tasks, task)
+		t.Command = command
+		t.Description = opts["description"]
+		p.Tasks = append(p.Tasks, t)
 	}
 
 	return nil
+}
+
+func IsNotFound(err error) bool {
+	return (err == ErrProjectPayloadNotFound)
 }

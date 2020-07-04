@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -16,14 +17,14 @@ type Entry struct {
 	Packages PackageList
 }
 
-func EntryFor(software string, version string) Entry {
+func EntryFor(software string, version string) (Entry, error) {
 	for _, e := range List() {
 		if e.Name == software && e.Version == version {
-			return e
+			return e, nil
 		}
 	}
 
-	panic("no entry")
+	return Entry{}, fmt.Errorf("%s %s not supported", software, version)
 }
 
 func List() []Entry {
@@ -57,13 +58,7 @@ type Installable interface {
 	Versions() map[string][]string
 }
 
-func Packages(i Installable, version string) []nix.Package {
-	versions := i.Versions()
-	parts, ok := versions[version]
-	if !ok {
-		return nil
-	}
-
-	entry := EntryFor(parts[0], parts[1])
-	return entry.Packages
+func Packages(name string, version string) ([]nix.Package, error) {
+	e, err := EntryFor(name, version)
+	return e.Packages, err
 }

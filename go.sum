@@ -2,9 +2,11 @@ github.com/dyrkin/fsm v0.0.0-20200122091000-a8e19481365d h1:4u8bJT63H3nYqHBzM0XX
 github.com/dyrkin/fsm v0.0.0-20200122091000-a8e19481365d/go.mod h1:C+ACovlJ2843kzxjLkE0HMZyxB6OG39JkmCb43M339g=
 github.com/peterbourgon/usage v1.0.1 h1:Clwpoi24ldPcZdlNreEdkh/1RyV5mEnJh0A8t13d/Rk=
 github.com/peterbourgon/usage v1.0.1/go.mod h1:KBC4Y1vQmbn4b8YHk7r0TlVkByTasbseRBMSOz5o0d0=
+github.com/stevenle/topsort v0.0.0-20130922064739-8130c1d7596b h1:wJSBFlabo96ySlmSX0a02WAPyGxagzTo9c5sk3sHP3E=
+github.com/stevenle/topsort v0.0.0-20130922064739-8130c1d7596b/go.mod h1:YIyOMT17IKD8FbLO8RfCJZd2qAZiOnIfuYePIeESwWc=
 golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a h1:WXEvlFVvvGxCJLG6REjsT03iWnKLEWinaScsxF2Vm2o=
 golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
-gopkg.in/yaml.v2 v2.3.0 h1:clyUAQHOM3G0M3f5vQj7LuJrETvjVot3Z5el9nffUtU=
-gopkg.in/yaml.v2 v2.3.0/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 h1:tQIYjPdBoyREyB9XMu+nnTclpTYkz2zFM+lzLJFO4gQ=
+gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=

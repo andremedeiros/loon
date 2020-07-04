@@ -2,6 +2,7 @@ package executor
 
 import (
 	"io"
+	"os"
 	"os/exec"
 )
 
@@ -9,7 +10,7 @@ type Option func(*exec.Cmd)
 
 func WithEnviron(environ []string) Option {
 	return func(c *exec.Cmd) {
-		c.Env = environ
+		c.Env = append(os.Environ(), environ...)
 	}
 }
 
