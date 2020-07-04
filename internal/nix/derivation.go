@@ -59,12 +59,12 @@ in mkShell {
 	fd.Write(buf.Bytes())
 }
 
-func (d *Derivation) NeedsUpdate(since time.Time) bool {
-	fi, err := os.Stat(d.NixPath)
+func (d *Derivation) NeedsUpdate(payloadModified time.Time) bool {
+	nixModified, err := os.Stat(d.NixPath)
 	if err != nil {
 		return true
 	}
-	return fi.ModTime().Before(since)
+	return payloadModified.After(nixModified.ModTime())
 }
 
 func (d *Derivation) Install() error {
