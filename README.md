@@ -4,7 +4,7 @@ Made with :heart: by [Andre Medeiros](https://andre.cool)
 
 ## Show, don't tell
 
-[![asciicast](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1.png)](https://asciinema.org/a/jHsY8gOl46WQRSfNe3UJePNA1)
+[![asciicast](https://asciinema.org/a/3R3uiG2jTnW6Pb1wo6gFwRnah.png)](https://asciinema.org/a/3R3uiG2jTnW6Pb1wo6gFwRnah)
 
 ## What is it?
 
