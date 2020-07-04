@@ -92,3 +92,4 @@ Ruby|2.6.6, 2.7.1
 
 * [Mark Imbriaco](https://github.com/imbriaco) for gently guiding me on how to pass options to Postgres
 * [Burke Libbey](https://github.com/burke) for giving me the finalizers idea
+* [Jon Pulsifer](https://github.com/j0npulsifer) for showing me how to add network aliases on Linux
