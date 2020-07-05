@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require 'test_helper'
 
 class TestDoctor < Loon::Test
   def test_that_it_shows_error_on_sudo

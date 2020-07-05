@@ -42,6 +42,21 @@ module Loon
     include Minitest::Hooks
     include Assertions
 
+    def with_payload(name: "Test", url: "Test", deps: {}, tasks: {})
+      yml = YAML.dump({
+        'name' => name,
+        'url' => url,
+        'deps' => deps,
+        'tasks' => tasks,
+      })
+      Dir.mktmpdir do |tmpdir|
+        File.open(File.join(tmpdir, 'loon.yml'), 'w') do |f|
+          f.write(yml)
+        end
+        yield
+      end
+    end
+
     def with_config(cfg)
       home = Dir.mktmpdir
       with_environment(home: home) do

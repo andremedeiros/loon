@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require 'test_helper'
 
 class TestClone < Loon::Test
   # Ensure we run these tests in temporary home folders

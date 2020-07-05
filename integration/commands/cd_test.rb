@@ -1,4 +1,4 @@
-require_relative '../test_helper'
+require 'test_helper'
 
 class TestCd < Loon::Test
   def test_that_we_get_a_finisher
