@@ -12,17 +12,17 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build Loon
+      run: go build
+    - name: Test
+      run: go test ./...
     - name: Install Ruby
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7.1
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Build
-      run: go build
-    - name: Test
-      run: go test ./...
-    - name: Checkout code
-      uses: actions/checkout@v2
+        bundler-cache: true
     - run: bundle install
-    - run: ruby integration/**/*_test.rb
+    - name: Integration Tests
+      run: ruby integration/**/*_test.rb
