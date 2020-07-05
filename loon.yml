@@ -9,7 +9,6 @@ tasks:
     description: Pulls dependencies
     command: |
       go get -u github.com/go-bindata/go-bindata/...
-      go mod download
   build:
     description: Builds Loon
     command: |
