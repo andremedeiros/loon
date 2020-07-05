@@ -27,4 +27,4 @@ jobs:
     - name: Bundle Install
       run: bundle install
     - name: Integration Tests
-      run: ruby integration/**/*_test.rb
+      run: rake test

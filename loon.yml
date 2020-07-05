@@ -25,4 +25,4 @@ tasks:
     command: go test ./... -v -bench=. $@
   integration:
     description: Runs integration tests
-    command: ruby integration/**/*_test.rb
+    command: rake test

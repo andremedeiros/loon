@@ -22,6 +22,11 @@ module Assertions
   def assert_stdout(str)
     assert @last_stdout.include?(str), "Expected\n\n#{@last_stdout}\n\nto include\n\n#{str}\n"
   end
+
+  def assert_finalizer(type, content = nil)
+    assert @last_finalizer.start_with?("#{type}:"), "Expected finalizer to be #{type}"
+    assert @last_finalizer.end_with?(":#{content}"), "Expected finalizer to contain #{content} but instead it was #{@last_finalizer}" if content
+  end
 end
 
 module Loon
@@ -66,11 +71,28 @@ module Loon
 
     def loon(*args)
       cmd = args.prepend(LOON).flatten.map(&:to_s).join(' ')
-      out, err, status = Open3.capture3(ENV, cmd)
-
+      finalizer = Tempfile.new("finalizer")
+      script = Tempfile.new("script")
+      script.write <<~SH
+        __integration_test() {
+          exec 9>"#{finalizer.path}"
+          #{cmd}
+          ret=$?
+          exec 9<&-
+          return "$ret"
+        }
+        __integration_test
+      SH
+      script.close
+      FileUtils.chmod("+x", script.path)
+      out, err, status = Open3.capture3(ENV, script.path)
       @last_stdout = out
       @last_stderr = err
       @last_status = status.exitstatus
+      @last_finalizer = IO.read(finalizer.path).chomp
+    ensure
+      File.unlink(script.path)
+      File.unlink(finalizer.path)
     end
   end
 end
