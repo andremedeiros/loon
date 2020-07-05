@@ -1,7 +1,10 @@
-require 'minitest/autorun'
-require 'minitest/pride'
+require 'fileutils'
 require 'open3'
 require 'pathname'
+require 'yaml'
+
+require 'minitest/autorun'
+require 'minitest/pride'
 
 ROOT = Pathname(__FILE__).dirname.dirname
 LOON = ROOT.join('loon')
@@ -27,11 +30,28 @@ module Assertions
     assert @last_finalizer.start_with?("#{type}:"), "Expected finalizer to be #{type}"
     assert @last_finalizer.end_with?(":#{content}"), "Expected finalizer to contain #{content} but instead it was #{@last_finalizer}" if content
   end
+
+  def assert_path(path)
+    assert Dir.exist?(path), "Expected #{path} to exist"
+  end
 end
 
 module Loon
   class Test < Minitest::Test
     include Assertions
+
+    def with_config(cfg)
+      home = Dir.mktmpdir
+      with_environment(home: home) do
+        FileUtils.mkdir_p File.join(home, '.config', 'loon')
+        File.open(File.join(home, '.config', 'loon', 'config.yml'), 'w') do |f|
+          cfg.each { |k, v| f.write("#{k}: #{v}\n") }
+        end
+        yield
+      end
+    ensure
+      FileUtils.remove_entry home
+    end
 
     def with_environment(env)
       previous_env = {}
