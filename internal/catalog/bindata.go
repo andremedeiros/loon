@@ -535,7 +535,7 @@ func ruby266Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 298, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
+	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 298, mode: os.FileMode(420), modTime: time.Unix(1593974633, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -5,6 +5,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest]
+        tag: ["~dependency" "dependency:ruby"]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
@@ -27,4 +28,4 @@ jobs:
     - name: Bundle Install
       run: bundle install
     - name: Integration Tests
-      run: rake test
+      run: bundle exec rspec --tag ${{ matrix.tag }}

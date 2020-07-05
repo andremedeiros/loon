@@ -25,4 +25,7 @@ tasks:
     command: go test ./... -v -bench=. $@
   integration:
     description: Runs integration tests
-    command: rake test
+    command: bundle exec rspec --tag "~dependency"
+  integration:dependency:
+    description: Runs integration tests (with dependencies)
+    command: bundle exec rspec
