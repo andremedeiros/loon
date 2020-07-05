@@ -18,6 +18,10 @@ module Assertions
   def assert_stderr(str)
     assert @last_stderr.include?(str), "Expected\n\n#{@last_stderr}\n\nto include\n\n#{str}\n"
   end
+
+  def assert_stdout(str)
+    assert @last_stdout.include?(str), "Expected\n\n#{@last_stdout}\n\nto include\n\n#{str}\n"
+  end
 end
 
 module Loon

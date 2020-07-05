@@ -18,4 +18,11 @@ class TestDoctor < Loon::Test
     assert_status 0
     assert_stderr "cannot find nix utility: nix"
   end
+
+  def test_it_shows_no_errors_when_all_is_good
+    loon %(doctor)
+
+    assert_status 0
+    assert_stdout "You're all good!"
+  end
 end
