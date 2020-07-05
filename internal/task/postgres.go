@@ -114,9 +114,9 @@ func init() {
 	RegisterTask("postgres:initialize", &PostgresInitialize{})
 	RegisterTask("postgres:start", &PostgresStart{})
 	RegisterTask("postgres:stop", &PostgresStop{})
-	RunsAfter("derivation:current:up", "postgres:initialize")
-	RunsAfter("postgres:initialize", "postgres:start")
-	RunsAfter("networking:start", "postgres:start")
-	RunsAfter("derivation:current:down", "postgres:stop")
 	RunsAfter("command:down", "postgres:stop")
+	RunsAfter("derivation:current:down", "postgres:stop")
+	RunsAfter("derivation:current:up", "postgres:initialize")
+	RunsAfter("networking:start", "postgres:start")
+	RunsAfter("postgres:initialize", "postgres:start")
 }

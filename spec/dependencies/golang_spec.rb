@@ -26,7 +26,5 @@ describe 'Dependencies' do
     it 'installs version 1.14.4 as the default' do
       test_golang_dep match: '1.14.4'
     end
-
   end
 end
-

@@ -71,7 +71,8 @@ func (*MemcachedStop) Environ(_ context.Context, p *project.Project) (Environ, B
 func init() {
 	RegisterTask("memcached:start", &MemcachedStart{})
 	RegisterTask("memcached:stop", &MemcachedStop{})
-	RunsAfter("networking:start", "memcached:start")
 	RunsAfter("command:down", "memcached:stop")
 	RunsAfter("derivation:current:down", "memcached:stop")
+	RunsAfter("derivation:current:up", "memcached:start")
+	RunsAfter("networking:start", "memcached:start")
 }

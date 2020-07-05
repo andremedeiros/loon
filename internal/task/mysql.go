@@ -106,9 +106,9 @@ func init() {
 	RegisterTask("mysql:initialize", &MysqlInitialize{})
 	RegisterTask("mysql:start", &MysqlStart{})
 	RegisterTask("mysql:stop", &MysqlStop{})
+	RunsAfter("command:down", "mysql:stop")
+	RunsAfter("derivation:current:down", "mysql:stop")
 	RunsAfter("derivation:current:up", "mysql:initialize")
 	RunsAfter("mysql:initialize", "mysql:start")
 	RunsAfter("networking:start", "mysql:start")
-	RunsAfter("derivation:current:down", "mysql:stop")
-	RunsAfter("command:down", "mysql:stop")
 }
