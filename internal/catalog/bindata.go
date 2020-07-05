@@ -115,7 +115,7 @@ func crystal0351Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "crystal/0.35.1.json", size: 701, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "crystal/0.35.1.json", size: 701, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -135,7 +135,7 @@ func crystalLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "crystal/latest.json", size: 701, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "crystal/latest.json", size: 701, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -155,7 +155,7 @@ func golang11312Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.13.12.json", size: 190, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "golang/1.13.12.json", size: 190, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -175,7 +175,7 @@ func golang1144Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.14.4.json", size: 183, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "golang/1.14.4.json", size: 183, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -195,7 +195,7 @@ func golangLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/latest.json", size: 183, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "golang/latest.json", size: 183, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -215,7 +215,7 @@ func memcached165Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.5.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.5.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -235,7 +235,7 @@ func memcached166Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.6.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.6.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -255,7 +255,7 @@ func memcachedLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/latest.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "memcached/latest.json", size: 195, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -275,7 +275,7 @@ func mysql8017Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "mysql/8.0.17.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "mysql/8.0.17.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -295,7 +295,7 @@ func mysqlLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "mysql/latest.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "mysql/latest.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -315,7 +315,7 @@ func node12181Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/12.18.1.json", size: 203, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "node/12.18.1.json", size: 203, mode: os.FileMode(420), modTime: time.Unix(1592875528, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -335,7 +335,7 @@ func node1440Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/14.4.0.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "node/14.4.0.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1592875528, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -355,7 +355,7 @@ func nodeLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/latest.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "node/latest.json", size: 194, mode: os.FileMode(420), modTime: time.Unix(1592875528, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -375,7 +375,7 @@ func postgresql1013Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/10.13.json", size: 202, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/10.13.json", size: 202, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -395,7 +395,7 @@ func postgresql118Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/11.8.json", size: 199, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/11.8.json", size: 199, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -415,7 +415,7 @@ func postgresql123Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/12.3.json", size: 211, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/12.3.json", size: 211, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -435,7 +435,7 @@ func postgresql9522Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.5.22.json", size: 205, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/9.5.22.json", size: 205, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -455,7 +455,7 @@ func postgresql9618Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.6.18.json", size: 205, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/9.6.18.json", size: 205, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -475,7 +475,7 @@ func postgresqlLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/latest.json", size: 211, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "postgresql/latest.json", size: 211, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -495,7 +495,7 @@ func redis604Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "redis/6.0.4.json", size: 193, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "redis/6.0.4.json", size: 193, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -515,7 +515,7 @@ func redisLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "redis/latest.json", size: 193, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "redis/latest.json", size: 193, mode: os.FileMode(420), modTime: time.Unix(1592873462, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -535,7 +535,7 @@ func ruby266Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 298, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "ruby/2.6.6.json", size: 298, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -555,7 +555,7 @@ func ruby271Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.7.1.json", size: 302, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "ruby/2.7.1.json", size: 302, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -575,7 +575,7 @@ func rubyLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/latest.json", size: 302, mode: os.FileMode(420), modTime: time.Unix(1593889513, 0)}
+	info := bindataFileInfo{name: "ruby/latest.json", size: 302, mode: os.FileMode(420), modTime: time.Unix(1593045091, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

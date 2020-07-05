@@ -6,6 +6,8 @@ import (
 
 	"github.com/andremedeiros/loon/cmd"
 	"github.com/andremedeiros/loon/internal/ui/color"
+
+	_ "github.com/go-bindata/go-bindata"
 )
 
 func main() {

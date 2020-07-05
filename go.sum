@@ -1,5 +1,7 @@
 github.com/dyrkin/fsm v0.0.0-20200122091000-a8e19481365d h1:4u8bJT63H3nYqHBzM0XXz+9E2m1CAvkp4/I1nWXG8O4=
 github.com/dyrkin/fsm v0.0.0-20200122091000-a8e19481365d/go.mod h1:C+ACovlJ2843kzxjLkE0HMZyxB6OG39JkmCb43M339g=
+github.com/go-bindata/go-bindata v3.1.2+incompatible h1:5vjJMVhowQdPzjE1LdxyFF7YFTXg5IgGVW4gBr5IbvE=
+github.com/go-bindata/go-bindata v3.1.2+incompatible/go.mod h1:xK8Dsgwmeed+BBsSy2XTopBn/8uK2HWuGSnA11C3Joo=
 github.com/peterbourgon/usage v1.0.1 h1:Clwpoi24ldPcZdlNreEdkh/1RyV5mEnJh0A8t13d/Rk=
 github.com/peterbourgon/usage v1.0.1/go.mod h1:KBC4Y1vQmbn4b8YHk7r0TlVkByTasbseRBMSOz5o0d0=
 github.com/stevenle/topsort v0.0.0-20130922064739-8130c1d7596b h1:wJSBFlabo96ySlmSX0a02WAPyGxagzTo9c5sk3sHP3E=

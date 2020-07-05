@@ -80,7 +80,7 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 		// Set up environment
 		sg.Finish()
 		path := os.Getenv("PATH")
-		envs = append(envs, fmt.Sprintf("%s:%s", strings.Join(bins, ":"), path))
+		envs = append(envs, fmt.Sprintf("PATH=%s:%s", strings.Join(bins, ":"), path))
 		if err := fun(envs); err != nil {
 			errs <- err
 		}
