@@ -6,19 +6,27 @@ import (
 	"time"
 )
 
+var ErrSudoNotEnabled = errors.New("sudo not enabled for this user")
+
 func Sudo() error {
 	cmd := exec.Command("sudo", "true")
-	cmd.Start()
-
-	done := make(chan error)
-	go func() { done <- cmd.Wait() }()
+	errs := make(chan error)
+	go func() {
+		err := cmd.Run()
+		code := cmd.ProcessState.ExitCode()
+		if err != nil || code != 0 {
+			errs <- ErrSudoNotEnabled
+		} else {
+			errs <- nil
+		}
+	}()
 
 	timeout := time.After(2 * time.Second)
 	select {
 	case <-timeout:
 		cmd.Process.Kill()
-		return errors.New("sudo not enabled in this system")
-	case <-done:
-		return nil
+		return ErrSudoNotEnabled
+	case err := <-errs:
+		return err
 	}
 }

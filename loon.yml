@@ -4,11 +4,13 @@ environment:
   LOON: Was here
 deps:
   - golang: 1.14.4
+  - ruby: 2.7.1
 tasks:
   setup:
     description: Pulls dependencies
     command: |
       go get -u github.com/go-bindata/go-bindata/...
+      bundle check || bundle install
   build:
     description: Builds Loon
     command: |
@@ -21,3 +23,6 @@ tasks:
   bench:
     description: Runs go tests with benchmark
     command: go test ./... -v -bench=. $@
+  integration:
+    description: Runs integration tests
+    command: ruby integration/**/*_test.rb
