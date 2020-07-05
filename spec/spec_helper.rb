@@ -115,9 +115,8 @@ module Helpers
     script.write <<~SH
       __integration_test() {
         exec 9>"#{finalizer.path}"
-        pushd #{opts[:dir] || Dir.pwd} >/dev/null
+        cd #{opts[:dir] || Dir.pwd}
         #{cmd}
-        popd >/dev/null
         ret=$?
         exec 9<&-
         return "$ret"

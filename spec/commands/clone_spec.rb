@@ -10,7 +10,6 @@ describe 'Commands' do
       with_config(source_tree: '$HOME/{owner}/{name}') do
         loon %w(clone andremedeiros/ruby-demo)
 
-        assert_stderr_empty
         assert_path "#{ENV['HOME']}/andremedeiros/ruby-demo/.git"
         assert_status 0
       end
@@ -19,7 +18,6 @@ describe 'Commands' do
     it 'should check out a repo' do
       loon %w(clone andremedeiros/ruby-demo)
 
-      assert_stderr_empty
       assert_path "#{ENV['HOME']}/src/github.com/andremedeiros/ruby-demo/.git"
       assert_status 0
     end
@@ -27,7 +25,6 @@ describe 'Commands' do
     it 'should emit a finisher' do
       loon %w(clone andremedeiros/ruby-demo)
 
-      assert_stderr_empty
       assert_finalizer 'chdir', "#{ENV['HOME']}/src/github.com/andremedeiros/ruby-demo"
       assert_status 0
     end
