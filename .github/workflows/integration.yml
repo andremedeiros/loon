@@ -16,6 +16,10 @@ jobs:
       with:
         ruby-version: 2.7.1
         bundler-cache: true
+    - name: Install Nix
+      uses: cachix/install-nix-action@v10
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Build Loon
