@@ -41,7 +41,7 @@ func NewRepository(nameWithOwner string) Repository {
 }
 
 func (ghr *GitHubRepository) Clone(path string) error {
-	remote := ghr.CheckoutURL(true)
+	remote := ghr.CheckoutURL(false)
 	workdir := filepath.Dir(path)
 	os.MkdirAll(workdir, 0755)
 	cmd := exec.Command("git", "-C", workdir, "clone", remote)
@@ -67,8 +67,8 @@ func (ghr *GitHubRepository) URL() string {
 	return fmt.Sprintf("https://github.com/%s/%s", ghr.owner, ghr.name)
 }
 
-func (ghr *GitHubRepository) CheckoutURL(useSecure bool) string {
-	if useSecure {
+func (ghr *GitHubRepository) CheckoutURL(useSSH bool) string {
+	if useSSH {
 		return fmt.Sprintf("git@github.com:%s/%s.git", ghr.owner, ghr.name)
 	}
 

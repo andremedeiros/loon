@@ -12,8 +12,6 @@ class TestClone < Loon::Test
     with_config(source_tree: '$HOME/{owner}/{name}') do
       loon %w(clone andremedeiros/ruby-demo)
 
-      puts @last_stdout
-      puts @last_stderr
       assert_status 0
       assert_path "#{ENV['HOME']}/andremedeiros/ruby-demo/.git"
     end
