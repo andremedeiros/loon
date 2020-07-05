@@ -5,7 +5,7 @@ jobs:
     strategy:
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        tag: [command, ruby]
+        tag: [command, crystal, ruby]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
