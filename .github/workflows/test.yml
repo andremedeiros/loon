@@ -29,5 +29,5 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - run: bundle install
-    - run: ruby test/**/*_test.rb
+    - run: ruby integration/**/*_test.rb
 
