@@ -2,6 +2,10 @@ on: [push, pull_request]
 name: Integration
 jobs:
   integration:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
