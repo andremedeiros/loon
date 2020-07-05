@@ -1,12 +1,36 @@
 on: [push, pull_request]
 name: Test
+job: &job
+  strategy:
+    matrix:
+      go-version: [1.13.x, 1.14.x]
+      platform: [ubuntu-latest, macos-latest]
+      ruby-version: 2.7.1
+  runs-on: ${{ matrix.platform }}
+
 jobs:
+  integration:
+    <<: &job
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build Loon
+      run: go build
+    - name: Install Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true
+    - name: Bundle Install
+      run: bundle install
+    - name: Integration Tests
+      run: ruby integration/**/*_test.rb
   test:
-    strategy:
-      matrix:
-        go-version: [1.13.x, 1.14.x]
-        platform: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
+    <<: &job
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
@@ -18,11 +42,3 @@ jobs:
       run: go build
     - name: Test
       run: go test ./...
-    - name: Install Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7.1
-        bundler-cache: true
-    - run: bundle install
-    - name: Integration Tests
-      run: ruby integration/**/*_test.rb
