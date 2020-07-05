@@ -1,5 +1,5 @@
 describe 'Dependencies' do
-  describe 'Ruby' do
+  describe 'Ruby', dependency: true, ruby: true do
     def test_ruby_dep(version: nil, match:)
       dep = if version
               {'ruby' => version}
@@ -18,12 +18,12 @@ describe 'Dependencies' do
     end
 
     %w(2.6.6 2.7.1).each do |version|
-      it "installs version #{version} correctly", dependency: 'ruby' do
+      it "installs version #{version} correctly" do
         test_ruby_dep version: version, match: version
       end
     end
 
-    it 'installs version 2.7.1 as the default', dependency: 'ruby' do
+    it 'installs version 2.7.1 as the default' do
       test_ruby_dep match: '2.7.1'
     end
   end

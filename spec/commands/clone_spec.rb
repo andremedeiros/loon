@@ -1,5 +1,5 @@
 describe 'Commands' do
-  describe 'clone' do
+  describe 'clone', command: true do
     around(:each) do |example|
       with_environment(home: Dir.mktmpdir) do
         example.run

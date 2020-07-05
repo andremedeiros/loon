@@ -1,5 +1,5 @@
 describe 'Commands' do
-  describe 'cd' do
+  describe 'cd', command: true do
     it 'should emit a finisher' do
       loon %w(cd andremedeiros/loon)
 

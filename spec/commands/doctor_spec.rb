@@ -1,5 +1,5 @@
 describe 'Commands' do
-  describe 'doctor' do
+  describe 'doctor', command: true do
     it 'should show error when sudo fails' do
       with_command_mock('sudo', 'exit 1') do
         loon %w(doctor)
