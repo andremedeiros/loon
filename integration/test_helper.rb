@@ -38,9 +38,13 @@ module Assertions
 end
 
 module Loon
-  class Test < Minitest::Test
+  class Test < Minitest::Spec
     include Minitest::Hooks
     include Assertions
+
+    def dependency_test(dep)
+      skip "Not running dependency tests for #{dep}" unless ENV['DEPENDENCY'] && ENV["DEPENDENCY_#{lang.to_s.upcase}"]
+    end
 
     def with_payload(name: "Test", url: "Test", deps: [], tasks: [])
       deps = deps.is_a?(Array) ? deps : [deps]

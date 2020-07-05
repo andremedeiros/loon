@@ -1,24 +1,32 @@
 require 'test_helper'
 
 class TestRuby < Loon::Test
-  def test_versions
+  def test_ruby_versions
+    dependency_test :ruby
     %w(2.6.6 2.7.1).each do |version|
-      with_payload(deps: {'ruby' => version}) do
-        loon %w(exec ruby --version)
-
-        assert_status 0
-        assert_stdout version
-      end
+      test_ruby_dep version: version, match: version
     end
   end
 
   def test_default
-    with_payload(deps: 'ruby') do
+    dependency_test :ruby
+    test_ruby_dep match: '2.7.1'
+  end
+
+  private
+
+  def test_ruby_dep(version: nil, match:)
+    dep = if version
+            {'ruby' => version}
+          else
+            'ruby'
+          end
+
+    with_payload(deps: dep) do
       loon %w(exec ruby --version)
 
       assert_status 0
-      assert_stdout '2.7.1'
+      assert_stdout match
     end
   end
 end
-

@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    minispec-metadata (3.3.1)
+      minitest
     minitest (5.14.1)
     minitest-hooks (1.5.0)
       minitest (> 5.3)
@@ -10,6 +12,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  minispec-metadata (~> 3.3.1)
   minitest (~> 5.14.1)
   minitest-hooks (~> 1.5.0)
   rake (~> 13.0.1)
