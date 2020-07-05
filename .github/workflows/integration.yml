@@ -1,0 +1,22 @@
+on: [push, pull_request]
+name: Integration
+jobs:
+  integration:
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.14.x
+    - name: Install Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+        bundler-cache: true
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build Loon
+      run: go build
+    - name: Bundle Install
+      run: bundle install
+    - name: Integration Tests
+      run: ruby integration/**/*_test.rb
