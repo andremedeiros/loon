@@ -11,5 +11,14 @@ class TestRuby < Loon::Test
       end
     end
   end
+
+  def test_default
+    with_payload(deps: 'ruby') do
+      loon %w(exec ruby --version)
+
+      assert_status 0
+      assert_stdout '2.7.1'
+    end
+  end
 end
 

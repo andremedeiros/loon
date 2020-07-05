@@ -42,13 +42,17 @@ module Loon
     include Minitest::Hooks
     include Assertions
 
-    def with_payload(name: "Test", url: "Test", deps: {}, tasks: {})
+    def with_payload(name: "Test", url: "Test", deps: [], tasks: [])
+      deps = deps.is_a?(Array) ? deps : [deps]
+      tasks = tasks.is_a?(Array) ? tasks : [tasks]
+
       yml = YAML.dump({
         'name' => name,
         'url' => url,
         'deps' => deps,
         'tasks' => tasks,
       })
+
       Dir.mktmpdir do |tmpdir|
         File.open(File.join(tmpdir, 'loon.yml'), 'w') do |f|
           f.write(yml)
