@@ -1,6 +1,13 @@
 require_relative '../test_helper'
 
 class TestClone < Loon::Test
+  # Ensure we run these tests in temporary home folders
+  def around
+    with_environment(home: Dir.mktmpdir) do
+      super
+    end
+  end
+
   def test_that_clone_respects_source_tree
     with_config(source_tree: '$HOME/{owner}/{name}') do
       loon %w(clone andremedeiros/ruby-demo)

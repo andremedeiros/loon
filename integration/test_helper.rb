@@ -4,6 +4,7 @@ require 'pathname'
 require 'yaml'
 
 require 'minitest/autorun'
+require 'minitest/hooks/default'
 require 'minitest/pride'
 
 ROOT = Pathname(__FILE__).dirname.dirname
@@ -38,6 +39,7 @@ end
 
 module Loon
   class Test < Minitest::Test
+    include Minitest::Hooks
     include Assertions
 
     def with_config(cfg)
