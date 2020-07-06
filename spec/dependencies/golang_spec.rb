@@ -3,12 +3,12 @@ describe 'Dependencies' do
     versions, latest = versions_for :golang
 
     versions.each do |version|
-      it "installs version #{version} correctly" do
+      it "installs v#{version} correctly" do
         test_dep 'golang', version: version, cmd: 'go version', match: version
       end
     end
 
-    it "installs version #{latest} as the default" do
+    it "installs v#{latest} as the default" do
       test_dep 'golang', cmd: 'go version', match: latest
     end
   end

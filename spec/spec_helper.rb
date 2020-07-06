@@ -41,7 +41,12 @@ module Assertions
   end
 
   def assert_stdout(str)
-    expect(@last_stdout).to include(str)
+    case str
+    when String then expect(@last_stdout).to include(str)
+    when Regexp then expect(@last_stdout).to match(str)
+    else raise "Not sure how to deal with #{str.class}"
+    end
+
   end
 
   def assert_finalizer(type, content = nil)
@@ -50,7 +55,7 @@ module Assertions
   end
 
   def assert_path(path)
-    expect(Dir.exist?(path)).to be_truthy
+    expect(File.exist?(path)).to be_truthy
   end
 end
 
@@ -66,13 +71,15 @@ module Helpers
             name
           end
 
-    with_payload(deps: dep) do |project|
-      loon %w(up), dir: project
-      loon ['exec', cmd], dir: project
+    with_payload(deps: dep) do
+      loon %w(up)
+      loon ['exec', cmd]
 
       assert_stderr_empty
       assert_stdout match
       assert_status 0
+    ensure
+      loon %(down)
     end
   end
 
@@ -90,7 +97,10 @@ module Helpers
       File.open(File.join(tmpdir, 'loon.yml'), 'w') do |f|
         f.write(yml)
       end
+      @project_dir = tmpdir
       yield tmpdir
+    ensure
+      @project_dir = nil
     end
   end
 
@@ -151,7 +161,7 @@ module Helpers
     script.write <<~SH
       __integration_test() {
         exec 9>"#{finalizer.path}"
-        cd #{opts[:dir] || Dir.pwd}
+        cd #{opts[:dir] || @project_dir || Dir.pwd}
         #{cmd}
         ret=$?
         exec 9<&-

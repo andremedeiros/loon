@@ -3,12 +3,12 @@ describe 'Dependencies' do
     versions, latest = versions_for :redis
 
     versions.each do |version|
-      it "installs version #{version} correctly" do
+      it "installs v#{version} correctly" do
         test_dep 'redis', cmd: 'redis-cli --version', version: version, match: version
       end
     end
 
-    it "installs version #{latest} as the default" do
+    it "installs v#{latest} as the default" do
       test_dep 'redis', cmd: 'redis-cli --version', match: latest
     end
   end
