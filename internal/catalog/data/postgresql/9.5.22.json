@@ -1,7 +1,7 @@
 {
-  "postgresql": {
+  "postgresql_9_5": {
     "version": "9.5.22",
     "url": "https://ftp.postgresql.org/pub/source/v9.5.22/postgresql-9.5.22.tar.gz",
-    "sha256": "03v4d4nr9f86y0i1j5jmvfan5w8y4ga1mar59lhcnj3jl5q58ma8"
+    "sha256": "0vapi50g6i0qh5bd8svf29aj6j1l5x3brk1kn1rnkski6lvfsxz9"
   }
 }
