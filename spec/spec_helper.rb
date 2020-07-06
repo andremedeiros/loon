@@ -70,6 +70,7 @@ module Helpers
       loon %w(up), dir: project
       loon ['exec', cmd], dir: project
 
+      puts @last_stderr
       assert_stderr_empty
       assert_stdout match
       assert_status 0
