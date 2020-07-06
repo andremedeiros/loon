@@ -44,6 +44,7 @@ func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project) error {
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{
 		"mysqld",
+		"--no-defaults",
 		"--initialize-insecure",
 		fmt.Sprintf("--datadir=%s", data),
 		fmt.Sprintf("--log-error=%s", logerr),
@@ -81,6 +82,7 @@ func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project) error {
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{
 		"mysqld",
+		"--no-defaults",
 		"--daemonize",
 		fmt.Sprintf("--pid-file=%s", pid),
 		fmt.Sprintf("--datadir=%s", data),
