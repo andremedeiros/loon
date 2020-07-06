@@ -415,7 +415,7 @@ func postgresql123Json() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/12.3.json", size: 214, mode: os.FileMode(420), modTime: time.Unix(1594056248, 0)}
+	info := bindataFileInfo{name: "postgresql/12.3.json", size: 214, mode: os.FileMode(420), modTime: time.Unix(1594056473, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -475,7 +475,7 @@ func postgresqlLatestJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/latest.json", size: 214, mode: os.FileMode(420), modTime: time.Unix(1594056248, 0)}
+	info := bindataFileInfo{name: "postgresql/latest.json", size: 214, mode: os.FileMode(420), modTime: time.Unix(1594056473, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

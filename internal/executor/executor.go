@@ -10,13 +10,11 @@ type Executor interface {
 	Execute([]string, ...Option) error
 }
 
-func Execute(cmd []string, opts ...Option) error {
-	name := cmd[0]
-	args := cmd[1:]
+func Execute(args []string, opts ...Option) error {
 	stdout := bytes.Buffer{}
 	stderr := bytes.Buffer{}
 	{
-		cmd := exec.Command(name, args...)
+		cmd := exec.Command(args[0], args[1:]...)
 		cmd.Stdout = bufio.NewWriter(&stdout)
 		cmd.Stderr = bufio.NewWriter(&stderr)
 
@@ -27,7 +25,7 @@ func Execute(cmd []string, opts ...Option) error {
 		err := cmd.Run()
 		code := cmd.ProcessState.ExitCode()
 		if err != nil {
-			err = NewExecutionError(err, code, stdout, stderr)
+			err = NewExecutionError(err, args, code, stdout, stderr)
 		}
 		return err
 	}
