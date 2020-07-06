@@ -3,6 +3,7 @@ name: Integration
 jobs:
   integration:
     strategy:
+      fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
         tag: [command, crystal, golang, memcached, mysql, node, postgres, redis, ruby]
