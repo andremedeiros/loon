@@ -70,8 +70,6 @@ module Helpers
       loon %w(up), dir: project
       loon ['exec', cmd], dir: project
 
-      puts @last_stderr
-      puts `cat #{project}/.loon/data/mysql/mysqld.err`
       assert_stderr_empty
       assert_stdout match
       assert_status 0
