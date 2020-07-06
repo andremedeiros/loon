@@ -84,7 +84,7 @@ func (*MysqlStop) Check(_ context.Context, p *project.Project) (bool, error) {
 	if !checkProjectHasDep(p, "mysql") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 3306, false), nil
+	return checkDown(p.IP, 3306, false), nil
 }
 
 func (*MysqlStop) Resolve(_ context.Context, p *project.Project) error {

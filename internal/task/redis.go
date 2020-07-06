@@ -83,7 +83,7 @@ func (rs *RedisStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	if !checkProjectHasDep(p, "redis") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 6379, rs.killed), nil
+	return checkDown(p.IP, 6379, rs.killed), nil
 }
 
 func (rs *RedisStop) Resolve(_ context.Context, p *project.Project) error {

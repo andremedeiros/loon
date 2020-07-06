@@ -47,7 +47,7 @@ func (*RubyInitialize) Environ(_ context.Context, p *project.Project) (Environ, 
 		return nil, nil
 	}
 	bin := p.VariableDataPath("data", "gem", "bin")
-	return nil, []string{bin}
+	return rubyEnviron(p), []string{bin}
 }
 
 func init() {

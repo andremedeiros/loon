@@ -44,6 +44,30 @@ func RunsAfter(on string, what string) {
 	graph.AddEdge(on, what)
 }
 
+func checkDown(ip net.IP, port int, wait bool) bool {
+	done := make(chan bool)
+	go func() {
+		hp := fmt.Sprintf("%s:%d", ip, port)
+		for {
+			conn, err := net.Dial("tcp", hp)
+			if conn != nil {
+				conn.Close()
+			}
+			isDown := (err != nil)
+			if !isDown && wait {
+				continue
+			}
+			done <- isDown
+		}
+	}()
+	select {
+	case down := <-done:
+		return down
+	case <-time.After(5000 * time.Millisecond):
+		return false
+	}
+}
+
 func checkHealth(ip net.IP, port int, waitUp bool) bool {
 	done := make(chan bool)
 	go func() {

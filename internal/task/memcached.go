@@ -55,7 +55,7 @@ func (ms *MemcachedStop) Check(_ context.Context, p *project.Project) (bool, err
 	if !checkProjectHasDep(p, "memcached") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 11211, ms.killed), nil
+	return checkDown(p.IP, 11211, ms.killed), nil
 }
 
 func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project) error {

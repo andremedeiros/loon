@@ -93,7 +93,7 @@ func (*PostgresStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	if !checkProjectHasDep(p, "postgresql") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 5432, false), nil
+	return checkDown(p.IP, 5432, false), nil
 }
 
 func (*PostgresStop) Resolve(_ context.Context, p *project.Project) error {
