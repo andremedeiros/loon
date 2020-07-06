@@ -1,15 +1,15 @@
 describe 'Dependencies' do
-  describe 'Ruby', dependency: true, ruby: true do
-    versions, latest = versions_for :ruby
+  describe 'Redis', dependency: true, redis: true do
+    versions, latest = versions_for :redis
 
     versions.each do |version|
       it "installs version #{version} correctly" do
-        test_dep 'ruby', version: version, match: version
+        test_dep 'redis', version: version, match: version
       end
     end
 
     it "installs version #{latest} as the default" do
-      test_dep 'ruby', match: latest
+      test_dep 'redis', match: latest
     end
   end
 end

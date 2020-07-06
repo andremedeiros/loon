@@ -1,9 +1,27 @@
+require 'bundler'
 require 'byebug'
 require 'tempfile'
 require 'fileutils'
 require 'open3'
 require 'pathname'
 require 'yaml'
+
+# This sits outside a module as it requires access
+# outside `it` blocks.
+def versions_for(name)
+  files = Dir["internal/catalog/data/#{name}/*.json"]
+  latest = nil
+  versions = []
+
+  files.each do |f|
+    case base = File.basename(f, ".json")
+    when 'latest' then latest = File.basename(File.readlink(f), ".json")
+    else versions << base
+    end
+  end
+
+  [versions.sort, latest]
+end
 
 module Assertions
   def assert_status(status)
@@ -39,6 +57,24 @@ end
 module Helpers
   ROOT = Pathname(__FILE__).dirname.dirname
   LOON = ROOT.join('loon')
+
+  def test_dep(name, version: nil, cmd: nil, match:)
+    cmd ||= "#{name} --version"
+    dep = if version
+            {name => version}
+          else
+            name
+          end
+
+    with_payload(deps: dep) do |project|
+      loon %w(up), dir: project
+      loon ['exec', cmd], dir: project
+
+      assert_stderr_empty
+      assert_stdout match
+      assert_status 0
+    end
+  end
 
   def with_payload(name: "Test", url: "Test", deps: [], tasks: {})
     deps = deps.is_a?(Array) ? deps : [deps]

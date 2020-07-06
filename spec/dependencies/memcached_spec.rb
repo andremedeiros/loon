@@ -1,30 +1,15 @@
 describe 'Dependencies' do
   describe 'Memcached', dependency: true, memcached: true do
-    def test_memcached_dep(version: nil, match:)
-      dep = if version
-              {'memcached' => version}
-            else
-              'memcached'
-            end
+    versions, latest = versions_for :memcached
 
-      with_payload(deps: dep) do |project|
-        loon %w(up), dir: project
-        loon %w(exec memcached --version), dir: project
-
-        assert_stderr_empty
-        assert_stdout match
-        assert_status 0
-      end
-    end
-
-    %w(1.6.5 1.6.6).each do |version|
+    versions.each do |version|
       it "installs version #{version} correctly" do
-        test_memcached_dep version: version, match: version
+        test_dep 'memcached', version: version, match: version
       end
     end
 
-    it 'installs version 1.6.6 as the default' do
-      test_memcached_dep match: '1.6.6'
+    it "installs version #{latest} as the default" do
+      test_dep 'memcached', match: latest
     end
   end
 end
