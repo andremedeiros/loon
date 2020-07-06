@@ -40,11 +40,13 @@ func (*MysqlInitialize) Check(_ context.Context, p *project.Project) (bool, erro
 }
 func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project) error {
 	data := p.VariableDataPath("data", "mysql")
+	logerr := p.VariableDataPath("data", "mysql", "mysqld.err")
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{
 		"mysqld",
 		"--initialize-insecure",
 		fmt.Sprintf("--datadir=%s", data),
+		fmt.Sprintf("--log-error=%s", logerr),
 	})
 }
 
