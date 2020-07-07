@@ -2,7 +2,6 @@ package nix
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -58,8 +57,6 @@ in mkShell {
 		panic(err)
 	}
 	t.Execute(buf, d)
-	fmt.Println(buf.String())
-
 	fd, _ := os.OpenFile(d.NixPath, os.O_RDWR|os.O_CREATE, 0660)
 	defer fd.Close()
 	fd.Truncate(0)

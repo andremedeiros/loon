@@ -115,7 +115,7 @@ func crystal0351Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "crystal/0.35.1.nix", size: 859, mode: os.FileMode(420), modTime: time.Unix(1594083790, 0)}
+	info := bindataFileInfo{name: "crystal/0.35.1.nix", size: 859, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -135,7 +135,7 @@ func crystalDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "crystal/default.nix", size: 859, mode: os.FileMode(420), modTime: time.Unix(1594083790, 0)}
+	info := bindataFileInfo{name: "crystal/default.nix", size: 859, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -155,7 +155,7 @@ func golang11312Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.13.12.nix", size: 341, mode: os.FileMode(420), modTime: time.Unix(1594084088, 0)}
+	info := bindataFileInfo{name: "golang/1.13.12.nix", size: 341, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -175,7 +175,7 @@ func golang1144Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/1.14.4.nix", size: 332, mode: os.FileMode(420), modTime: time.Unix(1594084147, 0)}
+	info := bindataFileInfo{name: "golang/1.14.4.nix", size: 332, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -195,7 +195,7 @@ func golangDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "golang/default.nix", size: 332, mode: os.FileMode(420), modTime: time.Unix(1594084147, 0)}
+	info := bindataFileInfo{name: "golang/default.nix", size: 332, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -215,7 +215,7 @@ func memcached165Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.5.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594081483, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.5.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -235,7 +235,7 @@ func memcached166Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/1.6.6.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594081493, 0)}
+	info := bindataFileInfo{name: "memcached/1.6.6.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -255,7 +255,7 @@ func memcachedDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "memcached/default.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594081493, 0)}
+	info := bindataFileInfo{name: "memcached/default.nix", size: 356, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -275,7 +275,7 @@ func mysql8017Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "mysql/8.0.17.nix", size: 350, mode: os.FileMode(420), modTime: time.Unix(1594081501, 0)}
+	info := bindataFileInfo{name: "mysql/8.0.17.nix", size: 350, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -295,7 +295,7 @@ func mysqlDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "mysql/default.nix", size: 350, mode: os.FileMode(420), modTime: time.Unix(1594081501, 0)}
+	info := bindataFileInfo{name: "mysql/default.nix", size: 350, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -315,7 +315,7 @@ func node12181Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/12.18.1.nix", size: 388, mode: os.FileMode(420), modTime: time.Unix(1594081741, 0)}
+	info := bindataFileInfo{name: "node/12.18.1.nix", size: 388, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -335,7 +335,7 @@ func node1440Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/14.4.0.nix", size: 370, mode: os.FileMode(420), modTime: time.Unix(1594082215, 0)}
+	info := bindataFileInfo{name: "node/14.4.0.nix", size: 370, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -355,7 +355,7 @@ func nodeDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "node/default.nix", size: 370, mode: os.FileMode(420), modTime: time.Unix(1594082215, 0)}
+	info := bindataFileInfo{name: "node/default.nix", size: 370, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -375,7 +375,7 @@ func postgresql1013Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/10.13.nix", size: 368, mode: os.FileMode(420), modTime: time.Unix(1594081523, 0)}
+	info := bindataFileInfo{name: "postgresql/10.13.nix", size: 368, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -395,7 +395,7 @@ func postgresql118Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/11.8.nix", size: 363, mode: os.FileMode(420), modTime: time.Unix(1594081530, 0)}
+	info := bindataFileInfo{name: "postgresql/11.8.nix", size: 363, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -415,7 +415,7 @@ func postgresql123Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/12.3.nix", size: 375, mode: os.FileMode(420), modTime: time.Unix(1594081537, 0)}
+	info := bindataFileInfo{name: "postgresql/12.3.nix", size: 375, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -435,7 +435,7 @@ func postgresql9522Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.5.22.nix", size: 374, mode: os.FileMode(420), modTime: time.Unix(1594081547, 0)}
+	info := bindataFileInfo{name: "postgresql/9.5.22.nix", size: 374, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -455,7 +455,7 @@ func postgresql9618Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/9.6.18.nix", size: 386, mode: os.FileMode(420), modTime: time.Unix(1594081554, 0)}
+	info := bindataFileInfo{name: "postgresql/9.6.18.nix", size: 386, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -475,7 +475,7 @@ func postgresqlDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "postgresql/default.nix", size: 375, mode: os.FileMode(420), modTime: time.Unix(1594081537, 0)}
+	info := bindataFileInfo{name: "postgresql/default.nix", size: 375, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -495,7 +495,7 @@ func redis604Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "redis/6.0.4.nix", size: 346, mode: os.FileMode(420), modTime: time.Unix(1594081561, 0)}
+	info := bindataFileInfo{name: "redis/6.0.4.nix", size: 346, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -515,7 +515,7 @@ func redisDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "redis/default.nix", size: 346, mode: os.FileMode(420), modTime: time.Unix(1594081561, 0)}
+	info := bindataFileInfo{name: "redis/default.nix", size: 346, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -535,7 +535,7 @@ func ruby266Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.6.6.nix", size: 349, mode: os.FileMode(420), modTime: time.Unix(1594083496, 0)}
+	info := bindataFileInfo{name: "ruby/2.6.6.nix", size: 349, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -555,7 +555,7 @@ func ruby271Nix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/2.7.1.nix", size: 353, mode: os.FileMode(420), modTime: time.Unix(1594083452, 0)}
+	info := bindataFileInfo{name: "ruby/2.7.1.nix", size: 353, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -575,7 +575,7 @@ func rubyDefaultNix() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "ruby/default.nix", size: 353, mode: os.FileMode(420), modTime: time.Unix(1594083452, 0)}
+	info := bindataFileInfo{name: "ruby/default.nix", size: 353, mode: os.FileMode(420), modTime: time.Unix(1594084860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
