@@ -33,7 +33,11 @@ module Assertions
   end
 
   def assert_stderr(str)
-    expect(@last_stderr).to include(str)
+    case str
+    when String then expect(@last_stderr).to include(str)
+    when Regexp then expect(@last_stderr).to match(str)
+    else raise "Not sure how to deal with #{str.class}"
+    end
   end
 
   def assert_stderr_empty
@@ -46,7 +50,6 @@ module Assertions
     when Regexp then expect(@last_stdout).to match(str)
     else raise "Not sure how to deal with #{str.class}"
     end
-
   end
 
   def assert_finalizer(type, content = nil)
