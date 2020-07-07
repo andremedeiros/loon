@@ -9,13 +9,13 @@ require 'yaml'
 # This sits outside a module as it requires access
 # outside `it` blocks.
 def versions_for(name)
-  files = Dir["internal/catalog/data/#{name}/*.json"]
+  files = Dir["internal/catalog/data/#{name}/*.nix"]
   latest = nil
   versions = []
 
   files.each do |f|
-    case base = File.basename(f, ".json")
-    when 'latest' then latest = File.basename(File.readlink(f), ".json")
+    case base = File.basename(f, ".nix")
+    when 'default' then latest = File.basename(File.readlink(f), ".nix")
     else versions << base
     end
   end

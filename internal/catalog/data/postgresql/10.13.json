@@ -1,7 +1,0 @@
-{
-  "postgresql_10": {
-    "version": "10.13",
-    "url": "https://ftp.postgresql.org/pub/source/v10.13/postgresql-10.13.tar.gz",
-    "sha256": "0gagakw8iy4rz8lf405vyw83lmg6gj39rad83yxybfryzgmch40i"
-  }
-}

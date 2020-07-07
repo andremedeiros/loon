@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/nix"
 
@@ -166,14 +165,12 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		default:
 			return fmt.Errorf("specify dependencies as `dep` or `dep: version`")
 		}
-		pkgs, err := catalog.Packages(name, version)
+		pkg, err := nix.PackageFor(name, version)
 		if err != nil {
 			return err
 		}
-		for _, nixpkg := range pkgs {
-			p.derivation.Packages = append(p.derivation.Packages, nixpkg)
-		}
-		d := Dependency{name, version, pkgs}
+		p.derivation.Packages = append(p.derivation.Packages, pkg)
+		d := Dependency{name, version, pkg}
 		p.Dependencies = append(p.Dependencies, d)
 	}
 	for tn, opts := range pd.Tasks {
