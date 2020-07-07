@@ -37,7 +37,7 @@ module Assertions
   end
 
   def assert_stderr_empty
-    expect(@last_stderr).to be_empty
+    expect(@last_stderr).to eq("")
   end
 
   def assert_stdout(str)
