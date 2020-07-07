@@ -1,5 +1,5 @@
 #{{ define "derivation" }}
-loon-go-1_14_4 = pkgs.go-1_13.overrideAttrs(attrs: {
+loon-go-1_14_4 = pkgs.go.overrideAttrs(attrs: {
   version = "1.14.4";
   src = pkgs.fetchurl {
     url = "https://dl.google.com/go/go1.14.4.src.tar.gz";
