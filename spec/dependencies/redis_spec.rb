@@ -1,6 +1,6 @@
 describe 'Dependencies' do
   describe 'Redis', dependency: true, redis: true do
-    versions, latest = versions_for :redis
+    versions, default = versions_for :redis
 
     versions.each do |version|
       it "installs v#{version} correctly" do
@@ -8,8 +8,8 @@ describe 'Dependencies' do
       end
     end
 
-    it "installs v#{latest} as the default" do
-      test_dep 'redis', cmd: 'redis-cli --version', match: latest
+    it "installs v#{default} as the default" do
+      test_dep 'redis', cmd: 'redis-cli --version', match: default
     end
   end
 end

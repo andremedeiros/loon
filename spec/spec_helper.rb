@@ -10,17 +10,17 @@ require 'yaml'
 # outside `it` blocks.
 def versions_for(name)
   files = Dir["internal/catalog/data/#{name}/*.nix"]
-  latest = nil
+  default = nil
   versions = []
 
   files.each do |f|
     case base = File.basename(f, ".nix")
-    when 'default' then latest = File.basename(File.readlink(f), ".nix")
+    when 'default' then default = File.basename(File.readlink(f), ".nix")
     else versions << base
     end
   end
 
-  [versions.sort, latest]
+  [versions.sort, default]
 end
 
 module Assertions

@@ -1,6 +1,6 @@
 describe 'Dependencies' do
   describe 'Node.JS', dependency: true, node: true do
-    versions, latest = versions_for :node
+    versions, default = versions_for :node
 
     versions.each do |version|
       it "installs v#{version} correctly" do
@@ -8,8 +8,8 @@ describe 'Dependencies' do
       end
     end
 
-    it "installs v#{latest} as the default" do
-      test_dep 'node', match: latest
+    it "installs v#{default} as the default" do
+      test_dep 'node', match: default
     end
   end
 end

@@ -1,6 +1,6 @@
 describe 'Dependencies' do
   describe 'Ruby', dependency: true, ruby: true do
-    versions, latest = versions_for :ruby
+    versions, default = versions_for :ruby
 
     versions.each do |version|
       describe "v#{version}" do
@@ -39,8 +39,8 @@ describe 'Dependencies' do
       end
     end
 
-    it "installs v#{latest} as the default" do
-      test_dep 'ruby', match: latest
+    it "installs v#{default} as the default" do
+      test_dep 'ruby', match: default
     end
   end
 end

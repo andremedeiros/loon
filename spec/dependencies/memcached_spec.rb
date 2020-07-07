@@ -1,6 +1,6 @@
 describe 'Dependencies' do
   describe 'Memcached', dependency: true, memcached: true do
-    versions, latest = versions_for :memcached
+    versions, default = versions_for :memcached
 
     versions.each do |version|
       it "installs v#{version} correctly" do
@@ -8,8 +8,8 @@ describe 'Dependencies' do
       end
     end
 
-    it "installs v#{latest} as the default" do
-      test_dep 'memcached', match: latest
+    it "installs v#{default} as the default" do
+      test_dep 'memcached', match: default
     end
   end
 end

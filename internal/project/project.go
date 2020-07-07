@@ -148,7 +148,7 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 	for _, dep := range pd.Deps {
 		name := ""
-		version := "latest"
+		version := "default"
 		switch dep.(type) {
 		case string:
 			name = dep.(string)

@@ -1,6 +1,6 @@
 describe 'Dependencies' do
   describe 'Crystal', dependency: true, crystal: true do
-    versions, latest = versions_for :crystal
+    versions, default = versions_for :crystal
 
     versions.each do |version|
       it "installs v#{version} correctly" do
@@ -8,8 +8,8 @@ describe 'Dependencies' do
       end
     end
 
-    it "installs v#{latest} as the default" do
-      test_dep 'crystal', match: latest
+    it "installs v#{default} as the default" do
+      test_dep 'crystal', match: default
     end
   end
 end
