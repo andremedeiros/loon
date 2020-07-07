@@ -27,8 +27,8 @@ func (*DerivationCurrent) Environ(_ context.Context, _ *project.Project) (Enviro
 func init() {
 	RegisterTask("derivation:current:up", &DerivationCurrent{})
 	RegisterTask("derivation:current:down", &DerivationCurrent{})
-	RunsAfter("command:up", "derivation:current:up")
+	RunsAfter("command:down", "derivation:current:down")
 	RunsAfter("command:exec", "derivation:current:up")
 	RunsAfter("command:task", "derivation:current:up")
-	RunsAfter("command:down", "derivation:current:down")
+	RunsAfter("command:up", "derivation:current:up")
 }

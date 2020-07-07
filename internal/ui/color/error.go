@@ -20,6 +20,7 @@ func (c color) Error(err error) {
 			stderr.WriteTo(&buf)
 		}
 		c.Fprintf(os.Stderr, "{red:Command invocation failed:}\n")
+		c.Fprintf(os.Stderr, "%s\n", err.Cmd())
 		c.Fprintf(os.Stderr, "%s\n", buf.String())
 	default:
 		c.Fprintf(os.Stderr, "{red:{bold:Error:} %s}\n", err)

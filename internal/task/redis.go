@@ -83,7 +83,7 @@ func (rs *RedisStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	if !checkProjectHasDep(p, "redis") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 6379, rs.killed), nil
+	return checkDown(p.IP, 6379, rs.killed), nil
 }
 
 func (rs *RedisStop) Resolve(_ context.Context, p *project.Project) error {
@@ -100,9 +100,9 @@ func init() {
 	RegisterTask("redis:initialize", &RedisInitialize{})
 	RegisterTask("redis:start", &RedisStart{})
 	RegisterTask("redis:stop", &RedisStop{})
-	RunsAfter("derivation:current:up", "redis:initialize")
-	RunsAfter("redis:initialize", "redis:start")
-	RunsAfter("networking:start", "redis:start")
-	RunsAfter("derivation:current:down", "redis:stop")
 	RunsAfter("command:down", "redis:stop")
+	RunsAfter("derivation:current:down", "redis:stop")
+	RunsAfter("derivation:current:up", "redis:initialize")
+	RunsAfter("networking:start", "redis:start")
+	RunsAfter("redis:initialize", "redis:start")
 }

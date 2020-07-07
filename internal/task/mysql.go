@@ -3,10 +3,26 @@ package task
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"text/template"
 
 	"github.com/andremedeiros/loon/internal/project"
 )
+
+const mysqlInit = `
+	CREATE USER 'root'@'{{ .IP }}' IDENTIFIED BY '';
+	GRANT ALL PRIVILEGES ON *.* TO 'root'@'{{ .IP }}';
+	FLUSH PRIVILEGES;
+`
+
+func mysqlInitFile(p *project.Project) string {
+	tmpfile, _ := ioutil.TempFile("", "init.sql")
+	t := template.Must(template.New("init.sql").Parse(mysqlInit))
+	t.Execute(tmpfile, p)
+	tmpfile.Close()
+	return tmpfile.Name()
+}
 
 type MysqlInitialize struct{}
 
@@ -24,11 +40,14 @@ func (*MysqlInitialize) Check(_ context.Context, p *project.Project) (bool, erro
 }
 func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project) error {
 	data := p.VariableDataPath("data", "mysql")
+	logerr := p.VariableDataPath("data", "mysql", "mysqld.err")
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{
 		"mysqld",
+		"--no-defaults",
 		"--initialize-insecure",
 		fmt.Sprintf("--datadir=%s", data),
+		fmt.Sprintf("--log-error=%s", logerr),
 	})
 }
 
@@ -53,17 +72,26 @@ func (ms *MysqlStart) Check(_ context.Context, p *project.Project) (bool, error)
 
 func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project) error {
 	ms.started = true
+	init := mysqlInitFile(p)
+	defer os.Remove(init)
 	pid := p.VariableDataPath("pids", "mysql.pid")
 	data := p.VariableDataPath("data", "mysql")
+	logerr := p.VariableDataPath("data", "mysql", "mysqld.err")
 	socket := p.VariableDataPath("sockets", "mysqld.sock")
+	xsocket := p.VariableDataPath("sockets", "mysqlx.sock")
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{
 		"mysqld",
+		"--no-defaults",
 		"--daemonize",
 		fmt.Sprintf("--pid-file=%s", pid),
 		fmt.Sprintf("--datadir=%s", data),
 		fmt.Sprintf("--bind-address=%s", p.IP),
+		fmt.Sprintf("--mysqlx-bind-address=%s", p.IP),
 		fmt.Sprintf("--socket=%s", socket),
+		fmt.Sprintf("--mysqlx-socket=%s", xsocket),
+		fmt.Sprintf("--init-file=%s", init),
+		fmt.Sprintf("--log-error=%s", logerr),
 	})
 }
 
@@ -84,7 +112,7 @@ func (*MysqlStop) Check(_ context.Context, p *project.Project) (bool, error) {
 	if !checkProjectHasDep(p, "mysql") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 3306, false), nil
+	return checkDown(p.IP, 3306, false), nil
 }
 
 func (*MysqlStop) Resolve(_ context.Context, p *project.Project) error {
@@ -106,9 +134,9 @@ func init() {
 	RegisterTask("mysql:initialize", &MysqlInitialize{})
 	RegisterTask("mysql:start", &MysqlStart{})
 	RegisterTask("mysql:stop", &MysqlStop{})
+	RunsAfter("command:down", "mysql:stop")
+	RunsAfter("derivation:current:down", "mysql:stop")
 	RunsAfter("derivation:current:up", "mysql:initialize")
 	RunsAfter("mysql:initialize", "mysql:start")
 	RunsAfter("networking:start", "mysql:start")
-	RunsAfter("derivation:current:down", "mysql:stop")
-	RunsAfter("command:down", "mysql:stop")
 }

@@ -9,8 +9,8 @@ import (
 
 	"github.com/peterbourgon/usage"
 
-	"github.com/andremedeiros/loon/internal/catalog"
 	"github.com/andremedeiros/loon/internal/config"
+	"github.com/andremedeiros/loon/internal/nix"
 	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
@@ -22,9 +22,10 @@ var runVersions = func(ctx context.Context, ui ui.UI, cfg *config.Config, _ *pro
 		return err
 	}
 	w := tabwriter.NewWriter(os.Stdout, 0, 8, 4, '\t', 0)
+	pkgs := nix.Packages()
 	fmt.Fprintln(w, "Software\tVersion")
-	for _, sv := range catalog.List() {
-		fmt.Fprintf(w, "%s\t%s\n", sv.Name, sv.Version)
+	for _, pkg := range pkgs {
+		fmt.Fprintf(w, "%s\t%s\n", pkg.Name, pkg.Version)
 	}
 	w.Flush()
 	return nil

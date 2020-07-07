@@ -1,7 +1,0 @@
-{
-  "postgresql": {
-    "version": "11.8",
-    "url": "https://ftp.postgresql.org/pub/source/v11.8/postgresql-11.8.tar.gz",
-    "sha256": "1qksqyayxmnccmbapg3ajsw9pjgqva0inxjhx64rqd6ckhrg9wpa"
-  }
-}

@@ -60,6 +60,7 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 				if err := te.Resolve(ctx, p); err != nil {
 					s.Fail()
 					errs <- err
+					return
 				} else {
 					done, err := te.Check(ctx, p)
 					if err != nil {

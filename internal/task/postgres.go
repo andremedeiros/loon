@@ -93,7 +93,7 @@ func (*PostgresStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	if !checkProjectHasDep(p, "postgresql") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 5432, false), nil
+	return checkDown(p.IP, 5432, false), nil
 }
 
 func (*PostgresStop) Resolve(_ context.Context, p *project.Project) error {
@@ -114,9 +114,9 @@ func init() {
 	RegisterTask("postgres:initialize", &PostgresInitialize{})
 	RegisterTask("postgres:start", &PostgresStart{})
 	RegisterTask("postgres:stop", &PostgresStop{})
-	RunsAfter("derivation:current:up", "postgres:initialize")
-	RunsAfter("postgres:initialize", "postgres:start")
-	RunsAfter("networking:start", "postgres:start")
-	RunsAfter("derivation:current:down", "postgres:stop")
 	RunsAfter("command:down", "postgres:stop")
+	RunsAfter("derivation:current:down", "postgres:stop")
+	RunsAfter("derivation:current:up", "postgres:initialize")
+	RunsAfter("networking:start", "postgres:start")
+	RunsAfter("postgres:initialize", "postgres:start")
 }

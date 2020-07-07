@@ -3,92 +3,56 @@ package nix
 import (
 	"bytes"
 	"fmt"
-	"runtime"
+	"path/filepath"
+	"strings"
 	"text/template"
-)
 
-type PackageType int
-
-const (
-	Override PackageType = iota
-	Inherit
-	MakeDerivation
-)
-
-const (
-	overrideTmpl = `
-		{{ .Name }} = pkgs.{{ .Name }}.overrideAttrs(attrs: {
-			version = "{{ .Version }}";
-			src = fetchurl {
-				url = "{{ .URL }}";
-				sha256 = "{{ .SHA256 }}";
-			};
-		});`
-	inheritTmpl = `
-		{{ .Name }} = pkgs.{{ .Name }};`
-	makeDerivationTmpl = `
-    {{ .Name }} = stdenv.mkDerivation rec {
-			pname = "{{ .Name }}";
-			version = "{{ .Version }}";
-			src = fetchurl {
-				url = "{{ .URL }}";
-				sha256 = "{{ .SHA256 }}";
-			};
-			buildCommand = ''
-				{{ .BuildCommand }}
-			'';
-		};`
+	"github.com/andremedeiros/loon/internal/catalog"
 )
 
 type Package struct {
-	Name string
-	Type PackageType
-
-	Version string
-	URL     string
-	SHA256  string
-
-	BuildCommand string
+	Name     string
+	Version  string
+	Template string
 }
 
-func NewPackage(name string, opts map[string]string) Package {
-	platform := fmt.Sprintf("%s:%s", runtime.GOARCH, runtime.GOOS)
-	p := Package{
-		Name:    name,
-		Version: opts["version"],
-		URL:     opts["url"],
-		SHA256:  opts["sha256"],
-	}
-	if sha, ok := opts[fmt.Sprintf("sha256:%s", platform)]; ok {
-		p.SHA256 = sha
-	}
-	if url, ok := opts[fmt.Sprintf("url:%s", platform)]; ok {
-		p.URL = url
-	}
-	switch opts["type"] {
-	case "inherit":
-		p.Type = Inherit
-	case "derivation":
-		p.Type = MakeDerivation
-		p.BuildCommand = opts["buildCommand"]
-	default:
-		p.Type = Override
-	}
-	return p
-}
-
-func (p *Package) Nix() string {
-	tmpl := ""
-	switch p.Type {
-	case Override:
-		tmpl = overrideTmpl
-	case Inherit:
-		tmpl = inheritTmpl
-	case MakeDerivation:
-		tmpl = makeDerivationTmpl
-	}
+func (p Package) Derivation() string {
 	buf := bytes.NewBuffer([]byte{})
-	t := template.Must(template.New("nix").Parse(tmpl))
-	t.Execute(buf, p)
+	t := template.Must(template.New("pkg").Parse(p.Template))
+	t, _ = t.Parse(`{{ template "derivation" }}`)
+	t.Execute(buf, nil)
 	return buf.String()
+}
+
+func (p Package) DerivationPackages() string {
+	buf := bytes.NewBuffer([]byte{})
+	t := template.Must(template.New("pkg").Parse(p.Template))
+	t, _ = t.Parse(`{{ template "packages" }}`)
+	t.Execute(buf, nil)
+	return buf.String()
+}
+
+func PackageFor(name string, version string) (Package, error) {
+	for _, p := range Packages() {
+		if p.Name == name && p.Version == version {
+			return p, nil
+		}
+	}
+	return Package{}, fmt.Errorf("%s %s not supported", name, version)
+}
+
+func Packages() []Package {
+	ps := []Package{}
+	for _, asset := range catalog.AssetNames() {
+		b, _ := catalog.Asset(asset)
+		parts := strings.SplitN(asset, "/", 2)
+		ext := filepath.Ext(parts[1])
+		p := Package{
+			Name:     parts[0],
+			Version:  parts[1][0 : len(parts[1])-len(ext)],
+			Template: string(b),
+		}
+		ps = append(ps, p)
+	}
+	return ps
 }

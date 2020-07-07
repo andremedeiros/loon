@@ -2,6 +2,7 @@ package nix
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,21 +38,27 @@ func (d *Derivation) generate() {
 	tmpl := `
 { pkgs ? import <nixpkgs> { } }:
 let
-inherit (pkgs) stdenv fetchurl mkShell;
-{{ range $package := $.Packages }}
-	{{ $package.Nix }}
-{{ end }}
+	inherit (pkgs) stdenv fetchurl mkShell;
 
+	{{ range $package := .Packages }}
+		{{ $package.Derivation }}
+	{{ end }}
 in mkShell {
 	name = "loon";
-	buildInputs = [{{ range $package := .Packages }}
-		{{ $package.Name }}
-	{{ end }}];
+	buildInputs = [
+		{{ range $package := .Packages }}
+			{{ $package.DerivationPackages }}
+		{{ end }}
+	];
 }`
-
 	buf := bytes.NewBuffer([]byte{})
-	t := template.Must(template.New("nix").Parse(tmpl))
+	t, err := template.New("nix").Parse(tmpl)
+	if err != nil {
+		// TODO(andremedeiros): figure out a better way
+		panic(err)
+	}
 	t.Execute(buf, d)
+	fmt.Println(buf.String())
 
 	fd, _ := os.OpenFile(d.NixPath, os.O_RDWR|os.O_CREATE, 0660)
 	defer fd.Close()

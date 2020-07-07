@@ -1,15 +1,16 @@
 on: [push, pull_request]
-name: Unit Tests
+name: Integration Tests
 jobs:
-  test:
+  integration:
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    name: "go ${{ matrix.go-version }} (${{ matrix.platform }})"
+    name: "${{ matrix.tag }} (${{ matrix.platform }})"
     strategy:
+      fail-fast: false
       matrix:
-        go-version: [1.13.x, 1.14.x]
         platform: [ubuntu-latest, macos-latest]
+        tag: [command, crystal, golang, memcached, mysql, node, postgres, redis, ruby]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Cancel Previous Runs
@@ -19,10 +20,21 @@ jobs:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
-        go-version: ${{ matrix.go-version }}
+        go-version: 1.14.x
+    - name: Install Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+        bundler-cache: true
+    - name: Install Nix
+      uses: cachix/install-nix-action@v10
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Build Loon
       run: go build
-    - name: Test
-      run: go test ./...
+    - name: Bundle Install
+      run: bundle install
+    - name: Integration Tests
+      run: bundle exec rspec --tag ${{ matrix.tag }}

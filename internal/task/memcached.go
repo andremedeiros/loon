@@ -55,7 +55,7 @@ func (ms *MemcachedStop) Check(_ context.Context, p *project.Project) (bool, err
 	if !checkProjectHasDep(p, "memcached") {
 		return true, nil
 	}
-	return !checkHealth(p.IP, 11211, ms.killed), nil
+	return checkDown(p.IP, 11211, ms.killed), nil
 }
 
 func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project) error {
@@ -71,7 +71,8 @@ func (*MemcachedStop) Environ(_ context.Context, p *project.Project) (Environ, B
 func init() {
 	RegisterTask("memcached:start", &MemcachedStart{})
 	RegisterTask("memcached:stop", &MemcachedStop{})
-	RunsAfter("networking:start", "memcached:start")
 	RunsAfter("command:down", "memcached:stop")
 	RunsAfter("derivation:current:down", "memcached:stop")
+	RunsAfter("derivation:current:up", "memcached:start")
+	RunsAfter("networking:start", "memcached:start")
 }
