@@ -22,8 +22,9 @@ var runVersions = func(ctx context.Context, ui ui.UI, cfg *config.Config, _ *pro
 		return err
 	}
 	w := tabwriter.NewWriter(os.Stdout, 0, 8, 4, '\t', 0)
+	pkgs := nix.Packages()
 	fmt.Fprintln(w, "Software\tVersion")
-	for _, pkg := range nix.Packages() {
+	for _, pkg := range pkgs {
 		fmt.Fprintf(w, "%s\t%s\n", pkg.Name, pkg.Version)
 	}
 	w.Flush()
