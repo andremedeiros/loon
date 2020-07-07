@@ -10,4 +10,7 @@ loon-ruby-2_7_1 = pkgs.ruby_2_7.overrideAttrs(attrs: {
 
 #{{ define "packages" }}
 loon-ruby-2_7_1
+pkgs.libiconv
+pkgs.openssl
+pkgs.zlib
 #{{ end }}
