@@ -35,7 +35,6 @@ var runEnv = func(ctx context.Context, ui ui.UI, cfg *config.Config, proj *proje
 			ui.Fprintf(w, "{bold:%s}=%s\n", es[0], es[1])
 		}
 		w.Flush()
-		ui.Fprintf(os.Stdout, "\n")
 		return nil
 	})
 }
