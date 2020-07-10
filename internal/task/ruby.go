@@ -36,10 +36,16 @@ func (*RubyInitialize) Check(_ context.Context, p *project.Project) (bool, error
 
 func (*RubyInitialize) Resolve(_ context.Context, p *project.Project) error {
 	exe := p.DerivationExecutor()
-	return exe.Execute(
-		[]string{"gem", "install", "bundler", "--no-document"},
-		executor.WithEnviron(rubyEnviron(p)),
-	)
+	cmds := [][]string{
+		{"gem", "install", "bundler", "--no-document"},       // Installs bundler
+		{"bundle", "config", "build.sassc", "--disable-lto"}, // https://github.com/sass/sassc-ruby/issues/148
+	}
+	for _, cmd := range cmds {
+		if err := exe.Execute(cmd, executor.WithEnviron(rubyEnviron(p))); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (*RubyInitialize) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
