@@ -97,7 +97,7 @@ func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project) error {
 
 func (*MysqlStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
 	if checkProjectHasDep(p, "mysql") {
-		return []string{fmt.Sprintf("DATABASE_URL=mysql2://%s:3306", p.IP)}, nil
+		return []string{fmt.Sprintf("DATABASE_URL=mysql2://root@%s:3306", p.IP)}, nil
 	}
 	return nil, nil
 }
