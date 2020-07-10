@@ -38,6 +38,7 @@ func rootUsage(ui ui.UI, p *project.Project) {
 	ui.Fprintf(os.Stderr, "  {blue:clone}     {bright_yellow:Clones a Git repository into the working directory}\n")
 	ui.Fprintf(os.Stderr, "  {blue:doctor}    {bright_yellow:Checks your system for potential problems}\n")
 	ui.Fprintf(os.Stderr, "  {blue:down}      {bright_yellow:Stops the current project's infrastructure}\n")
+	ui.Fprintf(os.Stderr, "  {blue:env}       {bright_yellow:Prints a project's specific environment variables}\n")
 	ui.Fprintf(os.Stderr, "  {blue:exec}      {bright_yellow:Executes command in project shell}\n")
 	ui.Fprintf(os.Stderr, "  {blue:shell}     {bright_yellow:Starts a shell inheriting the current project's environment}\n")
 	ui.Fprintf(os.Stderr, "  {blue:up}        {bright_yellow:Starts the current project's infrastructure}\n")
@@ -77,6 +78,8 @@ func Execute(ui ui.UI) error {
 		run = runClone
 	case "doc", "doctor":
 		run = runDoctor
+	case "env":
+		run = runEnv
 	case "exec":
 		run = runExec
 	case "down", "land":
