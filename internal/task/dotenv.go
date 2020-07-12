@@ -5,10 +5,12 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
+	"regexp"
 
 	"github.com/andremedeiros/loon/internal/project"
 )
+
+var dotenvRe = regexp.MustCompile(`^[^#\w]*([A-Z0-9_]*)\=(\"(.*)\"|(.*))$`)
 
 type DotenvSetup struct{}
 
@@ -37,17 +39,15 @@ func (*DotenvSetup) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		txt := strings.TrimSpace(scanner.Text())
-		switch {
-		case len(txt) == 0:
+		match := dotenvRe.FindStringSubmatch(scanner.Text())
+		if len(match) == 0 {
 			continue
-		case txt[0] == '#':
-			continue
-		default:
-			ee := strings.SplitN(txt, "=", 2)
-			if len(ee) == 2 {
-				environ[ee[0]] = ee[1]
-			}
+		}
+		if match[3] != "" {
+			environ[match[1]] = match[3]
+		}
+		if match[4] != "" {
+			environ[match[1]] = match[4]
 		}
 	}
 	return environ, nil
@@ -55,7 +55,7 @@ func (*DotenvSetup) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 
 func init() {
 	RegisterTask("dotenv:setup", &DotenvSetup{})
-	RunsAfter("command:up", "dotenv:setup")
-	RunsAfter("command:exec", "dotenv:setup")
-	RunsAfter("command:task", "dotenv:setup")
+	RunsAfter("command:up:done", "dotenv:setup")
+	RunsAfter("command:exec:done", "dotenv:setup")
+	RunsAfter("command:task:done", "dotenv:setup")
 }
