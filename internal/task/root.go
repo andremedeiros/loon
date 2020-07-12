@@ -107,7 +107,7 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 	path := os.Getenv("PATH")
 	newenvs := []string{"LOON_NEW_ENVS"}
 	envs["LOON_OLD_ENV_PATH"] = path
-	envs["PATH"] = fmt.Sprintf("PATH=%s:%s", strings.Join(bins, ":"), path)
+	envs["PATH"] = fmt.Sprintf("%s:%s", strings.Join(bins, ":"), path)
 	environ := []string{}
 	for k, v := range envs {
 		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
