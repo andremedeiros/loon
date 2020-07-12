@@ -93,7 +93,7 @@ module Helpers
     end
   end
 
-  def with_payload(name: "Test", url: "Test", deps: [], tasks: {})
+  def with_payload(name: "Test", url: "Test", deps: [], tasks: {}, env: {})
     deps = deps.is_a?(Array) ? deps : [deps]
 
     yml = YAML.dump({
@@ -101,6 +101,7 @@ module Helpers
       'url' => url,
       'deps' => deps,
       'tasks' => tasks,
+      'environment' => env
     })
 
     Dir.mktmpdir do |tmpdir|
