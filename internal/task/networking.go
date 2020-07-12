@@ -2,31 +2,9 @@ package task
 
 import (
 	"context"
-	"net"
 
 	"github.com/andremedeiros/loon/internal/project"
 )
-
-func checkIp(p *project.Project) (bool, error) {
-	ifis, err := net.Interfaces()
-	if err != nil {
-		return false, err
-	}
-	for _, ifi := range ifis {
-		addrs, err := ifi.Addrs()
-		if err != nil {
-			continue
-		}
-		for _, addr := range addrs {
-			if ipnet, ok := addr.(*net.IPNet); ok {
-				if ipnet.IP.Equal(p.IP) {
-					return true, nil
-				}
-			}
-		}
-	}
-	return false, nil
-}
 
 type NetworkingStart struct{}
 
@@ -35,7 +13,7 @@ func (*NetworkingStart) Header() string {
 }
 
 func (*NetworkingStart) Check(_ context.Context, p *project.Project) (bool, error) {
-	return checkIp(p)
+	return checkIp(p.IP)
 }
 
 func (*NetworkingStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
@@ -49,7 +27,7 @@ func (*NetworkingStop) Header() string {
 }
 
 func (*NetworkingStop) Check(_ context.Context, p *project.Project) (bool, error) {
-	exists, err := checkIp(p)
+	exists, err := checkIp(p.IP)
 	return !exists, err
 }
 

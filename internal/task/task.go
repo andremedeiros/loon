@@ -46,7 +46,32 @@ func RunsAfter(on string, what string) {
 	graph.AddEdge(on, what)
 }
 
+func checkIp(ip net.IP) (bool, error) {
+	ifis, err := net.Interfaces()
+	if err != nil {
+		return false, err
+	}
+	for _, ifi := range ifis {
+		addrs, err := ifi.Addrs()
+		if err != nil {
+			continue
+		}
+		for _, addr := range addrs {
+			if ipnet, ok := addr.(*net.IPNet); ok {
+				if ipnet.IP.Equal(ip) {
+					return true, nil
+				}
+			}
+		}
+	}
+	return false, nil
+}
+
 func checkDown(ip net.IP, port int, wait bool) bool {
+	hasaddr, _ := checkIp(ip)
+	if !hasaddr {
+		return true
+	}
 	done := make(chan bool)
 	go func() {
 		hp := fmt.Sprintf("%s:%d", ip, port)
@@ -66,11 +91,15 @@ func checkDown(ip net.IP, port int, wait bool) bool {
 	case down := <-done:
 		return down
 	case <-time.After(5000 * time.Millisecond):
-		return false
+		return true
 	}
 }
 
 func checkHealth(ip net.IP, port int, waitUp bool) bool {
+	hasaddr, _ := checkIp(ip)
+	if !hasaddr {
+		return false
+	}
 	done := make(chan bool)
 	go func() {
 		hp := fmt.Sprintf("%s:%d", ip, port)
