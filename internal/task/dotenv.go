@@ -21,7 +21,7 @@ func (*DotenvSetup) Check(_ context.Context, p *project.Project) (bool, error) {
 	return true, nil
 }
 
-func (*DotenvSetup) Resolve(_ context.Context, p *project.Project) error {
+func (*DotenvSetup) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	return nil
 }
 

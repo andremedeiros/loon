@@ -24,7 +24,7 @@ func (*RedisInitialize) Check(_ context.Context, p *project.Project) (bool, erro
 	return err == nil, nil
 }
 
-func (*RedisInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*RedisInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	data := p.VariableDataPath("data", "redis")
 	return os.MkdirAll(data, 0755)
 }
@@ -48,7 +48,7 @@ func (rs *RedisStart) Check(_ context.Context, p *project.Project) (bool, error)
 	return checkHealth(p.IP, 6379, rs.started), nil
 }
 
-func (rs *RedisStart) Resolve(_ context.Context, p *project.Project) error {
+func (rs *RedisStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	rs.started = true
 	pid := p.VariableDataPath("pids", "redis.pid")
 	data := p.VariableDataPath("data", "redis")
@@ -86,7 +86,7 @@ func (rs *RedisStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	return checkDown(p.IP, 6379, rs.killed), nil
 }
 
-func (rs *RedisStop) Resolve(_ context.Context, p *project.Project) error {
+func (rs *RedisStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	rs.killed = true
 	pid := p.VariableDataPath("pids", "redis.pid")
 	return process.InterruptFromPidFile(pid)

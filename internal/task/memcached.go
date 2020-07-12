@@ -23,7 +23,7 @@ func (ms *MemcachedStart) Check(_ context.Context, p *project.Project) (bool, er
 	return checkHealth(p.IP, 11211, ms.started), nil
 }
 
-func (ms *MemcachedStart) Resolve(_ context.Context, p *project.Project) error {
+func (ms *MemcachedStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	ms.started = true
 	pid := p.VariableDataPath("pids", "memcached.pid")
 	exe := p.DerivationExecutor()
@@ -58,7 +58,7 @@ func (ms *MemcachedStop) Check(_ context.Context, p *project.Project) (bool, err
 	return checkDown(p.IP, 11211, ms.killed), nil
 }
 
-func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project) error {
+func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	ms.killed = true
 	pid := p.VariableDataPath("pids", "memcached.pid")
 	return process.InterruptFromPidFile(pid)

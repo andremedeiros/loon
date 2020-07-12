@@ -38,7 +38,7 @@ func (*MysqlInitialize) Check(_ context.Context, p *project.Project) (bool, erro
 	_, err := os.Stat(data)
 	return err == nil, nil
 }
-func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	data := p.VariableDataPath("data", "mysql")
 	logerr := p.VariableDataPath("data", "mysql", "mysqld.err")
 	exe := p.DerivationExecutor()
@@ -70,7 +70,7 @@ func (ms *MysqlStart) Check(_ context.Context, p *project.Project) (bool, error)
 	return checkHealth(p.IP, 3306, ms.started), nil
 }
 
-func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project) error {
+func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	ms.started = true
 	init := mysqlInitFile(p)
 	defer os.Remove(init)
@@ -115,7 +115,7 @@ func (*MysqlStop) Check(_ context.Context, p *project.Project) (bool, error) {
 	return checkDown(p.IP, 3306, false), nil
 }
 
-func (*MysqlStop) Resolve(_ context.Context, p *project.Project) error {
+func (*MysqlStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	socket := p.VariableDataPath("sockets", "mysqld.sock")
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{

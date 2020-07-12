@@ -14,7 +14,6 @@ import (
 )
 
 var checks = []func() error{
-	check.Sudo,
 	check.Nix,
 }
 

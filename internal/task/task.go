@@ -17,10 +17,12 @@ var (
 	tasks = make(map[string]Executor)
 )
 
+type SudoFunc func(string) func() error
+
 type Executor interface {
 	Header() string
 	Check(context.Context, *project.Project) (bool, error)
-	Resolve(context.Context, *project.Project) error
+	Resolve(context.Context, *project.Project, SudoFunc) error
 	Environ(context.Context, *project.Project) (Environ, BinPaths)
 }
 

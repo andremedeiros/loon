@@ -11,6 +11,7 @@ type SpinnerState int
 
 const (
 	Working SpinnerState = iota
+	Waiting
 	Succeeded
 	Failed
 )
@@ -21,6 +22,8 @@ func (ss SpinnerState) String(s *Spinner) string {
 		return "{green:\u2713}"
 	case Failed:
 		return "{red:\u2717}"
+	case Waiting:
+		return "{yellow:\u203C}"
 	default:
 		s.curIdx = (s.curIdx + 1) % len(spinnerTheme)
 		return fmt.Sprintf("{cyan:%s}", spinnerTheme[s.curIdx])
@@ -70,6 +73,18 @@ func (s *Spinner) Fail() {
 func (s *Spinner) Succeed() {
 	s.State = Succeeded
 	s.Update()
+}
+
+func (s *Spinner) Wait() {
+	if s.State == Working {
+		s.State = Waiting
+	}
+}
+
+func (s *Spinner) Work() {
+	if s.State == Waiting {
+		s.State = Working
+	}
 }
 
 func (s *Spinner) String() string {

@@ -15,6 +15,7 @@ type SpinnerGroup struct {
 
 	ticker    *time.Ticker
 	refresh   bool
+	paused    bool
 	lastShown int
 	c         color
 	sync.Mutex
@@ -26,7 +27,9 @@ func (c color) NewSpinnerGroup() ui.SpinnerGroup {
 		for {
 			select {
 			case <-sg.ticker.C:
-				sg.Update()
+				if !sg.paused {
+					sg.Update()
+				}
 			}
 		}
 	}()
@@ -46,11 +49,27 @@ func (sg *SpinnerGroup) NewSpinner(f string, a ...interface{}) ui.Spinner {
 func (sg *SpinnerGroup) Update() {
 	sg.Lock()
 	defer sg.Unlock()
+	if sg.paused {
+		return
+	}
 	sg.c.Fprintf(os.Stdout, sg.String())
 }
 
 func (sg *SpinnerGroup) Finish() {
 	sg.ticker.Stop()
+}
+
+func (sg *SpinnerGroup) Pause() {
+	sg.Update()
+	sg.paused = true
+}
+
+func (sg *SpinnerGroup) Resume() {
+	sg.paused = false
+}
+
+func (sg *SpinnerGroup) ResetDisplay() {
+	sg.lastShown = 0
 }
 
 func (sg *SpinnerGroup) String() string {

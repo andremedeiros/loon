@@ -3,6 +3,7 @@ package executor
 import (
 	"bufio"
 	"bytes"
+	"os"
 	"os/exec"
 )
 
@@ -19,7 +20,9 @@ func Execute(args []string, opts ...Option) error {
 		cmd.Stderr = bufio.NewWriter(&stderr)
 
 		for _, opt := range opts {
-			opt(cmd)
+			if err := opt(cmd); err != nil {
+				return err
+			}
 		}
 
 		err := cmd.Run()
@@ -29,4 +32,11 @@ func Execute(args []string, opts ...Option) error {
 		}
 		return err
 	}
+}
+
+func RequestSudo(prompt string) error {
+	cmd := exec.Command("sudo", "-p", prompt, "true")
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	return cmd.Run()
 }

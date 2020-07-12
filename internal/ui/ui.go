@@ -10,7 +10,10 @@ type SpinnerGroup interface {
 
 	NewSpinner(string, ...interface{}) Spinner
 	Update()
+	Pause()
+	Resume()
 	Finish()
+	ResetDisplay()
 }
 
 type Spinner interface {
@@ -19,6 +22,8 @@ type Spinner interface {
 	Do(func() error) error
 	Update()
 	Fail()
+	Wait()
+	Work()
 	Succeed()
 }
 
