@@ -3,6 +3,7 @@ require 'byebug'
 require 'tempfile'
 require 'fileutils'
 require 'open3'
+require 'os'
 require 'pathname'
 require 'yaml'
 

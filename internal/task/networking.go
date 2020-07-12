@@ -64,5 +64,5 @@ func init() {
 	RunsAfter("command:up", "networking:start")
 	RunsAfter("command:task", "networking:start")
 	RunsAfter("command:exec", "networking:start")
-	RunsAfter("command:down", "networking:stop")
+	RunsAfter("command:down:done", "networking:stop")
 }
