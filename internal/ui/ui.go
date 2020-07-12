@@ -3,6 +3,9 @@ package ui
 import (
 	"fmt"
 	"io"
+	"os"
+
+	"github.com/mattn/go-isatty"
 )
 
 type SpinnerGroup interface {
@@ -34,4 +37,19 @@ type UI interface {
 	Error(error)
 
 	Fprintf(io.Writer, string, ...interface{}) (int, error)
+}
+
+var _ UI = NewColor()
+var _ UI = NewSimple()
+
+func Instance() UI {
+	if IsTTY() {
+		return NewColor()
+	} else {
+		return NewSimple()
+	}
+}
+
+func IsTTY() bool {
+	return isatty.IsTerminal(os.Stdout.Fd())
 }

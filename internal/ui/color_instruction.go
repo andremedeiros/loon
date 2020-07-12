@@ -1,11 +1,11 @@
-package color
+package ui
 
 import "fmt"
 
-type InstructionType int
+type colorInstructionType int
 
 const (
-	Reset InstructionType = iota
+	Reset colorInstructionType = iota
 	Bold
 	Faint
 	Italic
@@ -13,7 +13,7 @@ const (
 )
 
 const (
-	Black InstructionType = iota + 30
+	Black colorInstructionType = iota + 30
 	Red
 	Green
 	Yellow
@@ -24,7 +24,7 @@ const (
 )
 
 const (
-	BrightBlack InstructionType = iota + 90
+	BrightBlack colorInstructionType = iota + 90
 	BrightRed
 	BrightGreen
 	BrightYellow
@@ -34,7 +34,7 @@ const (
 	BrightWhite
 )
 
-var InstructionCodes = map[string]string{
+var colorInstructionCodes = map[string]string{
 	"reset":          Reset.String(),
 	"bold":           Bold.String(),
 	"faint":          Faint.String(),
@@ -58,6 +58,6 @@ var InstructionCodes = map[string]string{
 	"bright_white":   BrightWhite.String(),
 }
 
-func (i InstructionType) String() string {
+func (i colorInstructionType) String() string {
 	return fmt.Sprintf("\x1b[%dm", i)
 }
