@@ -23,7 +23,7 @@ func (ss SpinnerState) String(s *Spinner) string {
 	case Failed:
 		return "{red:\u2717}"
 	case Waiting:
-		return "{yellow:!}"
+		return "{yellow:\u203C}"
 	default:
 		s.curIdx = (s.curIdx + 1) % len(spinnerTheme)
 		return fmt.Sprintf("{cyan:%s}", spinnerTheme[s.curIdx])

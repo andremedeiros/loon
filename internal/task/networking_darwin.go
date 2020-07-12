@@ -8,8 +8,7 @@ import (
 )
 
 func (*NetworkingStart) Resolve(_ context.Context, p *project.Project, sudo SudoFunc) error {
-	msg := `I need superuser access in order to {bold:add an IP alias for the current project}.`
-
+	msg := `I need superuser access in order to {bold,underline:add an IP alias for the current project}.`
 	return executor.Execute([]string{
 		"ifconfig",
 		"lo0",
@@ -20,8 +19,7 @@ func (*NetworkingStart) Resolve(_ context.Context, p *project.Project, sudo Sudo
 }
 
 func (*NetworkingStop) Resolve(_ context.Context, p *project.Project, sudo SudoFunc) error {
-	msg := `I need superuser access in order to {bold:add an IP alias for the current project}.`
-
+	msg := `I need superuser access in order to {bold,underline:add an IP alias for the current project}.`
 	return executor.Execute([]string{
 		"ifconfig",
 		"lo0",
