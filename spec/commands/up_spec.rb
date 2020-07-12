@@ -7,6 +7,13 @@ describe 'Commands' do
         assert_path "#{root}/.loon/pids/redis.pid"
       end
     end
+
+    it 'should create an IP alias' do
+      loon %(up)
+      ip = project_ip
+
+      expect(`ifconfig`).to include(ip)
+    end
   end
 end
 
