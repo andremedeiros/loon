@@ -7,7 +7,7 @@ import (
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-func (*Networking) Resolve(_ context.Context, p *project.Project) error {
+func (*NetworkingStart) Resolve(_ context.Context, p *project.Project) error {
 	return executor.Execute([]string{
 		"sudo",
 		"ifconfig",
@@ -15,5 +15,15 @@ func (*Networking) Resolve(_ context.Context, p *project.Project) error {
 		"alias",
 		p.IP.String(),
 		"255.255.255.0",
+	})
+}
+
+func (*NetworkingStop) Resolve(_ context.Context, p *project.Project) error {
+	return executor.Execute([]string{
+		"sudo",
+		"ifconfig",
+		"lo0",
+		"-alias",
+		p.IP.String(),
 	})
 }
