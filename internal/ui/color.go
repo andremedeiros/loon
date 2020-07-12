@@ -1,7 +1,7 @@
-package color
+package ui
 
 type color struct{}
 
-func New() color {
+func NewColor() color {
 	return color{}
 }

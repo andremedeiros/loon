@@ -1,10 +1,8 @@
-package color
+package ui
 
 import (
 	"fmt"
 	"io"
-
-	"github.com/andremedeiros/loon/internal/ui/parser"
 )
 
 func (color) Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
@@ -12,6 +10,6 @@ func (color) Fprintf(w io.Writer, format string, a ...interface{}) (n int, err e
 }
 
 func fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
-	str := parser.MustParse(fmt.Sprintf(format, a...), InstructionCodes)
+	str := MustParse(fmt.Sprintf(format, a...), colorInstructionCodes)
 	return fmt.Fprint(w, str)
 }

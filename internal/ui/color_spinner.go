@@ -1,4 +1,4 @@
-package color
+package ui
 
 import (
 	"fmt"
@@ -7,16 +7,16 @@ import (
 
 var spinnerTheme = []string{"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
 
-type SpinnerState int
+type spinnerState int
 
 const (
-	Working SpinnerState = iota
+	Working spinnerState = iota
 	Waiting
 	Succeeded
 	Failed
 )
 
-func (ss SpinnerState) String(s *Spinner) string {
+func (ss spinnerState) String(s *colorSpinner) string {
 	switch ss {
 	case Succeeded:
 		return "{green:\u2713}"
@@ -30,25 +30,25 @@ func (ss SpinnerState) String(s *Spinner) string {
 	}
 }
 
-type Spinner struct {
+type colorSpinner struct {
 	Label string
 	Theme []string
-	State SpinnerState
+	State spinnerState
 
-	sg     *SpinnerGroup
+	sg     *colorSpinnerGroup
 	curIdx int
 	c      color
 }
 
-func (c color) NewSpinner(label string) *Spinner {
+func (c color) NewSpinner(label string) *colorSpinner {
 	return c.NewSpinnerWithGroup(label, nil)
 }
 
-func (c color) NewSpinnerWithGroup(label string, sg *SpinnerGroup) *Spinner {
-	return &Spinner{label, spinnerTheme, Working, sg, 0, c}
+func (c color) NewSpinnerWithGroup(label string, sg *colorSpinnerGroup) *colorSpinner {
+	return &colorSpinner{label, spinnerTheme, Working, sg, 0, c}
 }
 
-func (s *Spinner) Do(fun func() error) error {
+func (s *colorSpinner) Do(fun func() error) error {
 	if err := fun(); err != nil {
 		s.Fail()
 		return err
@@ -57,7 +57,7 @@ func (s *Spinner) Do(fun func() error) error {
 	return nil
 }
 
-func (s *Spinner) Update() {
+func (s *colorSpinner) Update() {
 	if s.sg != nil {
 		s.sg.Update()
 		return
@@ -65,29 +65,28 @@ func (s *Spinner) Update() {
 	s.c.Fprintf(os.Stdout, s.String())
 }
 
-func (s *Spinner) Fail() {
+func (s *colorSpinner) Fail() {
 	s.State = Failed
 	s.Update()
 }
 
-func (s *Spinner) Succeed() {
+func (s *colorSpinner) Succeed() {
 	s.State = Succeeded
 	s.Update()
 }
 
-func (s *Spinner) Wait() {
+func (s *colorSpinner) Wait() {
 	if s.State == Working {
 		s.State = Waiting
 	}
 }
 
-func (s *Spinner) Work() {
+func (s *colorSpinner) Work() {
 	if s.State == Waiting {
 		s.State = Working
 	}
 }
 
-func (s *Spinner) String() string {
-	// Figure out how many cycles
+func (s *colorSpinner) String() string {
 	return fmt.Sprintf("\r\x1b[2K%s %s", s.State.String(s), s.Label)
 }
