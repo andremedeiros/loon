@@ -3,7 +3,6 @@ package task
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,10 +24,10 @@ func (*DotenvSetup) Resolve(_ context.Context, p *project.Project, _ SudoFunc) e
 	return nil
 }
 
-func (*DotenvSetup) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
-	environ := []string{}
+func (*DotenvSetup) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
+	environ := Env{}
 	for k, v := range p.Environment {
-		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
+		environ[k] = v
 	}
 	dotenv := filepath.Join(p.Path, ".env")
 	if _, err := os.Stat(dotenv); os.IsNotExist(err) {
@@ -45,7 +44,10 @@ func (*DotenvSetup) Environ(_ context.Context, p *project.Project) (Environ, Bin
 		case txt[0] == '#':
 			continue
 		default:
-			environ = append(environ, txt)
+			ee := strings.SplitN(txt, "=", 2)
+			if len(ee) == 2 {
+				environ[ee[0]] = ee[1]
+			}
 		}
 	}
 	return environ, nil

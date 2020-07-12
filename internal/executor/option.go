@@ -1,12 +1,21 @@
 package executor
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 )
 
 type Option func(*exec.Cmd) error
+
+func WithEnv(env map[string]string) Option {
+	environ := []string{}
+	for k, v := range env {
+		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
+	}
+	return WithEnviron(environ)
+}
 
 func WithEnviron(environ []string) Option {
 	return func(c *exec.Cmd) error {

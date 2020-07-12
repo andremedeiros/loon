@@ -41,7 +41,7 @@ func (*PostgresInitialize) Resolve(_ context.Context, p *project.Project, _ Sudo
 	return ioutil.WriteFile(hba, hbaConf(p), 0600)
 }
 
-func (*PostgresInitialize) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*PostgresInitialize) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 
@@ -76,9 +76,9 @@ func (ps *PostgresStart) Resolve(_ context.Context, p *project.Project, _ SudoFu
 	})
 }
 
-func (*PostgresStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*PostgresStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if checkProjectHasDep(p, "postgresql") {
-		return []string{fmt.Sprintf("DATABASE_URL=postgres://%s:5432", p.IP)}, nil
+		return Env{"DATABASE_URL": fmt.Sprintf("postgres://%s:5432", p.IP)}, nil
 	}
 	return nil, nil
 }
@@ -106,7 +106,7 @@ func (*PostgresStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) 
 	})
 }
 
-func (*PostgresStop) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*PostgresStop) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

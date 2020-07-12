@@ -2,18 +2,14 @@ package task
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-func npmEnviron(p *project.Project) []string {
-	npm := p.VariableDataPath("data", "npm")
-	return []string{
-		fmt.Sprintf("NPM_CONFIG_PREFIX=%s", npm),
-	}
+func npmEnv(p *project.Project) Env {
+	return Env{"NPM_CONFIG_PREFIX": p.VariableDataPath("data", "npm")}
 }
 
 type NodeInitialize struct{}
@@ -37,11 +33,11 @@ func (*NodeInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc
 	exe := p.DerivationExecutor()
 	return exe.Execute(
 		[]string{"npm", "install", "-g", "yarn"},
-		executor.WithEnviron(npmEnviron(p)),
+		executor.WithEnv(npmEnv(p)),
 	)
 }
 
-func (*NodeInitialize) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*NodeInitialize) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if !checkProjectHasDep(p, "node") {
 		return nil, nil
 	}

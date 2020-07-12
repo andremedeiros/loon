@@ -36,9 +36,9 @@ func (ms *MemcachedStart) Resolve(_ context.Context, p *project.Project, _ SudoF
 	})
 }
 
-func (*MemcachedStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*MemcachedStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if checkProjectHasDep(p, "memcached") {
-		return []string{fmt.Sprintf("MEMCACHED_URL=%s:11211", p.IP)}, nil
+		return Env{"MEMCACHED_URL": fmt.Sprintf("%s:11211", p.IP)}, nil
 	}
 	return nil, nil
 }
@@ -64,7 +64,7 @@ func (ms *MemcachedStop) Resolve(_ context.Context, p *project.Project, _ SudoFu
 	return process.InterruptFromPidFile(pid)
 }
 
-func (*MemcachedStop) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*MemcachedStop) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

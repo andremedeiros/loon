@@ -2,7 +2,6 @@ package task
 
 import (
 	"context"
-	"fmt"
 	"net"
 
 	"github.com/andremedeiros/loon/internal/project"
@@ -39,8 +38,8 @@ func (*NetworkingStart) Check(_ context.Context, p *project.Project) (bool, erro
 	return checkIp(p)
 }
 
-func (*NetworkingStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
-	return []string{fmt.Sprintf("PROJECT_IP=%s", p.IP)}, nil
+func (*NetworkingStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
+	return Env{"PROJECT_IP": p.IP.String()}, nil
 }
 
 type NetworkingStop struct{}
@@ -54,7 +53,7 @@ func (*NetworkingStop) Check(_ context.Context, p *project.Project) (bool, error
 	return !exists, err
 }
 
-func (*NetworkingStop) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*NetworkingStop) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

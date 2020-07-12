@@ -35,7 +35,7 @@ func sudo(ui ui.UI, s ui.Spinner, sg ui.SpinnerGroup) func(string) func() error 
 
 func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun func([]string) error) error {
 	bins := []string{}
-	envs := []string{}
+	envs := map[string]string{}
 	wg := &sync.WaitGroup{}
 	wgs := make(map[string]*sync.WaitGroup)
 	errs := make(chan error)
@@ -72,9 +72,11 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 					errs <- err
 					return
 				}
-				e, b := te.Environ(ctx, p)
-				envs = append(envs, e...)
+				e, b := te.Env(ctx, p)
 				bins = append(bins, b...)
+				for k, v := range e {
+					envs[k] = v
+				}
 				if !done {
 					s := sg.NewSpinner(te.Header())
 					if err := te.Resolve(ctx, p, sudo(ui, s, sg)); err != nil {
@@ -103,8 +105,20 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 	// Set up environment
 	sg.Finish()
 	path := os.Getenv("PATH")
-	envs = append(envs, fmt.Sprintf("PATH=%s:%s", strings.Join(bins, ":"), path))
-	if err := fun(envs); err != nil {
+	newenvs := []string{"LOON_NEW_ENVS"}
+	envs["LOON_OLD_ENV_PATH"] = path
+	envs["PATH"] = fmt.Sprintf("PATH=%s:%s", strings.Join(bins, ":"), path)
+	environ := []string{}
+	for k, v := range envs {
+		environ = append(environ, fmt.Sprintf("%s=%s", k, v))
+		if old, ok := os.LookupEnv(k); ok {
+			envs[fmt.Sprintf("LOON_OLD_ENV_%s", k)] = old
+		} else {
+			newenvs = append(newenvs, k)
+		}
+	}
+	environ = append(environ, fmt.Sprintf("LOON_NEW_ENVS=%s", strings.Join(newenvs, ":")))
+	if err := fun(environ); err != nil {
 		errs <- err
 	}
 	close(errs)
