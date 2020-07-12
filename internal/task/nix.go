@@ -20,7 +20,7 @@ func (*DerivationCurrent) Resolve(_ context.Context, p *project.Project, _ SudoF
 	return p.EnsureDependencies()
 }
 
-func (*DerivationCurrent) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*DerivationCurrent) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

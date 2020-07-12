@@ -51,7 +51,7 @@ func (*MysqlInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFun
 	})
 }
 
-func (*MysqlInitialize) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*MysqlInitialize) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 
@@ -95,9 +95,9 @@ func (ms *MysqlStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc)
 	})
 }
 
-func (*MysqlStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*MysqlStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if checkProjectHasDep(p, "mysql") {
-		return []string{fmt.Sprintf("DATABASE_URL=mysql2://root@%s:3306", p.IP)}, nil
+		return Env{"DATABASE_URL": fmt.Sprintf("mysql2://root@%s:3306", p.IP)}, nil
 	}
 	return nil, nil
 }
@@ -126,7 +126,7 @@ func (*MysqlStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) err
 	})
 }
 
-func (*MysqlStop) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*MysqlStop) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

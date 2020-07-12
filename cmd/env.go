@@ -28,11 +28,14 @@ var runEnv = func(ctx context.Context, ui ui.UI, cfg *config.Config, proj *proje
 		sort.Strings(environ)
 		w := tabwriter.NewWriter(os.Stdout, 0, 2, 2, ' ', 0)
 		for _, e := range environ {
-			if strings.HasPrefix(e, "PATH=") {
-				continue
+			switch {
+			case strings.HasPrefix(e, "PATH="):
+			case strings.HasPrefix(e, "LOON_OLD_ENV_"):
+			case strings.HasPrefix(e, "LOON_NEW_ENVS="):
+			default:
+				es := strings.SplitN(e, "=", 2)
+				ui.Fprintf(w, "{bold:%s}=%s\n", es[0], es[1])
 			}
-			es := strings.SplitN(e, "=", 2)
-			ui.Fprintf(w, "{bold:%s}=%s\n", es[0], es[1])
 		}
 		w.Flush()
 		return nil

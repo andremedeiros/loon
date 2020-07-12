@@ -2,16 +2,12 @@ package task
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-func goEnviron(p *project.Project) []string {
-	golang := p.VariableDataPath("data", "go")
-	return []string{
-		fmt.Sprintf("GOPATH=%s", golang),
-	}
+func goEnviron(p *project.Project) map[string]string {
+	return Env{"GOPATH": p.VariableDataPath("data", "go")}
 }
 
 type GoInitialize struct{}
@@ -28,7 +24,7 @@ func (*GoInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) 
 	return nil
 }
 
-func (*GoInitialize) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*GoInitialize) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if !checkProjectHasDep(p, "golang") {
 		return nil, nil
 	}

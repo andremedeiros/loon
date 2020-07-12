@@ -23,10 +23,10 @@ type Executor interface {
 	Header() string
 	Check(context.Context, *project.Project) (bool, error)
 	Resolve(context.Context, *project.Project, SudoFunc) error
-	Environ(context.Context, *project.Project) (Environ, BinPaths)
+	Env(context.Context, *project.Project) (Env, BinPaths)
 }
 
-type Environ []string
+type Env map[string]string
 type BinPaths []string
 
 func RegisterTask(name string, t Executor) {

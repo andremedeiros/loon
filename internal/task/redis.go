@@ -29,7 +29,7 @@ func (*RedisInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFun
 	return os.MkdirAll(data, 0755)
 }
 
-func (*RedisInitialize) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*RedisInitialize) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 
@@ -64,9 +64,9 @@ func (rs *RedisStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc)
 	})
 }
 
-func (*RedisStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*RedisStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if checkProjectHasDep(p, "redis") {
-		return []string{fmt.Sprintf("REDIS_URL=redis://%s:6379", p.IP)}, nil
+		return Env{"REDIS_URL": fmt.Sprintf("redis://%s:6379", p.IP)}, nil
 	}
 	return nil, nil
 }
@@ -92,7 +92,7 @@ func (rs *RedisStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) 
 	return process.InterruptFromPidFile(pid)
 }
 
-func (*RedisStop) Environ(_ context.Context, _ *project.Project) (Environ, BinPaths) {
+func (*RedisStop) Env(_ context.Context, _ *project.Project) (Env, BinPaths) {
 	return nil, nil
 }
 

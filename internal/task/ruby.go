@@ -2,18 +2,17 @@ package task
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-func rubyEnviron(p *project.Project) []string {
+func rubyEnv(p *project.Project) Env {
 	gems := p.VariableDataPath("data", "gem")
-	return []string{
-		fmt.Sprintf("GEM_HOME=%s", gems),
-		fmt.Sprintf("GEM_PATH=%s", gems),
+	return Env{
+		"GEM_HOME": gems,
+		"GEM_PATH": gems,
 	}
 }
 
@@ -41,19 +40,19 @@ func (*RubyInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc
 		{"bundle", "config", "build.sassc", "--disable-lto"}, // https://github.com/sass/sassc-ruby/issues/148
 	}
 	for _, cmd := range cmds {
-		if err := exe.Execute(cmd, executor.WithEnviron(rubyEnviron(p))); err != nil {
+		if err := exe.Execute(cmd, executor.WithEnv(rubyEnv(p))); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (*RubyInitialize) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+func (*RubyInitialize) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
 	if !checkProjectHasDep(p, "ruby") {
 		return nil, nil
 	}
 	bin := p.VariableDataPath("data", "gem", "bin")
-	return rubyEnviron(p), []string{bin}
+	return rubyEnv(p), []string{bin}
 }
 
 func init() {
