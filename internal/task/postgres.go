@@ -31,7 +31,7 @@ func (*PostgresInitialize) Check(_ context.Context, p *project.Project) (bool, e
 	return err == nil, nil
 }
 
-func (*PostgresInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*PostgresInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	data := p.VariableDataPath("data", "postgres")
 	exe := p.DerivationExecutor()
 	if err := exe.Execute([]string{"initdb", data}); err != nil {
@@ -60,7 +60,7 @@ func (ps *PostgresStart) Check(_ context.Context, p *project.Project) (bool, err
 	return checkHealth(p.IP, 5432, ps.started), nil
 }
 
-func (ps *PostgresStart) Resolve(_ context.Context, p *project.Project) error {
+func (ps *PostgresStart) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	ps.started = true
 	data := p.VariableDataPath("data", "postgres")
 	log := p.VariableDataPath("data", "postgres", "postgres.log")
@@ -96,7 +96,7 @@ func (*PostgresStop) Check(_ context.Context, p *project.Project) (bool, error) 
 	return checkDown(p.IP, 5432, false), nil
 }
 
-func (*PostgresStop) Resolve(_ context.Context, p *project.Project) error {
+func (*PostgresStop) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	data := p.VariableDataPath("data", "postgres")
 	exe := p.DerivationExecutor()
 	return exe.Execute([]string{

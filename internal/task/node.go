@@ -33,7 +33,7 @@ func (*NodeInitialize) Check(_ context.Context, p *project.Project) (bool, error
 	return true, nil
 }
 
-func (*NodeInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*NodeInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	exe := p.DerivationExecutor()
 	return exe.Execute(
 		[]string{"npm", "install", "-g", "yarn"},

@@ -16,7 +16,7 @@ func (*DerivationCurrent) Check(_ context.Context, p *project.Project) (bool, er
 	return !p.NeedsUpdate(), nil
 }
 
-func (*DerivationCurrent) Resolve(_ context.Context, p *project.Project) error {
+func (*DerivationCurrent) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	return p.EnsureDependencies()
 }
 

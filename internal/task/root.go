@@ -7,12 +7,30 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/andremedeiros/loon/internal/executor"
 	"github.com/andremedeiros/loon/internal/project"
 	"github.com/andremedeiros/loon/internal/ui"
 )
 
 type Root struct {
 	Name string
+}
+
+func sudo(ui ui.UI, s ui.Spinner, sg ui.SpinnerGroup) func(string) func() error {
+	return func(msg string) func() error {
+		return func() error {
+			s.Wait()
+			sg.Pause()
+			defer func() {
+				sg.ResetDisplay()
+				s.Work()
+				sg.Resume()
+			}()
+			defer sg.Resume()
+			ui.Fprintf(os.Stdout, strings.TrimSpace(msg)+"\n")
+			return executor.RequestSudo("Please enter your password: ")
+		}
+	}
 }
 
 func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun func([]string) error) error {
@@ -59,7 +77,7 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 				bins = append(bins, b...)
 				if !done {
 					s := sg.NewSpinner(te.Header())
-					if err := te.Resolve(ctx, p); err != nil {
+					if err := te.Resolve(ctx, p, sudo(ui, s, sg)); err != nil {
 						s.Fail()
 						errs <- err
 						return

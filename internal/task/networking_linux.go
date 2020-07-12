@@ -10,24 +10,22 @@ import (
 
 func (*NetworkingStart) Resolve(_ context.Context, p *project.Project) error {
 	return executor.Execute([]string{
-		"sudo",
 		"ip",
 		"addr",
 		"add",
 		fmt.Sprintf("%s/32", p.IP),
 		"dev",
 		"lo",
-	})
+	}, executor.WithSudo())
 }
 
 func (*NetworkingStop) Resolve(_ context.Context, p *project.Project) error {
 	return executor.Execute([]string{
-		"sudo",
 		"ip",
 		"addr",
 		"del",
 		fmt.Sprintf("%s/32", p.IP),
 		"dev",
 		"lo",
-	})
+	}, executor.WithSudo())
 }

@@ -34,7 +34,7 @@ func (*RubyInitialize) Check(_ context.Context, p *project.Project) (bool, error
 	return true, nil
 }
 
-func (*RubyInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*RubyInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	exe := p.DerivationExecutor()
 	cmds := [][]string{
 		{"gem", "install", "bundler", "--no-document"},       // Installs bundler

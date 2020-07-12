@@ -24,7 +24,7 @@ func (*GoInitialize) Check(_ context.Context, p *project.Project) (bool, error) 
 	return true, nil
 }
 
-func (*GoInitialize) Resolve(_ context.Context, p *project.Project) error {
+func (*GoInitialize) Resolve(_ context.Context, p *project.Project, _ SudoFunc) error {
 	return nil
 }
 
