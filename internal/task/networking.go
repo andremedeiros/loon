@@ -8,13 +8,7 @@ import (
 	"github.com/andremedeiros/loon/internal/project"
 )
 
-type Networking struct{}
-
-func (*Networking) Header() string {
-	return "Setting up project networking"
-}
-
-func (n *Networking) Check(_ context.Context, p *project.Project) (bool, error) {
+func checkIp(p *project.Project) (bool, error) {
 	ifis, err := net.Interfaces()
 	if err != nil {
 		return false, err
@@ -35,13 +29,40 @@ func (n *Networking) Check(_ context.Context, p *project.Project) (bool, error) 
 	return false, nil
 }
 
-func (*Networking) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+type NetworkingStart struct{}
+
+func (*NetworkingStart) Header() string {
+	return "Setting up project networking"
+}
+
+func (*NetworkingStart) Check(_ context.Context, p *project.Project) (bool, error) {
+	return checkIp(p)
+}
+
+func (*NetworkingStart) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
 	return []string{fmt.Sprintf("PROJECT_IP=%s", p.IP)}, nil
 }
 
+type NetworkingStop struct{}
+
+func (*NetworkingStop) Header() string {
+	return "Tearing down project networking"
+}
+
+func (*NetworkingStop) Check(_ context.Context, p *project.Project) (bool, error) {
+	exists, err := checkIp(p)
+	return !exists, err
+}
+
+func (*NetworkingStop) Environ(_ context.Context, p *project.Project) (Environ, BinPaths) {
+	return nil, nil
+}
+
 func init() {
-	RegisterTask("networking:start", &Networking{})
+	RegisterTask("networking:start", &NetworkingStart{})
+	RegisterTask("networking:stop", &NetworkingStop{})
 	RunsAfter("command:up", "networking:start")
 	RunsAfter("command:task", "networking:start")
 	RunsAfter("command:exec", "networking:start")
+	RunsAfter("command:down:done", "networking:stop")
 }

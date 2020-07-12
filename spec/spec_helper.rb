@@ -3,6 +3,7 @@ require 'byebug'
 require 'tempfile'
 require 'fileutils'
 require 'open3'
+require 'os'
 require 'pathname'
 require 'yaml'
 
@@ -65,6 +66,12 @@ end
 module Helpers
   ROOT = Pathname(__FILE__).dirname.dirname
   LOON = ROOT.join('loon')
+
+  def project_ip
+    loon %(env)
+    /\=(\d+\.\d+\.\d+\.\d+)$/.match(@last_stdout)
+    return $1
+  end
 
   def test_dep(name, version: nil, cmd: nil, match:)
     cmd ||= "#{name} --version"
