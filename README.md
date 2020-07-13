@@ -77,7 +77,7 @@ Finally, `loon down` shuts the services down.
 Memcached|1.6.5, 1.6.6
 MySQL|8.0.17
 Postgresql|9.5.22, 9.6.18, 10.13, 11.8, 12.3
-Redis|6.0.4
+Redis|6.0.4-6.0.5
 
 ### Languages
 
