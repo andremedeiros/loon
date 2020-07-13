@@ -49,6 +49,8 @@ _l() {
 
   return ${ret}
 }
+
+alias loon="_l"
 	`, absPath))
 
 	os.Stdout.Write([]byte(shell))
