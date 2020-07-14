@@ -16,7 +16,7 @@ tasks:
     command: |
       go generate
       go build \
-        -ldflags="-X github.com/andremedeiros/loon/cmd.version=$(git rev-parse --short HEAD)"
+        -ldflags="-X github.com/andremedeiros/loon/internal/cli.version=$(git rev-parse --short HEAD)"
   test:
     description: Runs go tests
     command: go test ./... -v $@

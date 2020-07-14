@@ -34,16 +34,23 @@ type parser struct {
 
 func NewParser(b []byte, instructionCodes InstructionTable) *parser {
 	p := &parser{b: b, out: bytes.Buffer{}, pos: 0, stack: nil, fsm: fsm.NewFSM()}
-
 	p.fsm.StartWith("string_block", nil)
 	p.fsm.When("string_block")(func(event *fsm.Event) *fsm.NextState {
 		for i := p.pos; i < len(p.b); i++ {
 			switch p.b[i] {
 			case '{':
+				if len(p.b) > i+1 && p.b[i+1] == '{' {
+					i = i + 2
+					continue
+				}
 				p.out.Write(p.b[p.pos:i])
 				p.pos = i + 1
 				return p.fsm.Goto("start_formatting_block")
 			case '}':
+				if len(p.b) > i+1 && p.b[i+1] == '}' {
+					i = i + 2
+					continue
+				}
 				p.out.Write(p.b[p.pos:i])
 				p.pos = i + 1
 				return p.fsm.Goto("end_formatting_block")

@@ -13,8 +13,8 @@ describe 'Commands' do
     it "should show the task when running loon from the project dir" do
       with_payload(tasks: tasks) do
         loon
-        assert_stderr "hello"
-        assert_stderr "Says hello"
+        assert_stdout "hello"
+        assert_stdout "Says hello"
       end
     end
   end

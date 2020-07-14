@@ -3,7 +3,12 @@ package ui
 import (
 	"fmt"
 	"io"
+	"os"
 )
+
+func (c color) Write(p []byte) (n int, err error) {
+	return c.Fprintf(os.Stdout, string(p))
+}
 
 func (color) Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
 	return fprintf(w, format, a...)

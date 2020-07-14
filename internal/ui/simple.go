@@ -36,6 +36,10 @@ var simpleInstructionCodes = map[string]string{
 	"bright_white":   "",
 }
 
+func (s simple) Write(p []byte) (n int, err error) {
+	return s.Fprintf(os.Stdout, string(p))
+}
+
 func (simple) Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
 	str := MustParse(fmt.Sprintf(format, a...), simpleInstructionCodes)
 	return fmt.Fprintf(w, str)

@@ -31,11 +31,11 @@ type Spinner interface {
 }
 
 type UI interface {
-	NewSpinnerGroup() SpinnerGroup
+	io.Writer
 
+	NewSpinnerGroup() SpinnerGroup
 	Info(string)
 	Error(error)
-
 	Fprintf(io.Writer, string, ...interface{}) (int, error)
 }
 

@@ -3,11 +3,20 @@ package check
 import (
 	"fmt"
 	"os/exec"
+	"regexp"
 
-	"github.com/andremedeiros/loon/pkg/version"
+	"github.com/hashicorp/go-version"
 )
 
-var minVersion = version.New([]byte("2.3.6"))
+func extractNixVersion(p []byte) string {
+	re := regexp.MustCompile(`(\d+.\d+.\d+)`)
+	matches := re.FindStringSubmatch(string(p))
+	if matches == nil {
+		return ""
+	} else {
+		return matches[0]
+	}
+}
 
 func Nix() error {
 	// Check utilities are present.
@@ -20,9 +29,10 @@ func Nix() error {
 	// Check version is up to date enough.
 	cmd := exec.Command("nix", "--version")
 	out, _ := cmd.CombinedOutput()
-	nixver := version.New(out)
-	if minVersion.Greater(nixver) {
-		return fmt.Errorf("nix must be at least 2.3.6 and you have %s", nixver.String())
+	nv := version.Must(version.NewVersion(extractNixVersion(out)))
+	mv := version.Must(version.NewVersion("2.4.6"))
+	if mv.LessThanOrEqual(nv) {
+		return fmt.Errorf("nix must be at least 2.3.6 and you have %s", nv)
 	}
 	return nil
 }

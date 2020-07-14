@@ -24,7 +24,8 @@ func TestParse(t *testing.T) {
 		{"This {bold:{underline:thing} is} not bold", "This |BOL||UND|thing|RES||BOL| is|RES| not bold", nil},
 		{"This {red:thing} is red", "This |RED|thing|RES| is red", nil},
 		{"{blue:{bold:Info:} %s}\n", "|BLU||BOL|Info:|RES||BLU| %s|RES|\n", nil},
-		{"{blue:{bold:Info:} %s}}\n", "", ErrUnbalancedFormattingBlocks},
+		{"{blue:{bold:Info:} %s}}\n", "|BLU||BOL|Info:|RES||BLU| %s}}\n", nil},
+		{"{{.Foo}}", "{{.Foo}}", nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.have, func(t *testing.T) {
