@@ -69,7 +69,7 @@ module Helpers
 
   def project_ip
     loon %(env)
-    %r(^PROJECT_IP=(\d+\.\d+\.\d+\.\d+)$).match(@last_stdout)
+    %r(^LOON_PROJECT_IP=(\d+\.\d+\.\d+\.\d+)$).match(@last_stdout)
     return $1
   end
 

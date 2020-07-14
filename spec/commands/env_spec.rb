@@ -2,7 +2,7 @@ describe 'Commands' do
   describe 'env', command: true do
     it 'should show default values' do
       loon %(env)
-      assert_stdout 'PROJECT_IP='
+      assert_stdout 'LOON_PROJECT_IP='
     end
 
     describe 'without .env' do

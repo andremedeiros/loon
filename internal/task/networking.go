@@ -17,7 +17,7 @@ func (*NetworkingStart) Check(_ context.Context, p *project.Project) (bool, erro
 }
 
 func (*NetworkingStart) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
-	return Env{"PROJECT_IP": p.IP.String()}, nil
+	return Env{"LOON_PROJECT_IP": p.IP.String()}, nil
 }
 
 type NetworkingStop struct{}
