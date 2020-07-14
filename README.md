@@ -14,8 +14,8 @@ Loon is a developer tool that aims to facilitate getting started on various proj
 
 ```
 $ go get -u github.com/andremedeiros/loon
-$ loon shellrc >> ~/.bashrc # if you're a bash user
-$ loon shellrc >> ~/.zshrc  # if you're a zsh user
+$ loon rc >> ~/.bashrc # if you're a bash user
+$ loon rc >> ~/.zshrc  # if you're a zsh user
 ```
 
 ### A simple payload
