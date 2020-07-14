@@ -10,4 +10,4 @@ loon-mysql-8_0_17 = pkgs.mysql80.overrideAttrs(attrs: {
 
 #{{ define "packages" }}
 loon-mysql-8_0_17
-#{{ end }}{
+#{{ end }}

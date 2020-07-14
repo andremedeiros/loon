@@ -76,10 +76,10 @@ Finally, `loon down` shuts the services down.
 
 **Service**|**Versions**
 -----|-----
-Memcached|1.6.5-1.6.6
-MySQL|8.0.17
+Memcached|1.6.{5,6}
+MySQL|8.0.{17,21}
 Postgresql|9.5.22, 9.6.18, 10.13, 11.8, 12.3
-Redis|6.0.4-6.0.5
+Redis|6.0.{4,5}
 
 ### Languages
 
@@ -87,7 +87,7 @@ Redis|6.0.4-6.0.5
 -----|-----
 Crystal|0.35.1
 Golang|1.13.12, 1.14.4
-Node|12.18.1, 14.4.0
+Node|12.18.{1,2}, 14.{4,5}.0
 Ruby|2.6.6, 2.7.1
 
 ## Acknowledgements
