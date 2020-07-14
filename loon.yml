@@ -26,6 +26,6 @@ tasks:
   integration:
     description: Runs integration tests
     command: bundle exec rspec --tag command
-  integration:dependency:
-    description: Runs integration tests (with dependencies)
+  dependency:
+    description: Runs dependency tests
     command: bundle exec rspec --tag dependency
