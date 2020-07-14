@@ -25,7 +25,7 @@ tasks:
     command: go test ./... -v -bench=. $@
   integration:
     description: Runs integration tests
-    command: bundle exec rspec --tag command
+    command: rspec --tag command
   dependency:
     description: Runs dependency tests
-    command: bundle exec rspec --tag dependency
+    command: rspec --tag dependency
