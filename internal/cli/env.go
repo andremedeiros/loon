@@ -27,9 +27,10 @@ var envCmd = &cli.Command{
 			w := tabwriter.NewWriter(os.Stdout, 0, 2, 2, ' ', 0)
 			for _, e := range environ {
 				switch {
-				case strings.HasPrefix(e, "PATH="):
-				case strings.HasPrefix(e, "LOON_OLD_ENV_"):
 				case strings.HasPrefix(e, "LOON_NEW_ENVS="):
+				case strings.HasPrefix(e, "LOON_OLD_ENV_"):
+				case strings.HasPrefix(e, "LOON_PROJECT_ROOT="):
+				case strings.HasPrefix(e, "PATH="):
 				default:
 					es := strings.SplitN(e, "=", 2)
 					cliui.Fprintf(w, "{bold:%s}=%s\n", es[0], es[1])

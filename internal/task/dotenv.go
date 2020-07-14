@@ -27,7 +27,7 @@ func (*DotenvSetup) Resolve(_ context.Context, p *project.Project, _ SudoFunc) e
 }
 
 func (*DotenvSetup) Env(_ context.Context, p *project.Project) (Env, BinPaths) {
-	environ := Env{}
+	environ := Env{"LOON_PROJECT_ROOT": p.Path}
 	for k, v := range p.Environment {
 		environ[k] = v
 	}
