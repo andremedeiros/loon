@@ -1,6 +1,10 @@
 package cli
 
-import "github.com/urfave/cli/v2"
+import (
+	"context"
+
+	"github.com/urfave/cli/v2"
+)
 
 var version = "dev"
 
@@ -13,8 +17,8 @@ var app = &cli.App{
 	Version: version,
 }
 
-func Run(args []string) error {
-	return app.Run(args)
+func RunContext(ctx context.Context, args []string) error {
+	return app.RunContext(ctx, args)
 }
 
 func appendCommand(c *cli.Command) {
