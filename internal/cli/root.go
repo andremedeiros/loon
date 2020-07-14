@@ -14,7 +14,8 @@ var app = &cli.App{
 	Authors: []*cli.Author{
 		{Name: "André Medeiros", Email: "hello@andre.cool"},
 	},
-	Version: version,
+	Version:              version,
+	EnableBashCompletion: true,
 }
 
 func RunContext(ctx context.Context, args []string) error {
