@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 
 	"github.com/andremedeiros/loon/internal/executor"
@@ -20,7 +21,7 @@ type Project struct {
 	URL          string
 	Provider     string
 	Dependencies []Dependency
-	Tasks        []Task
+	Tasks        Tasks
 	Environment  map[string]string
 	Path         string
 	ModTime      time.Time
@@ -183,7 +184,7 @@ func (p *Project) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		t.Description = opts["description"]
 		p.Tasks = append(p.Tasks, t)
 	}
-
+	sort.Sort(p.Tasks)
 	return nil
 }
 

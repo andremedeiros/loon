@@ -16,7 +16,7 @@ tasks:
     command: |
       go generate
       go build \
-        -ldflags="-X github.com/andremedeiros/loon/cmd.version=$(git rev-parse --short HEAD)"
+        -ldflags="-X github.com/andremedeiros/loon/internal/cli.version=$(git rev-parse --short HEAD)"
   test:
     description: Runs go tests
     command: go test ./... -v $@
@@ -25,7 +25,7 @@ tasks:
     command: go test ./... -v -bench=. $@
   integration:
     description: Runs integration tests
-    command: bundle exec rspec --tag command
-  integration:dependency:
-    description: Runs integration tests (with dependencies)
-    command: bundle exec rspec --tag dependency
+    command: rspec --tag command
+  dependency:
+    description: Runs dependency tests
+    command: rspec --tag dependency

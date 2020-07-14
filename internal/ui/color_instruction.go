@@ -48,6 +48,7 @@ var colorInstructionCodes = map[string]string{
 	"magenta":        Magenta.String(),
 	"cyan":           Cyan.String(),
 	"white":          White.String(),
+	"gray":           BrightBlack.String(),
 	"bright_black":   BrightBlack.String(),
 	"bright_red":     BrightRed.String(),
 	"bright_green":   BrightGreen.String(),
