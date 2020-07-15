@@ -7,7 +7,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        dependency: [crystal, golang, memcached, mysql, node, postgres, redis, ruby]
+        dependency: [crystal, golang, memcached, mysql, node, postgresql, redis, ruby]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
