@@ -21,6 +21,9 @@ var buildCmd = &cli.Command{
 		dep := c.Args().Get(0)
 
 		if all {
+			if _, err := nix.PackageFor(dep, "default"); err != nil {
+				return err
+			}
 			for _, pkg := range nix.Packages() {
 				if pkg.Name != dep {
 					continue
