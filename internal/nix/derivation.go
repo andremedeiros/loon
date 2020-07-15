@@ -33,7 +33,7 @@ func (d *Derivation) Execute(args []string, opts ...executor.Option) error {
 	return executor.Execute(cmd, opts...)
 }
 
-func (d *Derivation) generate() {
+func (d *Derivation) generateShell() {
 	tmpl := `
 { pkgs ? import <nixpkgs> { } }:
 let
@@ -72,7 +72,7 @@ func (d *Derivation) NeedsUpdate(payloadModified time.Time) bool {
 }
 
 func (d *Derivation) Install() error {
-	d.generate()
+	d.generateShell()
 	if err := executor.Execute([]string{"nix-instantiate", d.NixPath, "--indirect", "--add-root", d.DrvPath}); err != nil {
 		return err
 	}

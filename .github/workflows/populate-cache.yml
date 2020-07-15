@@ -1,0 +1,31 @@
+on: [push, pull_request]
+name: Populate Cache
+jobs:
+  populate:
+    name: "${{ matrix.dependency }} (${{ matrix.platform }})"
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        dependency: [crystal, golang, memcached, mysql, node, postgres, redis, ruby]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.14.x
+    - name: Install Nix
+      uses: cachix/install-nix-action@v10
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    - name: Install Cachix
+      uses: cachix/cachix-action@v6
+      with:
+        name: loon
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build Loon
+      run: go build
+    - name: Build dependencies
+      run: ./loon nix build --all ${{ matrix.dependency }}

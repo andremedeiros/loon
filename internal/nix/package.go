@@ -3,11 +3,14 @@ package nix
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/andremedeiros/loon/internal/catalog"
+	"github.com/andremedeiros/loon/internal/executor"
 )
 
 type Package struct {
@@ -30,6 +33,40 @@ func (p Package) DerivationPackages() string {
 	t, _ = t.Parse(`{{ template "packages" }}`)
 	t.Execute(buf, nil)
 	return buf.String()
+}
+
+func (p Package) Build() error {
+	tmpl := `
+{ pkgs ? import <nixpkgs> { } }:
+let
+	inherit (pkgs) stdenv fetchurl mkShell;
+	{{ .Derivation }}
+in rec {
+	package =
+		{{ .DerivationPackages }}
+	;
+}`
+	buf := bytes.NewBuffer([]byte{})
+	t, err := template.New("nix").Parse(tmpl)
+	if err != nil {
+		// TODO(andremedeiros): figure out a better way
+		panic(err)
+	}
+	t.Execute(buf, p)
+	f, _ := ioutil.TempFile("", "default.nix")
+	f.Write(buf.Bytes())
+	f.Close()
+
+	return executor.Execute([]string{
+		"nix-build",
+		f.Name(),
+		"-A",
+		"package",
+		"--no-out-link",
+	},
+		executor.WithStdout(os.Stdout),
+		executor.WithStderr(os.Stderr),
+	)
 }
 
 func PackageFor(name string, version string) (Package, error) {
