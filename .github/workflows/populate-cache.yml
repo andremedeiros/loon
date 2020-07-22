@@ -1,24 +1,19 @@
 on: [push, pull_request]
-name: Integration Tests
+name: Populate Cache
 jobs:
-  integration:
-    name: "${{ matrix.tag }} (${{ matrix.platform }})"
+  populate:
+    name: "${{ matrix.dependency }} (${{ matrix.platform }})"
     strategy:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest]
-        tag: [command, crystal, golang, memcached, mysql, node, postgres, redis, ruby]
+        dependency: [crystal, golang, memcached, mysql, node, postgresql, redis, ruby]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Install Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.14.x
-    - name: Install Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 2.7.1
-        bundler-cache: true
     - name: Install Nix
       uses: cachix/install-nix-action@v10
       with:
@@ -27,11 +22,10 @@ jobs:
       uses: cachix/cachix-action@v6
       with:
         name: loon
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Build Loon
       run: go build
-    - name: Bundle Install
-      run: bundle install
-    - name: Integration Tests
-      run: bundle exec rspec --tag ${{ matrix.tag }}
+    - name: Build dependencies
+      run: ./loon nix build --all ${{ matrix.dependency }}
