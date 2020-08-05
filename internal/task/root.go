@@ -36,6 +36,7 @@ func sudo(ui ui.UI, s ui.Spinner, sg ui.SpinnerGroup) func(string) func() error 
 func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun func([]string) error) error {
 	bins := []string{}
 	envs := map[string]string{}
+	envsMu := &sync.Mutex{}
 	wg := &sync.WaitGroup{}
 	wgs := make(map[string]*sync.WaitGroup)
 	errs := make(chan error)
@@ -75,7 +76,9 @@ func Run(ctx context.Context, ui ui.UI, p *project.Project, name string, fun fun
 				e, b := te.Env(ctx, p)
 				bins = append(bins, b...)
 				for k, v := range e {
+					envsMu.Lock()
 					envs[k] = v
+					envsMu.Unlock()
 				}
 				if !done {
 					s := sg.NewSpinner(te.Header())
